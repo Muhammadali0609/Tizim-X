@@ -7,6 +7,12 @@ from db import setup_database
 async def setup_commands(app):
     await app.bot.set_my_commands(
         [
+            BotCommand("start", "Open TizimX"),
+        ],
+        scope=BotCommandScopeAllPrivateChats()
+    )
+    await app.bot.set_my_commands(
+        [
             BotCommand("ru", "Язык группы русский"),
             BotCommand("uz", "Guruh tili o‘zbekcha"),
         ],
