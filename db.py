@@ -27,6 +27,10 @@ def setup_database():
                     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
                 )
             """)
+            cur.execute("""
+                ALTER TABLE tizimx_groups
+                ADD COLUMN IF NOT EXISTS language TEXT NOT NULL DEFAULT 'ru'
+            """)
         conn.commit()
 
 def get_user_language(user_id: int) -> str:
@@ -86,3 +90,26 @@ def get_group_settings(chat_id: int) -> dict:
         "anti_bad_words": row[1],
         "silent_mode": row[2],
     }
+
+def get_group_language(chat_id: int) -> str:
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT language FROM tizimx_groups WHERE chat_id = %s",
+                (chat_id,)
+            )
+            row = cur.fetchone()
+
+    return row[0] if row else "ru"
+
+
+def save_group_language(chat_id: int, language: str):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO tizimx_groups (chat_id, language)
+                VALUES (%s, %s)
+                ON CONFLICT (chat_id)
+                DO UPDATE SET language = EXCLUDED.language
+            """, (chat_id, language))
+        conn.commit()
