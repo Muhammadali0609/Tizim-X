@@ -1,4 +1,5 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram.constants import ChatMemberStatus
 from telegram.ext import ContextTypes
 from db import save_user_language
 from texts import TEXTS
@@ -28,4 +29,34 @@ async def language_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.edit_message_text(
         TEXTS[lang]["language_saved"] + "\n\n" + TEXTS[lang]["start"]
+    )
+
+async def bot_added_to_group(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = update.my_chat_member
+
+    if not message:
+        return
+
+    new_status = message.new_chat_member.status
+
+    if new_status not in [
+        ChatMemberStatus.MEMBER,
+        ChatMemberStatus.ADMINISTRATOR,
+    ]:
+        return
+
+    chat = message.chat
+
+    bot_member = await chat.get_member(context.bot.id)
+
+    has_admin = bot_member.status == ChatMemberStatus.ADMINISTRATOR
+
+    text = TEXTS["ru"]["group_connected"]
+
+    if not has_admin:
+        text += "\n\n" + TEXTS["ru"]["no_admin_rights"]
+
+    await context.bot.send_message(
+        chat_id=chat.id,
+        text=text
     )
