@@ -1,7 +1,8 @@
-from telegram.ext import Application, CommandHandler
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler
 
 from config import BOT_TOKEN, WEBHOOK_URL, PORT
-from handlers import start_command
+from handlers import start_command, language_callback
+
 
 def main():
     app = Application.builder().token(BOT_TOKEN).build()
