@@ -3,7 +3,7 @@ from telegram.constants import ChatMemberStatus
 from telegram.ext import ContextTypes
 from db import save_user_language
 from texts import TEXTS
-
+from filters import has_link
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
@@ -60,3 +60,20 @@ async def bot_added_to_group(update: Update, context: ContextTypes.DEFAULT_TYPE)
         chat_id=chat.id,
         text=text
     )
+
+async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = update.message
+
+    if not message or not message.text:
+        return
+
+    if message.chat.type not in ["group", "supergroup"]:
+        return
+
+    text = message.text
+
+    if has_link(text):
+        try:
+            await message.delete()
+        except Exception as e:
+            print("MODERATION ERROR:", e)
