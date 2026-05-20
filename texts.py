@@ -13,6 +13,8 @@ TEXTS = {
         "no_admin_rights": (
             "❌ У бота нет прав администратора."
         ),
+        "group_language_ru": "✅ Язык группы изменён на русский.",
+        "group_language_uz": "✅ Язык группы изменён на узбекский.",
     },
     "uz": {
         "start": (
@@ -28,5 +30,7 @@ TEXTS = {
         "no_admin_rights": (
             "❌ Botda administrator huquqlari yo‘q."
         ),
+        "group_language_ru": "✅ Guruh tili rus tiliga o‘zgartirildi.",
+        "group_language_uz": "✅ Guruh tili o‘zbekchaga o‘zgartirildi.",
     }
 }
