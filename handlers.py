@@ -74,7 +74,7 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
     user = message.from_user
 
     if await is_admin(message.chat, user.id):
-    return
+        return
     
     text = message.text
 
