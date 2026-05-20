@@ -1,7 +1,4 @@
-from telegram.ext import (
-    Application,
-    CommandHandler,
-)
+from telegram.ext import Application, CommandHandler
 
 from config import BOT_TOKEN, WEBHOOK_URL, PORT
 from handlers import start_command
@@ -11,8 +8,6 @@ def main():
     app = Application.builder().token(BOT_TOKEN).build()
 
     app.add_handler(CommandHandler("start", start_command))
-
-    print("TizimX started...")
 
     app.run_webhook(
         listen="0.0.0.0",
