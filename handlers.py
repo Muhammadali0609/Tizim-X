@@ -1,7 +1,7 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.constants import ChatMemberStatus
 from telegram.ext import ContextTypes
-from db import save_user_language
+from db import save_user_language, save_group, get_group_settings
 from texts import TEXTS
 from filters import has_link
 from admins import is_admin
@@ -47,6 +47,7 @@ async def bot_added_to_group(update: Update, context: ContextTypes.DEFAULT_TYPE)
         return
 
     chat = message.chat
+    save_group(chat.id, chat.title)
 
     bot_member = await chat.get_member(context.bot.id)
 
@@ -69,6 +70,13 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
         return
 
     if message.chat.type not in ["group", "supergroup"]:
+        return
+
+    save_group(message.chat.id, message.chat.title)
+
+    settings = get_group_settings(message.chat.id)
+    
+    if not settings["anti_links"]:
         return
 
     user = message.from_user
