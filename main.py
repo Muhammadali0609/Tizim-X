@@ -7,6 +7,7 @@ def main():
     app = Application.builder().token(BOT_TOKEN).build()
 
     app.add_handler(CommandHandler("start", start_command))
+    app.add_handler(CallbackQueryHandler(language_callback, pattern="^lang_"))
 
     app.run_webhook(
         listen="0.0.0.0",
