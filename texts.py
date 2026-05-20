@@ -6,6 +6,13 @@ TEXTS = {
         ),
         "choose_language": "🌐 Выберите язык:",
         "language_saved": "✅ Язык сохранён: Русский",
+        "group_connected": (
+            "✅ TizimX подключён к группе.\n\n"
+            "Для работы модерации выдайте боту права администратора."
+        ),
+        "no_admin_rights": (
+            "❌ У бота нет прав администратора."
+        ),
     },
     "uz": {
         "start": (
@@ -14,5 +21,12 @@ TEXTS = {
         ),
         "choose_language": "🌐 Tilni tanlang:",
         "language_saved": "✅ Til saqlandi: O‘zbekcha",
+        "group_connected": (
+            "✅ TizimX guruhga ulandi.\n\n"
+            "Moderatsiya ishlashi uchun botga administrator huquqini bering."
+        ),
+        "no_admin_rights": (
+            "❌ Botda administrator huquqlari yo‘q."
+        ),
     }
 }
