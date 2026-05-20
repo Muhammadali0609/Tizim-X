@@ -4,6 +4,7 @@ from telegram.ext import ContextTypes
 from db import save_user_language
 from texts import TEXTS
 from filters import has_link
+from admins import is_admin
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
@@ -70,6 +71,11 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
     if message.chat.type not in ["group", "supergroup"]:
         return
 
+    user = message.from_user
+
+    if await is_admin(message.chat, user.id):
+    return
+    
     text = message.text
 
     if has_link(text):
