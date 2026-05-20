@@ -3,7 +3,6 @@ from telegram.ext import Application, CommandHandler
 from config import BOT_TOKEN, WEBHOOK_URL, PORT
 from handlers import start_command
 
-
 def main():
     app = Application.builder().token(BOT_TOKEN).build()
 
