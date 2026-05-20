@@ -1,4 +1,4 @@
-from telegram.ext import Application, CommandHandler, CallbackQueryHandler
+from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ChatMemberHandler
 
 from config import BOT_TOKEN, WEBHOOK_URL, PORT
 from handlers import start_command, language_callback
@@ -11,6 +11,12 @@ def main():
 
     app.add_handler(CommandHandler("start", start_command))
     app.add_handler(CallbackQueryHandler(language_callback, pattern="^lang_"))
+    app.add_handler(
+        ChatMemberHandler(
+            bot_added_to_group,
+            ChatMemberHandler.MY_CHAT_MEMBER
+        )
+    )
 
     app.run_webhook(
         listen="0.0.0.0",
