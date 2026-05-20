@@ -8,10 +8,9 @@ TEXTS = {
         "language_saved": "✅ Язык сохранён: Русский",
         "group_connected": (
             "✅ TizimX подключён к группе.\n\n"
-            "Для работы модерации выдайте боту права администратора."
         ),
         "no_admin_rights": (
-            "❌ У бота нет прав администратора."
+            "Для работы модерации выдайте боту права администратора."
         ),
         "group_language_ru": "✅ Язык группы изменён на русский.",
         "group_language_uz": "✅ Язык группы изменён на узбекский.",
@@ -25,10 +24,9 @@ TEXTS = {
         "language_saved": "✅ Til saqlandi: O‘zbekcha",
         "group_connected": (
             "✅ TizimX guruhga ulandi.\n\n"
-            "Moderatsiya ishlashi uchun botga administrator huquqini bering."
         ),
         "no_admin_rights": (
-            "❌ Botda administrator huquqlari yo‘q."
+            "Moderatsiya ishlashi uchun botga administrator huquqini bering."
         ),
         "group_language_ru": "✅ Guruh tili rus tiliga o‘zgartirildi.",
         "group_language_uz": "✅ Guruh tili o‘zbekchaga o‘zgartirildi.",
