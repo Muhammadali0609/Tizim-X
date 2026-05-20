@@ -2,62 +2,17 @@ TEXTS = {
     "ru": {
         "start": (
             "🛡 Добро пожаловать в TizimX\n\n"
-            "Умная система модерации для Telegram групп и каналов."
+            "Умная система управления и модерации Telegram-групп."
         ),
-
-        "language_select": "🌐 Выберите язык:",
-
-        "language_saved": "✅ Язык сохранён.",
-
-        "warn": (
-            "⚠️ {name}, предупреждение {count}/{limit}"
-        ),
-
-        "banned": (
-            "⛔ {name} был заблокирован."
-        ),
-
-        "muted": (
-            "🔇 {name} был замучен."
-        ),
-
-        "ads_detected": (
-            "🚫 Реклама запрещена."
-        ),
-
-        "bad_words_detected": (
-            "🚫 Мат запрещён."
-        ),
+        "choose_language": "🌐 Выберите язык:",
+        "language_saved": "✅ Язык сохранён: Русский",
     },
-
     "uz": {
         "start": (
             "🛡 TizimX ga xush kelibsiz\n\n"
-            "Telegram guruh va kanallari uchun aqlli moderatsiya tizimi."
+            "Telegram guruhlarini boshqarish va moderatsiya qilish uchun aqlli tizim."
         ),
-
-        "language_select": "🌐 Tilni tanlang:",
-
-        "language_saved": "✅ Til saqlandi.",
-
-        "warn": (
-            "⚠️ {name}, ogohlantirish {count}/{limit}"
-        ),
-
-        "banned": (
-            "⛔ {name} bloklandi."
-        ),
-
-        "muted": (
-            "🔇 {name} mute qilindi."
-        ),
-
-        "ads_detected": (
-            "🚫 Reklama taqiqlangan."
-        ),
-
-        "bad_words_detected": (
-            "🚫 So'kinish taqiqlangan."
-        ),
+        "choose_language": "🌐 Tilni tanlang:",
+        "language_saved": "✅ Til saqlandi: O‘zbekcha",
     }
 }
