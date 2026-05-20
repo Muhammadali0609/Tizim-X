@@ -14,8 +14,3 @@ handlers = ["http"]
 [[services.ports]]
 port = 443
 handlers = ["tls", "http"]
-
-[[vm]]
-memory = "256mb"
-cpu_kind = "shared"
-cpus = 1
