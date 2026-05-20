@@ -16,7 +16,7 @@ def setup_database():
                     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
                 )
             """)
-
+        conn.commit()
 
 def get_user_language(user_id: int) -> str:
     with get_connection() as conn:
@@ -39,3 +39,4 @@ def save_user_language(user_id: int, language: str):
                 ON CONFLICT (user_id)
                 DO UPDATE SET language = EXCLUDED.language
             """, (user_id, language))
+        conn.commit()
