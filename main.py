@@ -1,7 +1,7 @@
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ChatMemberHandler
 
 from config import BOT_TOKEN, WEBHOOK_URL, PORT
-from handlers import start_command, language_callback
+from handlers import start_command, language_callback, bot_added_to_group
 from db import setup_database
 
 
