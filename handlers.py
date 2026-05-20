@@ -5,6 +5,7 @@ from db import save_user_language, save_group, get_group_settings, get_group_lan
 from texts import TEXTS
 from filters import has_link
 from admins import is_admin
+import asyncio
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     keyboard = [
@@ -122,4 +123,13 @@ async def set_group_language(update: Update, context: ContextTypes.DEFAULT_TYPE)
     save_group(message.chat.id, message.chat.title)
     save_group_language(message.chat.id, lang)
 
-    await message.reply_text(TEXTS[lang][text_key])
+    msg = await message.chat.send_message(
+        TEXTS[lang][text_key]
+    )
+    
+    await asyncio.sleep(2)
+    
+    try:
+        await msg.delete()
+    except Exception as e:
+        print("DELETE TEMP MESSAGE ERROR:", e)
