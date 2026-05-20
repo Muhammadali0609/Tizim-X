@@ -98,6 +98,11 @@ async def set_group_language(update: Update, context: ContextTypes.DEFAULT_TYPE)
     if not message or message.chat.type not in ["group", "supergroup"]:
         return
 
+    try:
+        await message.delete()
+    except Exception as e:
+        print("DELETE COMMAND ERROR:", e)
+
     user = message.from_user
 
     if not await is_admin(message.chat, user.id):
