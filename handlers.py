@@ -1,7 +1,7 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
 from telegram.constants import ChatMemberStatus
 from telegram.ext import ContextTypes
-from db import save_user_language, save_group, get_group_settings
+from db import save_user_language, save_group, get_group_settings, get_group_language, save_group_language
 from texts import TEXTS
 from filters import has_link
 from admins import is_admin
@@ -52,8 +52,8 @@ async def bot_added_to_group(update: Update, context: ContextTypes.DEFAULT_TYPE)
     bot_member = await chat.get_member(context.bot.id)
 
     has_admin = bot_member.status == ChatMemberStatus.ADMINISTRATOR
-
-    text = TEXTS["ru"]["group_connected"]
+    lang = get_group_language(chat.id)
+    text = TEXTS[lang]["group_connected"]
 
     if not has_admin:
         text += "\n\n" + TEXTS["ru"]["no_admin_rights"]
@@ -91,3 +91,30 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
             await message.delete()
         except Exception as e:
             print("MODERATION ERROR:", e)
+
+async def set_group_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = update.message
+
+    if not message or message.chat.type not in ["group", "supergroup"]:
+        return
+
+    user = message.from_user
+
+    if not await is_admin(message.chat, user.id):
+        return
+
+    command = message.text.split()[0].lower()
+
+    if command.startswith("/ru"):
+        lang = "ru"
+        text_key = "group_language_ru"
+    elif command.startswith("/uz"):
+        lang = "uz"
+        text_key = "group_language_uz"
+    else:
+        return
+
+    save_group(message.chat.id, message.chat.title)
+    save_group_language(message.chat.id, lang)
+
+    await message.reply_text(TEXTS[lang][text_key])
