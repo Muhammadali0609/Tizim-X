@@ -1,7 +1,7 @@
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ChatMemberHandler, MessageHandler, filters
 
 from config import BOT_TOKEN, WEBHOOK_URL, PORT
-from handlers import start_command, language_callback, bot_added_to_group, check_group_message
+from handlers import start_command, language_callback, bot_added_to_group, check_group_message, set_group_language
 from db import setup_database
 
 
@@ -13,6 +13,8 @@ def main():
     app.add_handler(CallbackQueryHandler(language_callback, pattern="^lang_"))
     app.add_handler(ChatMemberHandler(bot_added_to_group, ChatMemberHandler.MY_CHAT_MEMBER))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, check_group_message))
+    app.add_handler(CommandHandler("ru", set_group_language))
+    app.add_handler(CommandHandler("uz", set_group_language))
 
     app.run_webhook(
         listen="0.0.0.0",
