@@ -13,7 +13,6 @@ def main():
         listen="0.0.0.0",
         port=PORT,
         webhook_url=f"{WEBHOOK_URL}/webhook",
-        secret_token=BOT_TOKEN,
     )
 
 
