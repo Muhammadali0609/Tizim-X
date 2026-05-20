@@ -1,16 +1,17 @@
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ChatMemberHandler, MessageHandler, filters
-from telegram import BotCommand
+from telegram import BotCommand, BotCommandScopeAllPrivateChats, BotCommandScopeAllGroupChats
 from config import BOT_TOKEN, WEBHOOK_URL, PORT
 from handlers import start_command, language_callback, bot_added_to_group, check_group_message, set_group_language
 from db import setup_database
 
 async def setup_commands(app):
-    commands = [
-        BotCommand("ru", "Русский язык группы"),
-        BotCommand("uz", "Guruh tili o‘zbekcha"),
-    ]
-
-    await app.bot.set_my_commands(commands)
+    await app.bot.set_my_commands(
+        [
+            BotCommand("ru", "Язык группы русский"),
+            BotCommand("uz", "Guruh tili o‘zbekcha"),
+        ],
+        scope=BotCommandScopeAllGroupChats()
+    )
 
 def main():
     setup_database()
