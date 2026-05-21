@@ -331,3 +331,42 @@ def add_ad_links(chat_id: int, links: list[str]):
                     ON CONFLICT (chat_id, link) DO NOTHING
                 """, (chat_id, link))
         conn.commit()
+
+def find_bad_word(chat_id: int, query: str):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, word
+                FROM tizimx_bad_words
+                WHERE chat_id = %s
+                ORDER BY word
+            """, (chat_id,))
+            rows = cur.fetchall()
+
+    if not rows:
+        return None
+
+    query = query.strip().lower().split()[0]
+
+    if query.isdigit():
+        index = int(query)
+
+        if 1 <= index <= len(rows):
+            word_id, word = rows[index - 1]
+            return {
+                "index": index,
+                "id": word_id,
+                "word": word,
+            }
+
+        return None
+
+    for index, (word_id, word) in enumerate(rows, start=1):
+        if word.lower() == query:
+            return {
+                "index": index,
+                "id": word_id,
+                "word": word,
+            }
+
+    return None
