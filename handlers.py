@@ -17,7 +17,8 @@ from db import(save_user_language,
     set_group_setting,
     get_ad_links,
     add_ad_links,
-    find_bad_word
+    find_bad_word,
+    delete_bad_word
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word
@@ -629,7 +630,15 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
             TEXTS[lang]["bad_word_found"].format(
                 index=result["index"],
                 word=result["word"]
-            )
+            ),
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        TEXTS[lang]["btn_delete"],
+                        callback_data=f"delete_bad_word:{chat_id}:{result['id']}"
+                    )
+                ]
+            ])
         )
         return
     
@@ -957,3 +966,30 @@ async def bad_words_search_callback(update: Update, context: ContextTypes.DEFAUL
     context.user_data["target_chat_id"] = chat_id
 
     await query.message.reply_text(TEXTS[lang]["bad_word_search_prompt"])
+
+async def delete_bad_word_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    _, chat_id, word_id = query.data.split(":")
+    chat_id = int(chat_id)
+    word_id = int(word_id)
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("DELETE BAD WORD ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    delete_bad_word(chat_id, word_id)
+
+    await query.answer(TEXTS[lang]["bad_word_deleted"], show_alert=True)
+
+    await query.edit_message_text(TEXTS[lang]["bad_word_deleted"])
