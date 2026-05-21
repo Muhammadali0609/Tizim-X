@@ -370,3 +370,12 @@ def find_bad_word(chat_id: int, query: str):
             }
 
     return None
+
+def delete_bad_word(chat_id: int, word_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                DELETE FROM tizimx_bad_words
+                WHERE chat_id = %s AND id = %s
+            """, (chat_id, word_id))
+        conn.commit()
