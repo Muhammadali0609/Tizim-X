@@ -13,7 +13,8 @@ from db import(save_user_language,
     get_bad_words_page,
     get_bad_words_count,
     add_bad_words,
-    get_bad_words_for_check
+    get_bad_words_for_check,
+    set_group_setting
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word
@@ -377,7 +378,7 @@ async def group_settings_callback(update: Update, context: ContextTypes.DEFAULT_
     keyboard = [
         [
             InlineKeyboardButton(TEXTS[lang]["btn_bad_words"], callback_data=f"bad_words_panel:{chat_id}:0"),
-            InlineKeyboardButton(TEXTS[lang]["btn_ads"], callback_data=f"panel:ads:{chat_id}"),
+            InlineKeyboardButton(TEXTS[lang]["btn_ads"], callback_data=f"ads_panel:{chat_id}"),
         ],
         [
             InlineKeyboardButton(TEXTS[lang]["btn_warnings"], callback_data=f"panel:warnings:{chat_id}"),
@@ -598,3 +599,114 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
     context.user_data.clear()
 
     await message.reply_text(TEXTS[lang]["bad_words_added"])
+
+def build_ads_panel(lang: str, chat_id: int, anti_links: bool):
+    status = (
+        TEXTS[lang]["links_enabled"]
+        if anti_links
+        else TEXTS[lang]["links_disabled"]
+    )
+
+    toggle_text = (
+        TEXTS[lang]["btn_disable_links"]
+        if anti_links
+        else TEXTS[lang]["btn_enable_links"]
+    )
+
+    text = TEXTS[lang]["ads_panel"].format(status=status)
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                toggle_text,
+                callback_data=f"ads_toggle_links:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_other_links"],
+                callback_data=f"ads_other_links:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_ad_phrases"],
+                callback_data=f"ads_phrases:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["back_button"],
+                callback_data=f"group_settings:{chat_id}"
+            )
+        ],
+    ]
+
+    return text, InlineKeyboardMarkup(keyboard)
+
+async def ads_panel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    chat_id = int(query.data.split(":")[1])
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("ADS PANEL ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    settings = get_group_settings(chat_id)
+
+    text, keyboard = build_ads_panel(
+        lang=lang,
+        chat_id=chat_id,
+        anti_links=settings["anti_links"]
+    )
+
+    await query.edit_message_text(
+        text,
+        reply_markup=keyboard
+    )
+
+async def ads_toggle_links_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    chat_id = int(query.data.split(":")[1])
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("ADS TOGGLE ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    settings = get_group_settings(chat_id)
+    new_value = not settings["anti_links"]
+
+    set_group_setting(chat_id, "anti_links", new_value)
+
+    text, keyboard = build_ads_panel(
+        lang=lang,
+        chat_id=chat_id,
+        anti_links=new_value
+    )
+
+    await query.edit_message_text(
+        text,
+        reply_markup=keyboard
+    )
