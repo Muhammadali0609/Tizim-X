@@ -12,7 +12,9 @@ from handlers import (start_command,
     settings_button_handler,
     group_settings_callback,
     back_groups_callback,
-    bad_words_panel_callback
+    bad_words_panel_callback,
+    add_bad_word_callback,
+    private_text_handler
 )
 from db import setup_database
 
@@ -47,6 +49,7 @@ def main():
     app.add_handler(MessageHandler(filters.StatusUpdate.PINNED_MESSAGE, clean_service_message))
     app.add_handler(CallbackQueryHandler(check_subscription_callback, pattern="^check_sub:"))
     app.add_handler(MessageHandler(filters.Regex("^(⚙️ Управлять|⚙️ Boshqarish)$"), settings_button_handler))
+    app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.TEXT & ~filters.COMMAND, private_text_handler))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, check_group_message))
     app.add_handler(CommandHandler("ru", set_group_language))
     app.add_handler(CommandHandler("uz", set_group_language))
@@ -54,6 +57,7 @@ def main():
     app.add_handler(CallbackQueryHandler(back_groups_callback, pattern="^back_groups$"))
     app.add_handler(CallbackQueryHandler(bad_words_panel_callback, pattern="^bad_words_panel:"))
     app.add_handler(CallbackQueryHandler(bad_words_panel_callback, pattern="^bad_words_page:"))
+    app.add_handler(CallbackQueryHandler(add_bad_word_callback, pattern="^bad_words_add:"))
 
     app.run_webhook(
         listen="0.0.0.0",
