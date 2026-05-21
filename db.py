@@ -31,6 +31,15 @@ def setup_database():
                 ALTER TABLE tizimx_groups
                 ADD COLUMN IF NOT EXISTS language TEXT NOT NULL DEFAULT 'ru'
             """)
+            cur.execute("""
+                ALTER TABLE tizimx_groups
+                ADD COLUMN IF NOT EXISTS required_channel TEXT
+            """)
+            
+            cur.execute("""
+                ALTER TABLE tizimx_groups
+                ADD COLUMN IF NOT EXISTS force_subscribe BOOLEAN NOT NULL DEFAULT FALSE
+            """)
         conn.commit()
 
 def get_user_language(user_id: int) -> str:
@@ -113,3 +122,30 @@ def save_group_language(chat_id: int, language: str):
                 DO UPDATE SET language = EXCLUDED.language
             """, (chat_id, language))
         conn.commit()
+
+def set_required_channel(chat_id: int, channel: str):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE tizimx_groups
+                SET required_channel = %s,
+                    force_subscribe = TRUE
+                WHERE chat_id = %s
+            """, (channel, chat_id))
+        conn.commit()
+
+
+def get_required_channel(chat_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT required_channel, force_subscribe
+                FROM tizimx_groups
+                WHERE chat_id = %s
+            """, (chat_id,))
+            row = cur.fetchone()
+
+    if not row:
+        return None, False
+
+    return row[0], row[1]
