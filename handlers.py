@@ -114,6 +114,8 @@ async def set_group_language(update: Update, context: ContextTypes.DEFAULT_TYPE)
     if not await is_admin(message.chat, user.id):
         return
 
+    save_group_admin(message.chat.id, user.id)
+
     command = message.text.split()[0].lower()
 
     if command.startswith("/ru"):
