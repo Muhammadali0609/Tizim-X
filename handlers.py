@@ -3,7 +3,7 @@ from telegram.constants import ChatMemberStatus
 from telegram.ext import ContextTypes
 from db import save_user_language, save_group, get_group_settings, get_group_language, save_group_language
 from texts import TEXTS
-from filters import has_link
+from filters import has_link, has_bad_word
 from admins import is_admin
 import asyncio
 
@@ -77,9 +77,6 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     settings = get_group_settings(message.chat.id)
     
-    if not settings["anti_links"]:
-        return
-
     user = message.from_user
 
     if await is_admin(message.chat, user.id):
@@ -87,11 +84,19 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
     
     text = message.text
 
-    if has_link(text):
+    if settings["anti_links"] and has_link(text):
         try:
             await message.delete()
         except Exception as e:
-            print("MODERATION ERROR:", e)
+            print("DELETE LINK ERROR:", e)
+        return
+    
+    if settings["anti_bad_words"] and has_bad_word(text):
+        try:
+            await message.delete()
+        except Exception as e:
+            print("DELETE BAD WORD ERROR:", e)
+        return
 
 async def set_group_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = update.message
