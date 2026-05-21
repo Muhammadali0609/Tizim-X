@@ -79,6 +79,16 @@ TEXTS = {
         "delete_ad_phrase_prompt": "🗑 Введите номер фразы для удаления.",
         "ad_phrase_deleted": "✅ Фраза удалена.",
         "ad_phrase_not_found": "❌ Такой фразы нет.",
+
+        "ad_exceptions_title": "✅ Исключения\n\n{exceptions}\n\nСтраница {page}/{total_pages}",
+        "ad_exceptions_empty": "✅ Список исключений пуст.",
+        "btn_add_ad_exception": "➕ Добавить исключение",
+        "btn_delete_ad_exception": "🗑 Удалить исключение",
+        "add_ad_exception_prompt": "✍️ Введите исключение.",
+        "ad_exception_added": "✅ Исключение добавлено.",
+        "delete_ad_exception_prompt": "🗑 Введите номер исключения для удаления.",
+        "ad_exception_deleted": "✅ Исключение удалено.",
+        "ad_exception_not_found": "❌ Такого исключения нет.",
     },
     "uz": {
         "start": (
@@ -160,5 +170,15 @@ TEXTS = {
         "delete_ad_phrase_prompt": "🗑 O‘chirish uchun ibora raqamini kiriting.",
         "ad_phrase_deleted": "✅ Ibora o‘chirildi.",
         "ad_phrase_not_found": "❌ Bunday ibora yo‘q.",
+
+        "ad_exceptions_title": "✅ Istisnolar\n\n{exceptions}\n\nSahifa {page}/{total_pages}",
+        "ad_exceptions_empty": "✅ Istisnolar ro‘yxati bo‘sh.",
+        "btn_add_ad_exception": "➕ Istisno qo‘shish",
+        "btn_delete_ad_exception": "🗑 Istisnoni o‘chirish",
+        "add_ad_exception_prompt": "✍️ Istisnoni kiriting.",
+        "ad_exception_added": "✅ Istisno qo‘shildi.",
+        "delete_ad_exception_prompt": "🗑 O‘chirish uchun istisno raqamini kiriting.",
+        "ad_exception_deleted": "✅ Istisno o‘chirildi.",
+        "ad_exception_not_found": "❌ Bunday istisno yo‘q.",
     }
 }
