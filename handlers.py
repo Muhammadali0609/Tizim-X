@@ -871,22 +871,3 @@ async def add_ad_link_callback(update: Update, context: ContextTypes.DEFAULT_TYP
     context.user_data["target_chat_id"] = chat_id
 
     await query.message.reply_text(TEXTS[lang]["add_ad_link_prompt"])
-
-if context.user_data.get("state") == "adding_ad_links":
-    chat_id = context.user_data.get("target_chat_id")
-
-    links = [
-        line.strip().lower()
-        for line in message.text.splitlines()
-        if line.strip()
-    ]
-
-    links = list(dict.fromkeys(links))
-
-    if links:
-        add_ad_links(chat_id, links)
-
-    context.user_data.clear()
-
-    await message.reply_text(TEXTS[lang]["ad_links_added"])
-    return
