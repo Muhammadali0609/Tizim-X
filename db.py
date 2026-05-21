@@ -275,3 +275,22 @@ def get_bad_words_for_check(chat_id: int) -> list[str]:
             rows = cur.fetchall()
 
     return [row[0].lower() for row in rows]
+
+def set_group_setting(chat_id: int, key: str, value: bool):
+    allowed_keys = {
+        "anti_links",
+        "anti_bad_words",
+        "force_subscribe",
+        "clean_service_messages",
+    }
+
+    if key not in allowed_keys:
+        return
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                f"UPDATE tizimx_groups SET {key} = %s WHERE chat_id = %s",
+                (value, chat_id)
+            )
+        conn.commit()
