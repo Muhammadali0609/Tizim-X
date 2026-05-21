@@ -187,3 +187,66 @@ async def new_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
         except Exception as e:
             print("FORCE SUBSCRIBE ERROR:", e)
+
+async def check_subscription_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    await query.answer()
+
+    data = query.data.split(":")
+    chat_id = int(data[1])
+    target_user_id = int(data[2])
+
+    if query.from_user.id != target_user_id:
+        await query.answer("Bu tugma siz uchun emas", show_alert=True)
+        return
+
+    required_channel, force_subscribe = get_required_channel(chat_id)
+
+    if not force_subscribe or not required_channel:
+        await query.answer("Sozlama topilmadi", show_alert=True)
+        return
+
+    channel_username = required_channel.replace("@", "")
+
+    try:
+        member = await context.bot.get_chat_member(
+            chat_id=f"@{channel_username}",
+            user_id=target_user_id
+        )
+
+        if member.status in [
+            ChatMemberStatus.MEMBER,
+            ChatMemberStatus.ADMINISTRATOR,
+            ChatMemberStatus.OWNER,
+        ]:
+            await context.bot.restrict_chat_member(
+                chat_id=chat_id,
+                user_id=target_user_id,
+                permissions=ChatPermissions(
+                    can_send_messages=True,
+                    can_send_audios=True,
+                    can_send_documents=True,
+                    can_send_photos=True,
+                    can_send_videos=True,
+                    can_send_video_notes=True,
+                    can_send_voice_notes=True,
+                    can_send_polls=True,
+                    can_send_other_messages=True,
+                    can_add_web_page_previews=True,
+                    can_invite_users=True,
+                )
+            )
+
+            await query.answer("✅ Obuna tasdiqlandi", show_alert=True)
+
+            try:
+                await query.message.delete()
+            except Exception as e:
+                print("DELETE SUB MESSAGE ERROR:", e)
+
+        else:
+            await query.answer("❌ Avval kanalga obuna bo‘ling", show_alert=True)
+
+    except Exception as e:
+        print("CHECK SUB ERROR:", e)
+        await query.answer("❌ Obunani tekshirib bo‘lmadi", show_alert=True)
