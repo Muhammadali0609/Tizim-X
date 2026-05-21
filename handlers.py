@@ -570,37 +570,63 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
     user_id = update.effective_user.id
     lang = get_user_language(user_id)
 
-    if context.user_data.get("state") != "adding_bad_words":
-        return
+    if context.user_data.get("state") == "adding_ad_links":
+        chat_id = context.user_data.get("target_chat_id")
 
-    chat_id = context.user_data.get("target_chat_id")
+        try:
+            chat = await context.bot.get_chat(chat_id)
 
-    try:
-        chat = await context.bot.get_chat(chat_id)
+            if not await is_admin(chat, user_id):
+                await message.reply_text(TEXTS[lang]["access_denied"])
+                context.user_data.clear()
+                return
 
-        if not await is_admin(chat, user_id):
+        except Exception as e:
+            print("ADD AD LINK TEXT ACCESS ERROR:", e)
             await message.reply_text(TEXTS[lang]["access_denied"])
             context.user_data.clear()
             return
 
-    except Exception as e:
-        print("ADD BAD WORD TEXT ACCESS ERROR:", e)
-        await message.reply_text(TEXTS[lang]["access_denied"])
+        link = message.text.strip().lower()
+
+        if link:
+            add_ad_links(chat_id, [link])
+
         context.user_data.clear()
+
+        await message.reply_text(TEXTS[lang]["ad_links_added"])
         return
 
-    raw_text = message.text.strip().lower()
+    if context.user_data.get("state") == "adding_bad_words":
+        chat_id = context.user_data.get("target_chat_id")
 
-    words = re.findall(r"[^\s,;]+", raw_text)
+        try:
+            chat = await context.bot.get_chat(chat_id)
 
-    words = list(dict.fromkeys(words))
+            if not await is_admin(chat, user_id):
+                await message.reply_text(TEXTS[lang]["access_denied"])
+                context.user_data.clear()
+                return
 
-    if words:
-        add_bad_words(chat_id, words)
+        except Exception as e:
+            print("ADD BAD WORD TEXT ACCESS ERROR:", e)
+            await message.reply_text(TEXTS[lang]["access_denied"])
+            context.user_data.clear()
+            return
 
-    context.user_data.clear()
+        raw_text = message.text.strip().lower()
 
-    await message.reply_text(TEXTS[lang]["bad_words_added"])
+        words = re.findall(r"[^\s,;]+", raw_text)
+
+        words = list(dict.fromkeys(words))
+
+        if words:
+            add_bad_words(chat_id, words)
+
+        context.user_data.clear()
+
+        await message.reply_text(TEXTS[lang]["bad_words_added"])
+        return
 
 def build_ads_panel(lang: str, chat_id: int, anti_links: bool):
     status = (
