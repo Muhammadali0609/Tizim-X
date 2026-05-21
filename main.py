@@ -1,7 +1,7 @@
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ChatMemberHandler, MessageHandler, filters
 from telegram import BotCommand, BotCommandScopeAllPrivateChats, BotCommandScopeAllGroupChats
 from config import BOT_TOKEN, WEBHOOK_URL, PORT
-from handlers import start_command, language_callback, bot_added_to_group, check_group_message, set_group_language, new_member_handler, check_subscription_callback, clean_service_message
+from handlers import start_command, language_callback, bot_added_to_group, check_group_message, set_group_language, new_member_handler, check_subscription_callback, clean_service_message, settings_button_handler
 from db import setup_database
 
 async def setup_commands(app):
@@ -34,6 +34,7 @@ def main():
     app.add_handler(MessageHandler(filters.StatusUpdate.DELETE_CHAT_PHOTO, clean_service_message))
     app.add_handler(MessageHandler(filters.StatusUpdate.PINNED_MESSAGE, clean_service_message))
     app.add_handler(CallbackQueryHandler(check_subscription_callback, pattern="^check_sub:"))
+    app.add_handler(MessageHandler(filters.Regex("^(⚙️ Настройки|⚙️ Sozlamalar)$"), settings_button_handler))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, check_group_message))
     app.add_handler(CommandHandler("ru", set_group_language))
     app.add_handler(CommandHandler("uz", set_group_language))
