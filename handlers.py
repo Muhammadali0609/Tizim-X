@@ -14,7 +14,9 @@ from db import(save_user_language,
     get_bad_words_count,
     add_bad_words,
     get_bad_words_for_check,
-    set_group_setting
+    set_group_setting,
+    get_ad_links,
+    add_ad_links
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word
