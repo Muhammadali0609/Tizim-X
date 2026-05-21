@@ -30,6 +30,8 @@ from handlers import (start_command,
     delete_ad_exception_start_callback,
     warnings_panel_callback,
     warnings_toggle_callback,
+    warnings_limit_callback,
+    warnings_set_limit_callback,
 )
 from db import setup_database
 
@@ -91,6 +93,8 @@ def main():
     app.add_handler(CallbackQueryHandler(delete_ad_exception_start_callback, pattern="^ad_exceptions_delete:"))
     app.add_handler(CallbackQueryHandler(warnings_panel_callback, pattern="^warnings_panel:"))
     app.add_handler(CallbackQueryHandler(warnings_toggle_callback, pattern="^warnings_toggle:"))
+    app.add_handler(CallbackQueryHandler(warnings_limit_callback, pattern="^warnings_limit:"))
+    app.add_handler(CallbackQueryHandler(warnings_set_limit_callback, pattern="^warnings_set_limit:"))
     
     app.run_webhook(
         listen="0.0.0.0",
