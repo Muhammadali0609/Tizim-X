@@ -29,6 +29,7 @@ from db import(save_user_language,
     add_ad_exceptions,
     delete_ad_exception_by_index,
     get_ad_exceptions_for_check,
+    set_group_number_setting
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception
@@ -1650,6 +1651,99 @@ async def warnings_toggle_callback(update: Update, context: ContextTypes.DEFAULT
 
     settings = get_group_settings(chat_id)
 
+    text, keyboard = build_warnings_panel(lang, chat_id, settings)
+
+    await query.edit_message_text(
+        text,
+        reply_markup=keyboard
+    )
+
+def build_warn_limit_keyboard(lang: str, chat_id: int, limit_type: str):
+    keyboard = [
+        [
+            InlineKeyboardButton("1", callback_data=f"warnings_set_limit:{limit_type}:{chat_id}:1"),
+            InlineKeyboardButton("2", callback_data=f"warnings_set_limit:{limit_type}:{chat_id}:2"),
+            InlineKeyboardButton("3", callback_data=f"warnings_set_limit:{limit_type}:{chat_id}:3"),
+        ],
+        [
+            InlineKeyboardButton("4", callback_data=f"warnings_set_limit:{limit_type}:{chat_id}:4"),
+            InlineKeyboardButton("5", callback_data=f"warnings_set_limit:{limit_type}:{chat_id}:5"),
+            InlineKeyboardButton("6", callback_data=f"warnings_set_limit:{limit_type}:{chat_id}:6"),
+        ],
+        [
+            InlineKeyboardButton("7", callback_data=f"warnings_set_limit:{limit_type}:{chat_id}:7"),
+            InlineKeyboardButton("8", callback_data=f"warnings_set_limit:{limit_type}:{chat_id}:8"),
+            InlineKeyboardButton("9", callback_data=f"warnings_set_limit:{limit_type}:{chat_id}:9"),
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["back_button"],
+                callback_data=f"warnings_panel:{chat_id}"
+            )
+        ]
+    ]
+
+    return InlineKeyboardMarkup(keyboard)
+
+async def warnings_limit_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    _, limit_type, chat_id = query.data.split(":")
+    chat_id = int(chat_id)
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("WARNINGS LIMIT ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    await query.edit_message_text(
+        TEXTS[lang]["choose_warn_limit"],
+        reply_markup=build_warn_limit_keyboard(lang, chat_id, limit_type)
+    )
+
+
+async def warnings_set_limit_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    _, limit_type, chat_id, value = query.data.split(":")
+    chat_id = int(chat_id)
+    value = int(value)
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("WARNINGS SET LIMIT ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    if limit_type == "bad_words":
+        key = "bad_words_warn_limit"
+    elif limit_type == "ads":
+        key = "ads_warn_limit"
+    else:
+        return
+
+    set_group_number_setting(chat_id, key, value)
+
+    await query.answer(TEXTS[lang]["warn_limit_saved"], show_alert=True)
+
+    settings = get_group_settings(chat_id)
     text, keyboard = build_warnings_panel(lang, chat_id, settings)
 
     await query.edit_message_text(
