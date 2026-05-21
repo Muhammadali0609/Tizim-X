@@ -58,7 +58,19 @@ async def settings_button_handler(update: Update, context: ContextTypes.DEFAULT_
     lang = get_user_language(user_id)
     groups = get_user_groups(user_id)
 
-    if not groups:
+    valid_groups = []
+
+    for chat_id, title in groups:
+        try:
+            chat = await context.bot.get_chat(chat_id)
+
+            if await is_admin(chat, user_id):
+                valid_groups.append((chat_id, title))
+
+        except Exception as e:
+            print("CHECK USER GROUP ACCESS ERROR:", e)
+
+    if not valid_groups:
         await message.reply_text(TEXTS[lang]["no_groups"])
         return
 
