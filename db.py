@@ -264,3 +264,14 @@ def add_bad_words(chat_id: int, words: list[str]):
                     ON CONFLICT (chat_id, word) DO NOTHING
                 """, (chat_id, word))
         conn.commit()
+
+def get_bad_words_for_check(chat_id: int) -> list[str]:
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT word FROM tizimx_bad_words WHERE chat_id = %s",
+                (chat_id,)
+            )
+            rows = cur.fetchall()
+
+    return [row[0].lower() for row in rows]
