@@ -80,6 +80,15 @@ def setup_database():
                     UNIQUE(chat_id, phrase)
                 )
             """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS tizimx_ad_exceptions (
+                    id BIGSERIAL PRIMARY KEY,
+                    chat_id BIGINT NOT NULL,
+                    exception TEXT NOT NULL,
+                    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                    UNIQUE(chat_id, exception)
+                )
+            """)
         conn.commit()
 
 def get_user_language(user_id: int) -> str:
@@ -473,3 +482,50 @@ def delete_ad_phrase_by_index(chat_id: int, index: int) -> bool:
         conn.commit()
 
     return True
+
+def get_ad_exceptions(chat_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, exception
+                FROM tizimx_ad_exceptions
+                WHERE chat_id = %s
+                ORDER BY id
+            """, (chat_id,))
+            return cur.fetchall()
+
+
+def add_ad_exceptions(chat_id: int, exceptions: list[str]):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            for exception in exceptions:
+                cur.execute("""
+                    INSERT INTO tizimx_ad_exceptions (chat_id, exception)
+                    VALUES (%s, %s)
+                    ON CONFLICT (chat_id, exception) DO NOTHING
+                """, (chat_id, exception))
+        conn.commit()
+
+
+def delete_ad_exception_by_index(chat_id: int, index: int) -> bool:
+    rows = get_ad_exceptions(chat_id)
+
+    if index < 1 or index > len(rows):
+        return False
+
+    exception_id = rows[index - 1][0]
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "DELETE FROM tizimx_ad_exceptions WHERE chat_id = %s AND id = %s",
+                (chat_id, exception_id)
+            )
+        conn.commit()
+
+    return True
+
+
+def get_ad_exceptions_for_check(chat_id: int) -> list[str]:
+    rows = get_ad_exceptions(chat_id)
+    return [row[1].lower() for row in rows]
