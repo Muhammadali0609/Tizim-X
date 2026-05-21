@@ -31,4 +31,6 @@ def has_bad_word(text: str) -> bool:
 
     text = text.lower()
 
-    return any(word in text for word in BAD_WORDS)
+    words = re.findall(r"\b\w+\b", text)
+
+    return any(word in BAD_WORDS for word in words)
