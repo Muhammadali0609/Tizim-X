@@ -40,6 +40,10 @@ def setup_database():
                 ALTER TABLE tizimx_groups
                 ADD COLUMN IF NOT EXISTS force_subscribe BOOLEAN NOT NULL DEFAULT FALSE
             """)
+            cur.execute("""
+                ALTER TABLE tizimx_groups
+                ADD COLUMN IF NOT EXISTS clean_service_messages BOOLEAN NOT NULL DEFAULT TRUE
+            """)
         conn.commit()
 
 def get_user_language(user_id: int) -> str:
@@ -81,7 +85,7 @@ def get_group_settings(chat_id: int) -> dict:
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT anti_links, anti_bad_words, silent_mode
+                SELECT anti_links, anti_bad_words, silent_mode, clean_service_messages
                 FROM tizimx_groups
                 WHERE chat_id = %s
             """, (chat_id,))
@@ -92,12 +96,14 @@ def get_group_settings(chat_id: int) -> dict:
             "anti_links": True,
             "anti_bad_words": False,
             "silent_mode": True,
+            "clean_service_messages": True,
         }
 
     return {
         "anti_links": row[0],
         "anti_bad_words": row[1],
         "silent_mode": row[2],
+        "clean_service_messages": row[3],
     }
 
 def get_group_language(chat_id: int) -> str:
