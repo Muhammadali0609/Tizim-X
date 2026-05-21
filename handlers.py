@@ -11,13 +11,15 @@ from db import(save_user_language,
     save_group_admin,
     get_user_groups,
     get_bad_words_page,
-    get_bad_words_count
+    get_bad_words_count,
+    add_bad_words
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word
 from admins import is_admin
 import asyncio
 import math
+import re
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     lang_keyboard = [
@@ -448,6 +450,13 @@ def build_bad_words_keyboard(lang: str, chat_id: int, page: int, total_pages: in
 
     keyboard.append([
         InlineKeyboardButton(
+            TEXTS[lang]["btn_add_bad_word"],
+            callback_data=f"bad_words_add:{chat_id}"
+        )
+    ])
+    
+    keyboard.append([
+        InlineKeyboardButton(
             TEXTS[lang]["btn_back_panel"],
             callback_data=f"group_settings:{chat_id}"
         )
@@ -519,3 +528,68 @@ async def bad_words_panel_callback(update: Update, context: ContextTypes.DEFAULT
             total_pages=total_pages
         )
     )
+
+async def add_bad_word_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    chat_id = int(query.data.split(":")[1])
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("ADD BAD WORD ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    context.user_data["state"] = "adding_bad_words"
+    context.user_data["target_chat_id"] = chat_id
+
+    await query.message.reply_text(TEXTS[lang]["add_bad_word_prompt"])
+
+async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = update.message
+
+    if not message or message.chat.type != "private":
+        return
+
+    user_id = update.effective_user.id
+    lang = get_user_language(user_id)
+
+    if context.user_data.get("state") != "adding_bad_words":
+        return
+
+    chat_id = context.user_data.get("target_chat_id")
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await message.reply_text(TEXTS[lang]["access_denied"])
+            context.user_data.clear()
+            return
+
+    except Exception as e:
+        print("ADD BAD WORD TEXT ACCESS ERROR:", e)
+        await message.reply_text(TEXTS[lang]["access_denied"])
+        context.user_data.clear()
+        return
+
+    raw_text = message.text.strip().lower()
+
+    words = re.findall(r"[^\s,;]+", raw_text)
+
+    words = list(dict.fromkeys(words))
+
+    if words:
+        add_bad_words(chat_id, words)
+
+    context.user_data.clear()
+
+    await message.reply_text(TEXTS[lang]["bad_words_added"])
