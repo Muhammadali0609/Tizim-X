@@ -1,6 +1,6 @@
 import psycopg
 from config import DATABASE_URL
-
+from filters import DEFAULT_BAD_WORDS
 
 def get_connection():
     return psycopg.connect(DATABASE_URL)
@@ -229,3 +229,27 @@ def get_bad_words_page(chat_id: int, page: int):
             rows = cur.fetchall()
 
     return rows
+
+def seed_default_bad_words(chat_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+
+            cur.execute("""
+                SELECT COUNT(*)
+                FROM tizimx_bad_words
+                WHERE chat_id = %s
+            """, (chat_id,))
+
+            count = cur.fetchone()[0]
+
+            if count > 0:
+                return
+
+            for word in DEFAULT_BAD_WORDS:
+                cur.execute("""
+                    INSERT INTO tizimx_bad_words (chat_id, word)
+                    VALUES (%s, %s)
+                    ON CONFLICT (chat_id, word) DO NOTHING
+                """, (chat_id, word))
+
+        conn.commit()
