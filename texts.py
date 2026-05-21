@@ -18,6 +18,10 @@ TEXTS = {
         "settings_button": "⚙️ Настройки",
         "choose_group": "📂 Выберите группу:",
         "no_groups": "❌ У вас пока нет подключённых групп.",
+        "group_panel": "⚙️ Настройки группы:\n\n{title}",
+        "access_denied": "❌ У вас больше нет доступа к этой группе.",
+        "enabled": "🟢",
+        "disabled": "🔴",
     },
     "uz": {
         "start": (
@@ -38,5 +42,9 @@ TEXTS = {
         "settings_button": "⚙️ Sozlamalar",
         "choose_group": "📂 Guruhni tanlang:",
         "no_groups": "❌ Sizda hali ulangan guruhlar yo‘q.",
+        "group_panel": "⚙️ Guruh sozlamalari:\n\n{title}",
+        "access_denied": "❌ Sizda bu guruhga kirish huquqi yo‘q.",
+        "enabled": "🟢",
+        "disabled": "🔴",
     }
 }
