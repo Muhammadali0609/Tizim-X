@@ -49,3 +49,11 @@ def has_ad_phrase(text: str, phrases: list[str]) -> bool:
             return True
 
     return False
+
+def has_custom_ad_link(text: str, links: list[str]) -> bool:
+    if not text or not links:
+        return False
+
+    text = text.lower()
+
+    return any(link.lower() in text for link in links)
