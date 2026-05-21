@@ -44,6 +44,15 @@ def setup_database():
                 ALTER TABLE tizimx_groups
                 ADD COLUMN IF NOT EXISTS clean_service_messages BOOLEAN NOT NULL DEFAULT TRUE
             """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS tizimx_group_admins (
+                    chat_id BIGINT NOT NULL,
+                    user_id BIGINT NOT NULL,
+                    role TEXT NOT NULL DEFAULT 'admin',
+                    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                    PRIMARY KEY (chat_id, user_id)
+                )
+            """)
         conn.commit()
 
 def get_user_language(user_id: int) -> str:
@@ -155,3 +164,29 @@ def get_required_channel(chat_id: int):
         return None, False
 
     return row[0], row[1]
+
+def save_group_admin(chat_id: int, user_id: int, role: str = "admin"):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO tizimx_group_admins (chat_id, user_id, role)
+                VALUES (%s, %s, %s)
+                ON CONFLICT (chat_id, user_id)
+                DO UPDATE SET role = EXCLUDED.role
+            """, (chat_id, user_id, role))
+        conn.commit()
+
+
+def get_user_groups(user_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT g.chat_id, g.title
+                FROM tizimx_group_admins a
+                JOIN tizimx_groups g ON g.chat_id = a.chat_id
+                WHERE a.user_id = %s
+                ORDER BY g.title
+            """, (user_id,))
+            rows = cur.fetchall()
+
+    return rows
