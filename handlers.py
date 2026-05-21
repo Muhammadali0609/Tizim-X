@@ -190,14 +190,13 @@ async def new_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
 async def check_subscription_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-    await query.answer()
 
     data = query.data.split(":")
     chat_id = int(data[1])
     target_user_id = int(data[2])
 
     if query.from_user.id != target_user_id:
-        await query.answer("Bu tugma siz uchun emas", show_alert=True)
+        await query.answer("Bu tugma siz uchun emas")
         return
 
     required_channel, force_subscribe = get_required_channel(chat_id)
