@@ -14,7 +14,9 @@ from handlers import (start_command,
     back_groups_callback,
     bad_words_panel_callback,
     add_bad_word_callback,
-    private_text_handler
+    private_text_handler,
+    ads_panel_callback,
+    ads_toggle_links_callback
 )
 from db import setup_database
 
@@ -58,6 +60,8 @@ def main():
     app.add_handler(CallbackQueryHandler(bad_words_panel_callback, pattern="^bad_words_panel:"))
     app.add_handler(CallbackQueryHandler(bad_words_panel_callback, pattern="^bad_words_page:"))
     app.add_handler(CallbackQueryHandler(add_bad_word_callback, pattern="^bad_words_add:"))
+    app.add_handler(CallbackQueryHandler(ads_panel_callback, pattern="^ads_panel:"))
+    app.add_handler(CallbackQueryHandler(ads_toggle_links_callback, pattern="^ads_toggle_links:"))
 
     app.run_webhook(
         listen="0.0.0.0",
