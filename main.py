@@ -64,13 +64,7 @@ def main():
     app.add_handler(CallbackQueryHandler(ads_toggle_links_callback, pattern="^ads_toggle_links:"))
     app.add_handler(CallbackQueryHandler(ad_links_panel_callback, pattern="^ad_links_panel:"))
     app.add_handler(CallbackQueryHandler(ad_links_panel_callback, pattern="^ad_links_page:"))
-
-app.add_handler(
-    CallbackQueryHandler(
-        add_ad_link_callback,
-        pattern="^ad_links_add:"
-    )
-)
+    app.add_handler(CallbackQueryHandler(add_ad_link_callback, pattern="^ad_links_add:"))
 
     app.run_webhook(
         listen="0.0.0.0",
