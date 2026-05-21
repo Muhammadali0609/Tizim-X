@@ -24,10 +24,14 @@ from db import(save_user_language,
     get_ad_phrases_for_check,
     get_ad_links_for_check,
     delete_ad_link_by_index,
-    delete_ad_phrase_by_index
+    delete_ad_phrase_by_index,
+    get_ad_exceptions,
+    add_ad_exceptions,
+    delete_ad_exception_by_index,
+    get_ad_exceptions_for_check,
 )
 from texts import TEXTS
-from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link
+from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception
 from admins import is_admin
 import asyncio
 import math
@@ -170,6 +174,11 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
     
     text = message.text
 
+    ad_exceptions = get_ad_exceptions_for_check(message.chat.id)
+
+    if has_ad_exception(text, ad_exceptions):
+        return
+    
     if settings["anti_links"] and has_link(text):
         try:
             await message.delete()
@@ -598,6 +607,41 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
     user_id = update.effective_user.id
     lang = get_user_language(user_id)
 
+    if context.user_data.get("state") == "adding_ad_exception":
+        chat_id = context.user_data.get("target_chat_id")
+    
+        exception = message.text.strip().lower()
+    
+        if exception:
+            add_ad_exceptions(chat_id, [exception])
+    
+        context.user_data.clear()
+    
+        await message.reply_text(TEXTS[lang]["ad_exception_added"])
+        return
+    
+    
+    if context.user_data.get("state") == "deleting_ad_exception":
+        chat_id = context.user_data.get("target_chat_id")
+    
+        text = message.text.strip().split()[0]
+    
+        if not text.isdigit():
+            await message.reply_text(TEXTS[lang]["ad_exception_not_found"])
+            context.user_data.clear()
+            return
+    
+        deleted = delete_ad_exception_by_index(chat_id, int(text))
+    
+        context.user_data.clear()
+    
+        await message.reply_text(
+            TEXTS[lang]["ad_exception_deleted"]
+            if deleted
+            else TEXTS[lang]["ad_exception_not_found"]
+        )
+        return
+    
     if context.user_data.get("state") == "deleting_ad_link":
         chat_id = context.user_data.get("target_chat_id")
     
@@ -806,7 +850,7 @@ def build_ads_panel(lang: str, chat_id: int, anti_links: bool):
         [
             InlineKeyboardButton(
                 TEXTS[lang]["btn_ad_exceptions"],
-                callback_data=f"ads_exceptions:{chat_id}"
+                callback_data=f"ad_exceptions_panel:{chat_id}:0"
             )
         ],
         [
@@ -1298,3 +1342,182 @@ async def delete_ad_phrase_start_callback(update: Update, context: ContextTypes.
     context.user_data["target_chat_id"] = chat_id
 
     await query.message.reply_text(TEXTS[lang]["delete_ad_phrase_prompt"])
+
+def build_ad_exception_pages(rows):
+    pages = []
+    current_page = []
+    current_length = 0
+
+    for index, (_, exception) in enumerate(rows, start=1):
+        line = f"{index}. {exception}"
+        line_length = len(line) + 1
+
+        if current_page and current_length + line_length > 3000:
+            pages.append(current_page)
+            current_page = []
+            current_length = 0
+
+        current_page.append(line)
+        current_length += line_length
+
+    if current_page:
+        pages.append(current_page)
+
+    return pages
+
+
+def build_ad_exceptions_keyboard(lang: str, chat_id: int, page: int, total_pages: int):
+    keyboard = []
+    nav_buttons = []
+
+    if page > 0:
+        nav_buttons.append(
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_prev"],
+                callback_data=f"ad_exceptions_page:{chat_id}:{page - 1}"
+            )
+        )
+
+    if page < total_pages - 1:
+        nav_buttons.append(
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_next"],
+                callback_data=f"ad_exceptions_page:{chat_id}:{page + 1}"
+            )
+        )
+
+    if nav_buttons:
+        keyboard.append(nav_buttons)
+
+    keyboard.append([
+        InlineKeyboardButton(
+            TEXTS[lang]["btn_add_ad_exception"],
+            callback_data=f"ad_exceptions_add:{chat_id}"
+        )
+    ])
+
+    keyboard.append([
+        InlineKeyboardButton(
+            TEXTS[lang]["btn_delete_ad_exception"],
+            callback_data=f"ad_exceptions_delete:{chat_id}"
+        )
+    ])
+
+    keyboard.append([
+        InlineKeyboardButton(
+            TEXTS[lang]["back_button"],
+            callback_data=f"ads_panel:{chat_id}"
+        )
+    ])
+
+    return InlineKeyboardMarkup(keyboard)
+
+
+async def ad_exceptions_panel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    data = query.data.split(":")
+    chat_id = int(data[1])
+    page = int(data[2]) if len(data) > 2 else 0
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("AD EXCEPTIONS ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    rows = get_ad_exceptions(chat_id)
+
+    if not rows:
+        await query.edit_message_text(
+            TEXTS[lang]["ad_exceptions_empty"],
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        TEXTS[lang]["btn_add_ad_exception"],
+                        callback_data=f"ad_exceptions_add:{chat_id}"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        TEXTS[lang]["back_button"],
+                        callback_data=f"ads_panel:{chat_id}"
+                    )
+                ]
+            ])
+        )
+        return
+
+    pages = build_ad_exception_pages(rows)
+    total_pages = len(pages)
+
+    if page >= total_pages:
+        page = total_pages - 1
+
+    exceptions_text = "\n".join(pages[page])
+
+    await query.edit_message_text(
+        TEXTS[lang]["ad_exceptions_title"].format(
+            exceptions=exceptions_text,
+            page=page + 1,
+            total_pages=total_pages
+        ),
+        reply_markup=build_ad_exceptions_keyboard(lang, chat_id, page, total_pages),
+        disable_web_page_preview=True
+    )
+
+
+async def add_ad_exception_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+    chat_id = int(query.data.split(":")[1])
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("ADD AD EXCEPTION ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    context.user_data["state"] = "adding_ad_exception"
+    context.user_data["target_chat_id"] = chat_id
+
+    await query.message.reply_text(TEXTS[lang]["add_ad_exception_prompt"])
+
+
+async def delete_ad_exception_start_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+    chat_id = int(query.data.split(":")[1])
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("DELETE AD EXCEPTION ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    context.user_data["state"] = "deleting_ad_exception"
+    context.user_data["target_chat_id"] = chat_id
+
+    await query.message.reply_text(TEXTS[lang]["delete_ad_exception_prompt"])
