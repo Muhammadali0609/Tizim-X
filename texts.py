@@ -42,6 +42,14 @@ TEXTS = {
         "btn_add_bad_word": "➕ Добавить мат",
         "add_bad_word_prompt": "✍️ Введите новый мат.\n\nМожно сразу несколько слов, например:\nмат1 мат2 мат3",
         "bad_words_added": "✅ Мат добавлен в группу.",
+
+        "ads_panel": "🚫 Реклама\n\nБлокировка ссылок: {status}",
+        "links_enabled": "🟢 Включена",
+        "links_disabled": "🔴 Выключена",
+        "btn_disable_links": "🔴 Выключить блокировку ссылок",
+        "btn_enable_links": "🟢 Включить блокировку ссылок",
+        "btn_other_links": "🔗 Другие ссылки",
+        "btn_ad_phrases": "💬 Рекламные фразы",
     },
     "uz": {
         "start": (
@@ -86,5 +94,13 @@ TEXTS = {
         "btn_add_bad_word": "➕ So‘kinish qo‘shish",
         "add_bad_word_prompt": "✍️ Yangi so‘kinishni kiriting.\n\nBir nechta so‘z yuborishingiz mumkin, masalan:\nso‘z1 so‘z2 so‘z3",
         "bad_words_added": "✅ So‘kinish guruhga qo‘shildi.",
+
+        "ads_panel": "🚫 Reklamalar\n\nHavolalarni bloklash: {status}",
+        "links_enabled": "🟢 Yoqilgan",
+        "links_disabled": "🔴 O‘chirilgan",
+        "btn_disable_links": "🔴 Havolalarni bloklashni o‘chirish",
+        "btn_enable_links": "🟢 Havolalarni bloklashni yoqish",
+        "btn_other_links": "🔗 Boshqa havolalar",
+        "btn_ad_phrases": "💬 Reklama iboralari",
     }
 }
