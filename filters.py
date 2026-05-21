@@ -57,3 +57,11 @@ def has_custom_ad_link(text: str, links: list[str]) -> bool:
     text = text.lower()
 
     return any(link.lower() in text for link in links)
+
+def has_ad_exception(text: str, exceptions: list[str]) -> bool:
+    if not text or not exceptions:
+        return False
+
+    text = text.lower()
+
+    return any(exception in text for exception in exceptions)
