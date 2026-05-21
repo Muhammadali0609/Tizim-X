@@ -1,7 +1,7 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ChatPermissions
 from telegram.constants import ChatMemberStatus
 from telegram.ext import ContextTypes
-from db import save_user_language, save_group, get_group_settings, get_group_language, save_group_language, get_required_channel
+from db import save_user_language, save_group, get_group_settings, get_group_language, save_group_language, get_required_channel, save_group_admin
 from texts import TEXTS
 from filters import has_link, has_bad_word
 from admins import is_admin
