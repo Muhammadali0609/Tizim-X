@@ -35,3 +35,17 @@ def has_bad_word(text: str, bad_words: list[str]) -> bool:
     bad_words_set = set(word.lower() for word in bad_words)
 
     return any(word in bad_words_set for word in words)
+
+def has_ad_phrase(text: str, phrases: list[str]) -> bool:
+    if not text or not phrases:
+        return False
+
+    text = " ".join(text.lower().split())
+
+    for phrase in phrases:
+        normalized_phrase = " ".join(phrase.lower().split())
+
+        if normalized_phrase and normalized_phrase in text:
+            return True
+
+    return False
