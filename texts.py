@@ -93,8 +93,8 @@ TEXTS = {
         "warnings_panel": (
             "⚠️ Предупреждения\n\n"
             "Здесь вы можете управлять предупреждениями за нарушения.\n\n"
-            "Предупреждение за мат: {bad_words_status}\n"
-            "Предупреждение за рекламу: {ads_status}"
+            "Предупреждение за мат:\n {bad_words_status}\n"
+            "Предупреждение за рекламу:\n {ads_status}"
         ),
         
         "warn_enabled": "🟢 ВКЛ",
@@ -203,8 +203,8 @@ TEXTS = {
         "warnings_panel": (
             "⚠️ Ogohlantirishlar\n\n"
             "Bu yerda qoidabuzarliklar uchun ogohlantirishlarni boshqarishingiz mumkin.\n\n"
-            "So‘kinish uchun ogohlantirish: {bad_words_status}\n"
-            "Reklama uchun ogohlantirish: {ads_status}"
+            "So‘kinish uchun ogohlantirish:\n {bad_words_status}\n"
+            "Reklama uchun ogohlantirish:\n {ads_status}"
         ),
         
         "warn_enabled": "🟢 YOQILGAN",
