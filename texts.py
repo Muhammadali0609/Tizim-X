@@ -14,6 +14,10 @@ TEXTS = {
         ),
         "group_language_ru": "✅ Язык группы изменён на русский.",
         "group_language_uz": "✅ Язык группы изменён на узбекский.",
+        "private_welcome": "🛡 Добро пожаловать в TizimX",
+        "settings_button": "⚙️ Настройки",
+        "choose_group": "📂 Выберите группу:",
+        "no_groups": "❌ У вас пока нет подключённых групп.",
     },
     "uz": {
         "start": (
@@ -30,5 +34,9 @@ TEXTS = {
         ),
         "group_language_ru": "✅ Guruh tili rus tiliga o‘zgartirildi.",
         "group_language_uz": "✅ Guruh tili o‘zbekchaga o‘zgartirildi.",
+        "private_welcome": "🛡 TizimX ga xush kelibsiz",
+        "settings_button": "⚙️ Sozlamalar",
+        "choose_group": "📂 Guruhni tanlang:",
+        "no_groups": "❌ Sizda hali ulangan guruhlar yo‘q.",
     }
 }
