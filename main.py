@@ -11,7 +11,8 @@ from handlers import (start_command,
     clean_service_message,
     settings_button_handler,
     group_settings_callback,
-    back_groups_callback
+    back_groups_callback,
+    bad_words_panel_callback
 )
 from db import setup_database
 
