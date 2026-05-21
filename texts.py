@@ -57,6 +57,10 @@ TEXTS = {
         "btn_add_ad_link": "➕ Добавить ссылку",
         "add_ad_link_prompt": "✍️ Введите ссылку.",
         "ad_links_added": "✅ Ссылка добавлена в группу.",
+
+        "bad_word_search_prompt": "🔍 Введите число или мат, например:\n38 или мат2",
+        "bad_word_not_found": "❌ Такой мат не существует, можете добавить его.",
+        "bad_word_found": "✅ Найдено:\n\n{index}. {word}",
     },
     "uz": {
         "start": (
@@ -116,5 +120,9 @@ TEXTS = {
         "btn_add_ad_link": "➕ Havola qo‘shish",
         "add_ad_link_prompt": "✍️ Havolani kiriting.",
         "ad_links_added": "✅ Havola guruhga qo‘shildi.",
+
+        "bad_word_search_prompt": "🔍 Raqam yoki so‘kinishni kiriting, masalan:\n38 yoki so‘z2",
+        "bad_word_not_found": "❌ Bunday so‘kinish mavjud emas, uni qo‘shishingiz mumkin.",
+        "bad_word_found": "✅ Topildi:\n\n{index}. {word}",
     }
 }
