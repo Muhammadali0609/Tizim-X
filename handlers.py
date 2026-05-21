@@ -8,22 +8,12 @@ from admins import is_admin
 import asyncio
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    keyboard = ReplyKeyboardMarkup(
-        [["⚙️ Настройки"]],
-        resize_keyboard=True
-    )
-
     lang_keyboard = [
         [
             InlineKeyboardButton("🇷🇺 Русский", callback_data="lang_ru"),
             InlineKeyboardButton("🇺🇿 O‘zbekcha", callback_data="lang_uz"),
         ]
     ]
-
-    await update.message.reply_text(
-        TEXTS["ru"]["choose_language"],
-        reply_markup=keyboard
-    )
 
     await update.message.reply_text(
         TEXTS["ru"]["choose_language"],
@@ -38,11 +28,29 @@ async def language_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     save_user_language(user_id, lang)
 
+    keyboard_text = (
+        "⚙️ Настройки"
+        if lang == "ru"
+        else "⚙️ Sozlamalar"
+    )
+
+    keyboard = ReplyKeyboardMarkup(
+        [[keyboard_text]],
+        resize_keyboard=True
+    )
+
     await query.answer(TEXTS[lang]["language_saved"])
 
-    await query.edit_message_text(
-        TEXTS[lang]["start"]
+    await query.message.reply_text(
+        TEXTS[lang]["start"],
+        reply_markup=keyboard
     )
+
+    try:
+        await query.message.delete()
+    except Exception as e:
+        print("DELETE LANGUAGE MESSAGE ERROR:", e)
+        
 async def bot_added_to_group(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = update.my_chat_member
 
