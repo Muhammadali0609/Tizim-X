@@ -29,13 +29,15 @@ async def language_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     save_user_language(user_id, lang)
 
     keyboard_text = (
-        "⚙️ Настройки"
-        if lang == "ru"
-        else "⚙️ Sozlamalar"
+        TEXTS[lang]["manage_button"]
+    )
+    
+    language_text = (
+        TEXTS[lang]["language_button"]
     )
 
     keyboard = ReplyKeyboardMarkup(
-        [[keyboard_text]],
+        [[keyboard_text, language_text]],
         resize_keyboard=True
     )
 
