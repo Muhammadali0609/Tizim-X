@@ -420,7 +420,7 @@ async def group_settings_callback(update: Update, context: ContextTypes.DEFAULT_
             InlineKeyboardButton(TEXTS[lang]["btn_ads"], callback_data=f"ads_panel:{chat_id}"),
         ],
         [
-            InlineKeyboardButton(TEXTS[lang]["btn_warnings"], callback_data=f"panel:warnings:{chat_id}"),
+            InlineKeyboardButton(TEXTS[lang]["btn_warnings"], callback_data=f"warnings_panel:{chat_id}"),
             InlineKeyboardButton(TEXTS[lang]["btn_restrictions"], callback_data=f"panel:restrictions:{chat_id}"),
         ],
         [
@@ -1521,3 +1521,138 @@ async def delete_ad_exception_start_callback(update: Update, context: ContextTyp
     context.user_data["target_chat_id"] = chat_id
 
     await query.message.reply_text(TEXTS[lang]["delete_ad_exception_prompt"])
+
+def build_warnings_panel(lang: str, chat_id: int, settings: dict):
+    bad_words_status = (
+        TEXTS[lang]["warn_enabled"]
+        if settings["warn_bad_words"]
+        else TEXTS[lang]["warn_disabled"]
+    )
+
+    ads_status = (
+        TEXTS[lang]["warn_enabled"]
+        if settings["warn_ads"]
+        else TEXTS[lang]["warn_disabled"]
+    )
+
+    text = TEXTS[lang]["warnings_panel"].format(
+        bad_words_status=bad_words_status,
+        ads_status=ads_status,
+    )
+
+    bad_words_btn = (
+        TEXTS[lang]["btn_warn_bad_words_off"]
+        if settings["warn_bad_words"]
+        else TEXTS[lang]["btn_warn_bad_words_on"]
+    )
+
+    ads_btn = (
+        TEXTS[lang]["btn_warn_ads_off"]
+        if settings["warn_ads"]
+        else TEXTS[lang]["btn_warn_ads_on"]
+    )
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                bad_words_btn,
+                callback_data=f"warnings_toggle:warn_bad_words:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                ads_btn,
+                callback_data=f"warnings_toggle:warn_ads:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_bad_words_warn_limit"].format(
+                    limit=settings["bad_words_warn_limit"]
+                ),
+                callback_data=f"warnings_limit:bad_words:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_ads_warn_limit"].format(
+                    limit=settings["ads_warn_limit"]
+                ),
+                callback_data=f"warnings_limit:ads:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["back_button"],
+                callback_data=f"group_settings:{chat_id}"
+            )
+        ],
+    ]
+
+    return text, InlineKeyboardMarkup(keyboard)
+
+async def warnings_panel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    chat_id = int(query.data.split(":")[1])
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("WARNINGS PANEL ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    settings = get_group_settings(chat_id)
+
+    text, keyboard = build_warnings_panel(lang, chat_id, settings)
+
+    await query.edit_message_text(
+        text,
+        reply_markup=keyboard
+    )
+
+
+async def warnings_toggle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    _, key, chat_id = query.data.split(":")
+    chat_id = int(chat_id)
+
+    if key not in ["warn_bad_words", "warn_ads"]:
+        return
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("WARNINGS TOGGLE ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    settings = get_group_settings(chat_id)
+    new_value = not settings[key]
+
+    set_group_setting(chat_id, key, new_value)
+
+    settings = get_group_settings(chat_id)
+
+    text, keyboard = build_warnings_panel(lang, chat_id, settings)
+
+    await query.edit_message_text(
+        text,
+        reply_markup=keyboard
+    )
