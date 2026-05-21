@@ -18,7 +18,8 @@ from handlers import (start_command,
     ads_panel_callback,
     ads_toggle_links_callback,
     ad_links_panel_callback,
-    add_ad_link_callback
+    add_ad_link_callback,
+    bad_words_search_callback
 )
 from db import setup_database
 
@@ -67,6 +68,7 @@ def main():
     app.add_handler(CallbackQueryHandler(ad_links_panel_callback, pattern="^ad_links_panel:"))
     app.add_handler(CallbackQueryHandler(ad_links_panel_callback, pattern="^ad_links_page:"))
     app.add_handler(CallbackQueryHandler(add_ad_link_callback, pattern="^ad_links_add:"))
+    app.add_handler(CallbackQueryHandler(bad_words_search_callback, pattern="^bad_words_search:"))
 
     app.run_webhook(
         listen="0.0.0.0",
