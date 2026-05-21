@@ -23,6 +23,8 @@ from handlers import (start_command,
     delete_bad_word_callback,
     ad_phrases_panel_callback,
     add_ad_phrase_callback,
+    delete_ad_link_start_callback,
+    delete_ad_phrase_start_callback,
 )
 from db import setup_database
 
@@ -76,6 +78,8 @@ def main():
     app.add_handler(CallbackQueryHandler(ad_phrases_panel_callback, pattern="^ad_phrases_panel:"))
     app.add_handler(CallbackQueryHandler(ad_phrases_panel_callback, pattern="^ad_phrases_page:"))   
     app.add_handler(CallbackQueryHandler(add_ad_phrase_callback, pattern="^ad_phrases_add:"))
+    app.add_handler(CallbackQueryHandler(delete_ad_link_start_callback, pattern="^ad_links_delete:"))
+    app.add_handler(CallbackQueryHandler(delete_ad_phrase_start_callback, pattern="^ad_phrases_delete:"))
 
     app.run_webhook(
         listen="0.0.0.0",
