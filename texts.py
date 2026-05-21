@@ -61,6 +61,8 @@ TEXTS = {
         "bad_word_search_prompt": "🔍 Введите число или мат, например:\n38 или мат2",
         "bad_word_not_found": "❌ Такой мат не существует, можете добавить его.",
         "bad_word_found": "✅ Найдено:\n\n{index}. {word}",
+        "btn_delete": "🗑 Удалить",
+        "bad_word_deleted": "✅ Мат удалён.",
     },
     "uz": {
         "start": (
@@ -124,5 +126,7 @@ TEXTS = {
         "bad_word_search_prompt": "🔍 Raqam yoki so‘kinishni kiriting, masalan:\n38 yoki so‘z2",
         "bad_word_not_found": "❌ Bunday so‘kinish mavjud emas, uni qo‘shishingiz mumkin.",
         "bad_word_found": "✅ Topildi:\n\n{index}. {word}",
+        "btn_delete": "🗑 O‘chirish",
+        "bad_word_deleted": "✅ So‘kinish o‘chirildi.",
     }
 }
