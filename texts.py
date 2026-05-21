@@ -22,6 +22,13 @@ TEXTS = {
         "access_denied": "❌ У вас больше нет доступа к этой группе.",
         "enabled": "🟢",
         "disabled": "🔴",
+
+        "btn_bad_words": "🤬 Маты",
+        "btn_ads": "🚫 Рекламы",
+        "btn_warnings": "⚠️ Предупреждения",
+        "btn_restrictions": "🔒 Ограничения",
+        "btn_settings": "⚙️ Настройки",
+        "btn_transfer_settings": "🔁 Перенос настроек",
     },
     "uz": {
         "start": (
@@ -46,5 +53,12 @@ TEXTS = {
         "access_denied": "❌ Sizda bu guruhga kirish huquqi yo‘q.",
         "enabled": "🟢",
         "disabled": "🔴",
+
+        "btn_bad_words": "🤬 So‘kinishlar",
+        "btn_ads": "🚫 Reklamalar",
+        "btn_warnings": "⚠️ Ogohlantirishlar",
+        "btn_restrictions": "🔒 Cheklovlar",
+        "btn_settings": "⚙️ Sozlamalar",
+        "btn_transfer_settings": "🔁 Sozlamalarni ko‘chirish",
     }
 }
