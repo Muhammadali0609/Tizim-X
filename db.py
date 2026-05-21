@@ -71,6 +71,15 @@ def setup_database():
                     UNIQUE(chat_id, link)
                 )
             """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS tizimx_ad_phrases (
+                    id BIGSERIAL PRIMARY KEY,
+                    chat_id BIGINT NOT NULL,
+                    phrase TEXT NOT NULL,
+                    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                    UNIQUE(chat_id, phrase)
+                )
+            """)
         conn.commit()
 
 def get_user_language(user_id: int) -> str:
@@ -379,3 +388,40 @@ def delete_bad_word(chat_id: int, word_id: int):
                 WHERE chat_id = %s AND id = %s
             """, (chat_id, word_id))
         conn.commit()
+
+def get_ad_phrases(chat_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, phrase
+                FROM tizimx_ad_phrases
+                WHERE chat_id = %s
+                ORDER BY id
+            """, (chat_id,))
+            rows = cur.fetchall()
+
+    return rows
+
+
+def add_ad_phrases(chat_id: int, phrases: list[str]):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            for phrase in phrases:
+                cur.execute("""
+                    INSERT INTO tizimx_ad_phrases (chat_id, phrase)
+                    VALUES (%s, %s)
+                    ON CONFLICT (chat_id, phrase) DO NOTHING
+                """, (chat_id, phrase))
+        conn.commit()
+
+
+def get_ad_phrases_for_check(chat_id: int) -> list[str]:
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT phrase FROM tizimx_ad_phrases WHERE chat_id = %s",
+                (chat_id,)
+            )
+            rows = cur.fetchall()
+
+    return [row[0].lower() for row in rows]
