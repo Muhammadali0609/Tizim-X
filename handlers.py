@@ -104,6 +104,7 @@ async def settings_button_handler(update: Update, context: ContextTypes.DEFAULT_
     )
 
 async def bot_added_to_group(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    from db import seed_default_bad_words
     message = update.my_chat_member
 
     if not message:
@@ -119,6 +120,7 @@ async def bot_added_to_group(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
     chat = message.chat
     save_group(chat.id, chat.title)
+    seed_default_bad_words(chat.id)
 
     bot_member = await chat.get_member(context.bot.id)
 
