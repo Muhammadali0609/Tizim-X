@@ -53,6 +53,15 @@ def setup_database():
                     PRIMARY KEY (chat_id, user_id)
                 )
             """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS tizimx_bad_words (
+                    id BIGSERIAL PRIMARY KEY,
+                    chat_id BIGINT NOT NULL,
+                    word TEXT NOT NULL,
+                    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                    UNIQUE(chat_id, word)
+                )
+            """)
         conn.commit()
 
 def get_user_language(user_id: int) -> str:
@@ -187,6 +196,36 @@ def get_user_groups(user_id: int):
                 WHERE a.user_id = %s
                 ORDER BY g.title
             """, (user_id,))
+            rows = cur.fetchall()
+
+    return rows
+
+BAD_WORDS_PER_PAGE = 30
+
+def get_bad_words_count(chat_id: int) -> int:
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT COUNT(*) FROM tizimx_bad_words WHERE chat_id = %s",
+                (chat_id,)
+            )
+            row = cur.fetchone()
+
+    return row[0]
+
+
+def get_bad_words_page(chat_id: int, page: int):
+    offset = page * BAD_WORDS_PER_PAGE
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, word
+                FROM tizimx_bad_words
+                WHERE chat_id = %s
+                ORDER BY word
+                LIMIT %s OFFSET %s
+            """, (chat_id, BAD_WORDS_PER_PAGE, offset))
             rows = cur.fetchall()
 
     return rows
