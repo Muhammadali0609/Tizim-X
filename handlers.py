@@ -196,7 +196,7 @@ async def check_subscription_callback(update: Update, context: ContextTypes.DEFA
     target_user_id = int(data[2])
 
     if query.from_user.id != target_user_id:
-        await query.answer("Bu tugma siz uchun emas")
+        await query.answer("Bu tugma siz uchun emas", show_alert=True)
         return
 
     required_channel, force_subscribe = get_required_channel(chat_id)
