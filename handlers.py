@@ -716,3 +716,175 @@ async def ads_toggle_links_callback(update: Update, context: ContextTypes.DEFAUL
         text,
         reply_markup=keyboard
     )
+
+def build_ad_link_pages(rows):
+    pages = []
+    current_page = []
+    current_length = 0
+
+    for index, (_, link) in enumerate(rows, start=1):
+        line = f"{index}. {link}"
+
+        line_length = len(line) + 1
+
+        if current_page and current_length + line_length > 3000:
+            pages.append(current_page)
+            current_page = []
+            current_length = 0
+
+        current_page.append(line)
+        current_length += line_length
+
+    if current_page:
+        pages.append(current_page)
+
+    return pages
+
+def build_ad_links_keyboard(lang: str, chat_id: int, page: int, total_pages: int):
+    keyboard = []
+
+    nav_buttons = []
+
+    if page > 0:
+        nav_buttons.append(
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_prev"],
+                callback_data=f"ad_links_page:{chat_id}:{page - 1}"
+            )
+        )
+
+    if page < total_pages - 1:
+        nav_buttons.append(
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_next"],
+                callback_data=f"ad_links_page:{chat_id}:{page + 1}"
+            )
+        )
+
+    if nav_buttons:
+        keyboard.append(nav_buttons)
+
+    keyboard.append([
+        InlineKeyboardButton(
+            TEXTS[lang]["btn_add_ad_link"],
+            callback_data=f"ad_links_add:{chat_id}"
+        )
+    ])
+
+    keyboard.append([
+        InlineKeyboardButton(
+            TEXTS[lang]["back_button"],
+            callback_data=f"ads_panel:{chat_id}"
+        )
+    ])
+
+    return InlineKeyboardMarkup(keyboard)
+
+async def ad_links_panel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    data = query.data.split(":")
+    chat_id = int(data[1])
+    page = int(data[2]) if len(data) > 2 else 0
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("AD LINKS ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    rows = get_ad_links(chat_id)
+
+    if not rows:
+        await query.edit_message_text(
+            TEXTS[lang]["ad_links_empty"],
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        TEXTS[lang]["btn_add_ad_link"],
+                        callback_data=f"ad_links_add:{chat_id}"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        TEXTS[lang]["back_button"],
+                        callback_data=f"ads_panel:{chat_id}"
+                    )
+                ]
+            ])
+        )
+        return
+
+    pages = build_ad_link_pages(rows)
+    total_pages = len(pages)
+
+    if page >= total_pages:
+        page = total_pages - 1
+
+    links_text = "\n".join(pages[page])
+
+    await query.edit_message_text(
+        TEXTS[lang]["ad_links_title"].format(
+            links=links_text,
+            page=page + 1,
+            total_pages=total_pages
+        ),
+        reply_markup=build_ad_links_keyboard(
+            lang=lang,
+            chat_id=chat_id,
+            page=page,
+            total_pages=total_pages
+        ),
+        disable_web_page_preview=True
+    )
+
+async def add_ad_link_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    chat_id = int(query.data.split(":")[1])
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("ADD AD LINK ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    context.user_data["state"] = "adding_ad_links"
+    context.user_data["target_chat_id"] = chat_id
+
+    await query.message.reply_text(TEXTS[lang]["add_ad_link_prompt"])
+
+if context.user_data.get("state") == "adding_ad_links":
+    chat_id = context.user_data.get("target_chat_id")
+
+    links = [
+        line.strip().lower()
+        for line in message.text.splitlines()
+        if line.strip()
+    ]
+
+    links = list(dict.fromkeys(links))
+
+    if links:
+        add_ad_links(chat_id, links)
+
+    context.user_data.clear()
+
+    await message.reply_text(TEXTS[lang]["ad_links_added"])
+    return
