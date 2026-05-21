@@ -22,7 +22,9 @@ from db import(save_user_language,
     get_ad_phrases,
     add_ad_phrases,
     get_ad_phrases_for_check,
-    get_ad_links_for_check
+    get_ad_links_for_check,
+    delete_ad_link_by_index,
+    delete_ad_phrase_by_index
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link
@@ -596,6 +598,49 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
     user_id = update.effective_user.id
     lang = get_user_language(user_id)
 
+    if context.user_data.get("state") == "deleting_ad_link":
+        chat_id = context.user_data.get("target_chat_id")
+    
+        text = message.text.strip().split()[0]
+    
+        if not text.isdigit():
+            await message.reply_text(TEXTS[lang]["ad_link_not_found"])
+            context.user_data.clear()
+            return
+    
+        deleted = delete_ad_link_by_index(chat_id, int(text))
+    
+        context.user_data.clear()
+    
+        await message.reply_text(
+            TEXTS[lang]["ad_link_deleted"]
+            if deleted
+            else TEXTS[lang]["ad_link_not_found"]
+        )
+        return
+    
+    
+    if context.user_data.get("state") == "deleting_ad_phrase":
+        chat_id = context.user_data.get("target_chat_id")
+    
+        text = message.text.strip().split()[0]
+    
+        if not text.isdigit():
+            await message.reply_text(TEXTS[lang]["ad_phrase_not_found"])
+            context.user_data.clear()
+            return
+    
+        deleted = delete_ad_phrase_by_index(chat_id, int(text))
+    
+        context.user_data.clear()
+    
+        await message.reply_text(
+            TEXTS[lang]["ad_phrase_deleted"]
+            if deleted
+            else TEXTS[lang]["ad_phrase_not_found"]
+        )
+        return
+    
     if context.user_data.get("state") == "adding_ad_links":
         chat_id = context.user_data.get("target_chat_id")
 
@@ -894,7 +939,12 @@ def build_ad_links_keyboard(lang: str, chat_id: int, page: int, total_pages: int
             callback_data=f"ad_links_add:{chat_id}"
         )
     ])
-
+    keyboard.append([
+        InlineKeyboardButton(
+            TEXTS[lang]["btn_delete_ad_link"],
+            callback_data=f"ad_links_delete:{chat_id}"
+        )
+    ])
     keyboard.append([
         InlineKeyboardButton(
             TEXTS[lang]["back_button"],
@@ -1096,7 +1146,12 @@ def build_ad_phrases_keyboard(lang: str, chat_id: int, page: int, total_pages: i
             callback_data=f"ad_phrases_add:{chat_id}"
         )
     ])
-
+    keyboard.append([
+        InlineKeyboardButton(
+            TEXTS[lang]["btn_delete_ad_phrase"],
+            callback_data=f"ad_phrases_delete:{chat_id}"
+        )
+    ])
     keyboard.append([
         InlineKeyboardButton(
             TEXTS[lang]["back_button"],
@@ -1194,3 +1249,52 @@ async def add_ad_phrase_callback(update: Update, context: ContextTypes.DEFAULT_T
     context.user_data["target_chat_id"] = chat_id
 
     await query.message.reply_text(TEXTS[lang]["add_ad_phrase_prompt"])
+
+async def delete_ad_link_start_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    chat_id = int(query.data.split(":")[1])
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("DELETE AD LINK ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    context.user_data["state"] = "deleting_ad_link"
+    context.user_data["target_chat_id"] = chat_id
+
+    await query.message.reply_text(TEXTS[lang]["delete_ad_link_prompt"])
+
+
+async def delete_ad_phrase_start_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    chat_id = int(query.data.split(":")[1])
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("DELETE AD PHRASE ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    context.user_data["state"] = "deleting_ad_phrase"
+    context.user_data["target_chat_id"] = chat_id
+
+    await query.message.reply_text(TEXTS[lang]["delete_ad_phrase_prompt"])
