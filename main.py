@@ -1,7 +1,7 @@
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ChatMemberHandler, MessageHandler, filters
 from telegram import BotCommand, BotCommandScopeAllPrivateChats, BotCommandScopeAllGroupChats
 from config import BOT_TOKEN, WEBHOOK_URL, PORT
-from handlers import start_command, language_callback, bot_added_to_group, check_group_message, set_group_language
+from handlers import start_command, language_callback, bot_added_to_group, check_group_message, set_group_language, new_member_handler
 from db import setup_database
 
 async def setup_commands(app):
@@ -27,6 +27,7 @@ def main():
     app.add_handler(CommandHandler("start", start_command))
     app.add_handler(CallbackQueryHandler(language_callback, pattern="^lang_"))
     app.add_handler(ChatMemberHandler(bot_added_to_group, ChatMemberHandler.MY_CHAT_MEMBER))
+    app.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, new_member_handler))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, check_group_message))
     app.add_handler(CommandHandler("ru", set_group_language))
     app.add_handler(CommandHandler("uz", set_group_language))
