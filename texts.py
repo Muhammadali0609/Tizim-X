@@ -55,7 +55,7 @@ TEXTS = {
         "ad_links_title": "🔗 Другие ссылки\n\n{links}\n\nСтраница {page}/{total_pages}",
         "ad_links_empty": "🔗 Список ссылок пуст.",
         "btn_add_ad_link": "➕ Добавить ссылку",
-        "add_ad_link_prompt": "✍️ Введите ссылку.\n\nМожно отправить несколько ссылок, каждая с новой строки.",
+        "add_ad_link_prompt": "✍️ Введите ссылку.",
         "ad_links_added": "✅ Ссылка добавлена в группу.",
     },
     "uz": {
@@ -114,7 +114,7 @@ TEXTS = {
         "ad_links_title": "🔗 Boshqa havolalar\n\n{links}\n\nSahifa {page}/{total_pages}",
         "ad_links_empty": "🔗 Havolalar ro‘yxati bo‘sh.",
         "btn_add_ad_link": "➕ Havola qo‘shish",
-        "add_ad_link_prompt": "✍️ Havolani kiriting.\n\nBir nechta havola yuborishingiz mumkin, har biri yangi qatordan.",
+        "add_ad_link_prompt": "✍️ Havolani kiriting.",
         "ad_links_added": "✅ Havola guruhga qo‘shildi.",
     }
 }
