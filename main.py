@@ -28,6 +28,8 @@ from handlers import (start_command,
     ad_exceptions_panel_callback,
     add_ad_exception_callback,
     delete_ad_exception_start_callback,
+    warnings_panel_callback,
+    warnings_toggle_callback,
 )
 from db import setup_database
 
@@ -87,7 +89,9 @@ def main():
     app.add_handler(CallbackQueryHandler(ad_exceptions_panel_callback, pattern="^ad_exceptions_page:"))
     app.add_handler(CallbackQueryHandler(add_ad_exception_callback, pattern="^ad_exceptions_add:"))
     app.add_handler(CallbackQueryHandler(delete_ad_exception_start_callback, pattern="^ad_exceptions_delete:"))
-
+    app.add_handler(CallbackQueryHandler(warnings_panel_callback, pattern="^warnings_panel:"))
+    app.add_handler(CallbackQueryHandler(warnings_toggle_callback, pattern="^warnings_toggle:"))
+    
     app.run_webhook(
         listen="0.0.0.0",
         port=PORT,
