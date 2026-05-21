@@ -16,7 +16,9 @@ from handlers import (start_command,
     add_bad_word_callback,
     private_text_handler,
     ads_panel_callback,
-    ads_toggle_links_callback
+    ads_toggle_links_callback,
+    ad_links_panel_callback,
+    add_ad_link_callback
 )
 from db import setup_database
 
