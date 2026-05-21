@@ -62,6 +62,15 @@ def setup_database():
                     UNIQUE(chat_id, word)
                 )
             """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS tizimx_ad_links (
+                    id BIGSERIAL PRIMARY KEY,
+                    chat_id BIGINT NOT NULL,
+                    link TEXT NOT NULL,
+                    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                    UNIQUE(chat_id, link)
+                )
+            """)
         conn.commit()
 
 def get_user_language(user_id: int) -> str:
@@ -293,4 +302,32 @@ def set_group_setting(chat_id: int, key: str, value: bool):
                 f"UPDATE tizimx_groups SET {key} = %s WHERE chat_id = %s",
                 (value, chat_id)
             )
+        conn.commit()
+
+AD_LINKS_MAX_TEXT_LENGTH = 3200
+
+
+def get_ad_links(chat_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, link
+                FROM tizimx_ad_links
+                WHERE chat_id = %s
+                ORDER BY id
+            """, (chat_id,))
+            rows = cur.fetchall()
+
+    return rows
+
+
+def add_ad_links(chat_id: int, links: list[str]):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            for link in links:
+                cur.execute("""
+                    INSERT INTO tizimx_ad_links (chat_id, link)
+                    VALUES (%s, %s)
+                    ON CONFLICT (chat_id, link) DO NOTHING
+                """, (chat_id, link))
         conn.commit()
