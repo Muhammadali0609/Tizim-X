@@ -653,7 +653,7 @@ def build_ads_panel(lang: str, chat_id: int, anti_links: bool):
         [
             InlineKeyboardButton(
                 TEXTS[lang]["btn_other_links"],
-                callback_data=f"ads_other_links:{chat_id}"
+                callback_data=f"ad_links_panel:{chat_id}:0"
             )
         ],
         [
