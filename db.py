@@ -333,6 +333,8 @@ def set_group_setting(chat_id: int, key: str, value: bool):
         "anti_bad_words",
         "force_subscribe",
         "clean_service_messages",
+        "warn_bad_words",
+        "warn_ads",
     }
 
     if key not in allowed_keys:
