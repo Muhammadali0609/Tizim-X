@@ -31,6 +31,13 @@ TEXTS = {
         "btn_restrictions": "🔒 Ограничения",
         "btn_settings": "⚙️ Настройки",
         "btn_transfer_settings": "🔁 Перенос настроек",
+
+        "bad_words_title": "🤬 Маты\n\n{words}\n\nСтраница {page}/{total_pages}",
+        "bad_words_empty": "🤬 Список матов пуст.",
+        "btn_prev": "⬅️ Назад",
+        "btn_next": "Вперёд ➡️",
+        "btn_search": "🔍 Поиск",
+        "btn_back_panel": "⬅️ В меню",
     },
     "uz": {
         "start": (
@@ -64,5 +71,12 @@ TEXTS = {
         "btn_restrictions": "🔒 Cheklovlar",
         "btn_settings": "⚙️ Sozlamalar",
         "btn_transfer_settings": "🔁 Sozlamalarni ko‘chirish",
+
+        "bad_words_title": "🤬 So‘kinishlar\n\n{words}\n\nSahifa {page}/{total_pages}",
+        "bad_words_empty": "🤬 So‘kinishlar ro‘yxati bo‘sh.",
+        "btn_prev": "⬅️ Oldingi",
+        "btn_next": "Keyingi ➡️",
+        "btn_search": "🔍 Qidirish",
+        "btn_back_panel": "⬅️ Menyuga",
     }
 }
