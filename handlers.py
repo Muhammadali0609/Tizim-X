@@ -1,11 +1,23 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ChatPermissions, ReplyKeyboardMarkup
 from telegram.constants import ChatMemberStatus
 from telegram.ext import ContextTypes
-from db import save_user_language, get_user_language, save_group, get_group_settings, get_group_language, save_group_language, get_required_channel, save_group_admin, get_user_groups
+from db import(save_user_language,
+    get_user_language,
+    save_group,
+    get_group_settings,
+    get_group_language,
+    save_group_language,
+    get_required_channel,
+    save_group_admin,
+    get_user_groups,
+    get_bad_words_page,
+    get_bad_words_count
+)
 from texts import TEXTS
 from filters import has_link, has_bad_word
 from admins import is_admin
 import asyncio
+import math
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     lang_keyboard = [
@@ -355,7 +367,7 @@ async def group_settings_callback(update: Update, context: ContextTypes.DEFAULT_
 
     keyboard = [
         [
-            InlineKeyboardButton(TEXTS[lang]["btn_bad_words"], callback_data=f"panel:bad_words:{chat_id}"),
+            InlineKeyboardButton(TEXTS[lang]["btn_bad_words"], callback_data=f"bad_words_panel:{chat_id}:0"),
             InlineKeyboardButton(TEXTS[lang]["btn_ads"], callback_data=f"panel:ads:{chat_id}"),
         ],
         [
@@ -399,4 +411,109 @@ async def back_groups_callback(update: Update, context: ContextTypes.DEFAULT_TYP
     await query.edit_message_text(
         TEXTS[lang]["choose_group"],
         reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+def build_bad_words_keyboard(lang: str, chat_id: int, page: int, total_pages: int):
+    nav_buttons = []
+
+    if page > 0:
+        nav_buttons.append(
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_prev"],
+                callback_data=f"bad_words_page:{chat_id}:{page - 1}"
+            )
+        )
+
+    nav_buttons.append(
+        InlineKeyboardButton(
+            TEXTS[lang]["btn_search"],
+            callback_data=f"bad_words_search:{chat_id}"
+        )
+    )
+
+    if page < total_pages - 1:
+        nav_buttons.append(
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_next"],
+                callback_data=f"bad_words_page:{chat_id}:{page + 1}"
+            )
+        )
+
+    keyboard = []
+
+    if nav_buttons:
+        keyboard.append(nav_buttons)
+
+    keyboard.append([
+        InlineKeyboardButton(
+            TEXTS[lang]["btn_back_panel"],
+            callback_data=f"group_settings:{chat_id}"
+        )
+    ])
+
+    return InlineKeyboardMarkup(keyboard)
+
+async def bad_words_panel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    data = query.data.split(":")
+    chat_id = int(data[1])
+    page = int(data[2]) if len(data) > 2 else 0
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("BAD WORDS ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    total_count = get_bad_words_count(chat_id)
+
+    if total_count == 0:
+        await query.edit_message_text(
+            TEXTS[lang]["bad_words_empty"],
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        TEXTS[lang]["btn_search"],
+                        callback_data=f"bad_words_search:{chat_id}"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        TEXTS[lang]["btn_back_panel"],
+                        callback_data=f"group_settings:{chat_id}"
+                    )
+                ]
+            ])
+        )
+        return
+
+    total_pages = math.ceil(total_count / 30)
+    rows = get_bad_words_page(chat_id, page)
+
+    words_text = "\n".join(
+        f"{i + 1 + page * 30}. {word}"
+        for i, (_, word) in enumerate(rows)
+    )
+
+    await query.edit_message_text(
+        TEXTS[lang]["bad_words_title"].format(
+            words=words_text,
+            page=page + 1,
+            total_pages=total_pages
+        ),
+        reply_markup=build_bad_words_keyboard(
+            lang=lang,
+            chat_id=chat_id,
+            page=page,
+            total_pages=total_pages
+        )
     )
