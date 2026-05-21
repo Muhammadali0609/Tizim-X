@@ -341,6 +341,17 @@ def add_ad_links(chat_id: int, links: list[str]):
                 """, (chat_id, link))
         conn.commit()
 
+def get_ad_links_for_check(chat_id: int) -> list[str]:
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "SELECT link FROM tizimx_ad_links WHERE chat_id = %s",
+                (chat_id,)
+            )
+            rows = cur.fetchall()
+
+    return [row[0].lower() for row in rows]
+
 def find_bad_word(chat_id: int, query: str):
     with get_connection() as conn:
         with conn.cursor() as cur:
