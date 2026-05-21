@@ -16,7 +16,8 @@ from db import(save_user_language,
     get_bad_words_for_check,
     set_group_setting,
     get_ad_links,
-    add_ad_links
+    add_ad_links,
+    find_bad_word
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word
@@ -597,6 +598,41 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
         await message.reply_text(TEXTS[lang]["ad_links_added"])
         return
 
+    if context.user_data.get("state") == "searching_bad_word":
+        chat_id = context.user_data.get("target_chat_id")
+    
+        try:
+            chat = await context.bot.get_chat(chat_id)
+    
+            if not await is_admin(chat, user_id):
+                await message.reply_text(TEXTS[lang]["access_denied"])
+                context.user_data.clear()
+                return
+    
+        except Exception as e:
+            print("SEARCH BAD WORD ACCESS ERROR:", e)
+            await message.reply_text(TEXTS[lang]["access_denied"])
+            context.user_data.clear()
+            return
+    
+        query_text = message.text.strip()
+    
+        result = find_bad_word(chat_id, query_text)
+    
+        context.user_data.clear()
+    
+        if not result:
+            await message.reply_text(TEXTS[lang]["bad_word_not_found"])
+            return
+    
+        await message.reply_text(
+            TEXTS[lang]["bad_word_found"].format(
+                index=result["index"],
+                word=result["word"]
+            )
+        )
+        return
+    
     if context.user_data.get("state") == "adding_bad_words":
         chat_id = context.user_data.get("target_chat_id")
 
@@ -897,3 +933,27 @@ async def add_ad_link_callback(update: Update, context: ContextTypes.DEFAULT_TYP
     context.user_data["target_chat_id"] = chat_id
 
     await query.message.reply_text(TEXTS[lang]["add_ad_link_prompt"])
+
+async def bad_words_search_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    chat_id = int(query.data.split(":")[1])
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("BAD WORD SEARCH ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    context.user_data["state"] = "searching_bad_word"
+    context.user_data["target_chat_id"] = chat_id
+
+    await query.message.reply_text(TEXTS[lang]["bad_word_search_prompt"])
