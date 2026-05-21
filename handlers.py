@@ -1,7 +1,7 @@
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ChatPermissions
 from telegram.constants import ChatMemberStatus
 from telegram.ext import ContextTypes
-from db import save_user_language, save_group, get_group_settings, get_group_language, save_group_language
+from db import save_user_language, save_group, get_group_settings, get_group_language, save_group_language, get_required_channel
 from texts import TEXTS
 from filters import has_link, has_bad_word
 from admins import is_admin
@@ -138,3 +138,52 @@ async def set_group_language(update: Update, context: ContextTypes.DEFAULT_TYPE)
         await msg.delete()
     except Exception as e:
         print("DELETE TEMP MESSAGE ERROR:", e)
+
+async def new_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = update.message
+
+    if not message or not message.new_chat_members:
+        return
+
+    if message.chat.type not in ["group", "supergroup"]:
+        return
+
+    required_channel, force_subscribe = get_required_channel(message.chat.id)
+
+    if not force_subscribe or not required_channel:
+        return
+
+    for user in message.new_chat_members:
+        if user.is_bot:
+            continue
+
+        try:
+            await message.chat.restrict_member(
+                user_id=user.id,
+                permissions=ChatPermissions(
+                    can_send_messages=False
+                )
+            )
+
+            keyboard = [
+                [
+                    InlineKeyboardButton(
+                        "📢 Подписаться",
+                        url=f"https://t.me/{required_channel.replace('@', '')}"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        "✅ Проверить",
+                        callback_data=f"check_sub:{message.chat.id}:{user.id}"
+                    )
+                ]
+            ]
+
+            await message.chat.send_message(
+                f"{user.first_name}, чтобы писать в группе, подпишитесь на канал.",
+                reply_markup=InlineKeyboardMarkup(keyboard)
+            )
+
+        except Exception as e:
+            print("FORCE SUBSCRIBE ERROR:", e)
