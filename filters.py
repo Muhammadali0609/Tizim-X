@@ -25,12 +25,14 @@ DEFAULT_BAD_WORDS = [
 ]
 
 
-def has_bad_word(text: str) -> bool:
-    if not text:
+def has_bad_word(text: str, bad_words: list[str]) -> bool:
+    if not text or not bad_words:
         return False
 
     text = text.lower()
 
-    words = re.findall(r"\b\w+\b", text)
+    words = re.findall(r"[^\s,.;:!?()\[\]{}\"“”]+", text)
 
-    return any(word in BAD_WORDS for word in words)
+    bad_words_set = set(word.lower() for word in bad_words)
+
+    return any(word in bad_words_set for word in words)
