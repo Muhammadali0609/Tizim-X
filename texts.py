@@ -63,6 +63,12 @@ TEXTS = {
         "bad_word_found": "✅ Найдено:\n\n{index}. {word}",
         "btn_delete": "🗑 Удалить",
         "bad_word_deleted": "✅ Мат удалён.",
+
+        "ad_phrases_title": "💬 Рекламные фразы\n\n{phrases}\n\nСтраница {page}/{total_pages}",
+        "ad_phrases_empty": "💬 Список рекламных фраз пуст.",
+        "btn_add_ad_phrase": "➕ Добавить фразу",
+        "add_ad_phrase_prompt": "✍️ Введите рекламную фразу.",
+        "ad_phrase_added": "✅ Рекламная фраза добавлена.",
     },
     "uz": {
         "start": (
@@ -128,5 +134,11 @@ TEXTS = {
         "bad_word_found": "✅ Topildi:\n\n{index}. {word}",
         "btn_delete": "🗑 O‘chirish",
         "bad_word_deleted": "✅ So‘kinish o‘chirildi.",
+
+        "ad_phrases_title": "💬 Reklama iboralari\n\n{phrases}\n\nSahifa {page}/{total_pages}",
+        "ad_phrases_empty": "💬 Reklama iboralari ro‘yxati bo‘sh.",
+        "btn_add_ad_phrase": "➕ Ibora qo‘shish",
+        "add_ad_phrase_prompt": "✍️ Reklama iborasini kiriting.",
+        "ad_phrase_added": "✅ Reklama iborasi qo‘shildi.",
     }
 }
