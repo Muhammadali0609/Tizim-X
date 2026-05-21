@@ -17,3 +17,18 @@ def has_link(text: str) -> bool:
         return False
 
     return bool(URL_PATTERN.search(text))
+
+BAD_WORDS = [
+    "am",
+    "qoto",
+    "yiban",
+]
+
+
+def has_bad_word(text: str) -> bool:
+    if not text:
+        return False
+
+    text = text.lower()
+
+    return any(word in text for word in BAD_WORDS)
