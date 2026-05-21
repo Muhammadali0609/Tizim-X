@@ -10,7 +10,8 @@ from handlers import (start_command,
     check_subscription_callback,
     clean_service_message,
     settings_button_handler,
-    group_settings_callback
+    group_settings_callback,
+    back_groups_callback
 )
 from db import setup_database
 
@@ -49,6 +50,7 @@ def main():
     app.add_handler(CommandHandler("ru", set_group_language))
     app.add_handler(CommandHandler("uz", set_group_language))
     app.add_handler(CallbackQueryHandler(group_settings_callback, pattern="^group_settings:"))
+    app.add_handler(CallbackQueryHandler(back_groups_callback, pattern="^back_groups$"))
 
     app.run_webhook(
         listen="0.0.0.0",
