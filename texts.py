@@ -50,6 +50,7 @@ TEXTS = {
         "btn_enable_links": "🟢 Включить блокировку ссылок",
         "btn_other_links": "🔗 Другие ссылки",
         "btn_ad_phrases": "💬 Рекламные фразы",
+        "btn_ad_exceptions": "✅ Исключения",
     },
     "uz": {
         "start": (
@@ -102,5 +103,6 @@ TEXTS = {
         "btn_enable_links": "🟢 Havolalarni bloklashni yoqish",
         "btn_other_links": "🔗 Boshqa havolalar",
         "btn_ad_phrases": "💬 Reklama iboralari",
+        "btn_ad_exceptions": "✅ Istisnolar",
     }
 }
