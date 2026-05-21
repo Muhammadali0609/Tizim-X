@@ -45,6 +45,25 @@ def setup_database():
                 ADD COLUMN IF NOT EXISTS clean_service_messages BOOLEAN NOT NULL DEFAULT TRUE
             """)
             cur.execute("""
+                ALTER TABLE tizimx_groups
+                ADD COLUMN IF NOT EXISTS warn_bad_words BOOLEAN NOT NULL DEFAULT FALSE
+            """)
+            
+            cur.execute("""
+                ALTER TABLE tizimx_groups
+                ADD COLUMN IF NOT EXISTS warn_ads BOOLEAN NOT NULL DEFAULT FALSE
+            """)
+            
+            cur.execute("""
+                ALTER TABLE tizimx_groups
+                ADD COLUMN IF NOT EXISTS bad_words_warn_limit INTEGER NOT NULL DEFAULT 3
+            """)
+            
+            cur.execute("""
+                ALTER TABLE tizimx_groups
+                ADD COLUMN IF NOT EXISTS ads_warn_limit INTEGER NOT NULL DEFAULT 3
+            """)
+            cur.execute("""
                 CREATE TABLE IF NOT EXISTS tizimx_group_admins (
                     chat_id BIGINT NOT NULL,
                     user_id BIGINT NOT NULL,
@@ -130,7 +149,7 @@ def get_group_settings(chat_id: int) -> dict:
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT anti_links, anti_bad_words, silent_mode, clean_service_messages
+                SELECT anti_links, anti_bad_words, silent_mode, clean_service_messages, force_subscribe, warn_bad_words, warn_ads, bad_words_warn_limit, ads_warn_limit
                 FROM tizimx_groups
                 WHERE chat_id = %s
             """, (chat_id,))
@@ -149,6 +168,11 @@ def get_group_settings(chat_id: int) -> dict:
         "anti_bad_words": row[1],
         "silent_mode": row[2],
         "clean_service_messages": row[3],
+        "force_subscribe": row[4],
+        "warn_bad_words": row[5],
+        "warn_ads": row[6],
+        "bad_words_warn_limit": row[7],
+        "ads_warn_limit": row[8],
     }
 
 def get_group_language(chat_id: int) -> str:
