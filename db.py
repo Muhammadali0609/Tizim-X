@@ -253,3 +253,14 @@ def seed_default_bad_words(chat_id: int):
                 """, (chat_id, word))
 
         conn.commit()
+
+def add_bad_words(chat_id: int, words: list[str]):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            for word in words:
+                cur.execute("""
+                    INSERT INTO tizimx_bad_words (chat_id, word)
+                    VALUES (%s, %s)
+                    ON CONFLICT (chat_id, word) DO NOTHING
+                """, (chat_id, word))
+        conn.commit()
