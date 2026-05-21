@@ -436,3 +436,40 @@ def get_ad_phrases_for_check(chat_id: int) -> list[str]:
             rows = cur.fetchall()
 
     return [row[0].lower() for row in rows]
+
+def delete_ad_link_by_index(chat_id: int, index: int) -> bool:
+    rows = get_ad_links(chat_id)
+
+    if index < 1 or index > len(rows):
+        return False
+
+    link_id = rows[index - 1][0]
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "DELETE FROM tizimx_ad_links WHERE chat_id = %s AND id = %s",
+                (chat_id, link_id)
+            )
+        conn.commit()
+
+    return True
+
+
+def delete_ad_phrase_by_index(chat_id: int, index: int) -> bool:
+    rows = get_ad_phrases(chat_id)
+
+    if index < 1 or index > len(rows):
+        return False
+
+    phrase_id = rows[index - 1][0]
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "DELETE FROM tizimx_ad_phrases WHERE chat_id = %s AND id = %s",
+                (chat_id, phrase_id)
+            )
+        conn.commit()
+
+    return True
