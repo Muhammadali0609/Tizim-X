@@ -108,6 +108,8 @@ TEXTS = {
         
         "btn_bad_words_warn_limit": "🤬 Число предупреждений за мат: {limit}",
         "btn_ads_warn_limit": "🚫 Число предупреждений за рекламу: {limit}",
+        "choose_warn_limit": "⚠️ Выберите число предупреждений:",
+        "warn_limit_saved": "✅ Число предупреждений сохранено.",
     },
     "uz": {
         "start": (
@@ -218,5 +220,7 @@ TEXTS = {
         
         "btn_bad_words_warn_limit": "🤬 So‘kinish ogohlantirish soni: {limit}",
         "btn_ads_warn_limit": "🚫 Reklama ogohlantirish soni: {limit}",
+        "choose_warn_limit": "⚠️ Ogohlantirishlar sonini tanlang:",
+        "warn_limit_saved": "✅ Ogohlantirishlar soni saqlandi.",
     }
 }
