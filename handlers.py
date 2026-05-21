@@ -249,3 +249,22 @@ async def check_subscription_callback(update: Update, context: ContextTypes.DEFA
     except Exception as e:
         print("CHECK SUB ERROR:", e)
         await query.answer("❌ Obunani tekshirib bo‘lmadi", show_alert=True)
+
+async def clean_service_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = update.message
+
+    if not message:
+        return
+
+    if message.chat.type not in ["group", "supergroup"]:
+        return
+
+    settings = get_group_settings(message.chat.id)
+
+    if not settings["clean_service_messages"]:
+        return
+
+    try:
+        await message.delete()
+    except Exception as e:
+        print("DELETE SERVICE MESSAGE ERROR:", e)
