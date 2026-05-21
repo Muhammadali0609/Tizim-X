@@ -636,6 +636,12 @@ def build_ads_panel(lang: str, chat_id: int, anti_links: bool):
         ],
         [
             InlineKeyboardButton(
+                TEXTS[lang]["btn_ad_exceptions"],
+                callback_data=f"ads_exceptions:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
                 TEXTS[lang]["back_button"],
                 callback_data=f"group_settings:{chat_id}"
             )
