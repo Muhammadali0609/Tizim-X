@@ -21,10 +21,11 @@ from db import(save_user_language,
     delete_bad_word,
     get_ad_phrases,
     add_ad_phrases,
-    get_ad_phrases_for_check
+    get_ad_phrases_for_check,
+    get_ad_links_for_check
 )
 from texts import TEXTS
-from filters import has_link, has_bad_word, has_ad_phrase
+from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link
 from admins import is_admin
 import asyncio
 import math
@@ -172,6 +173,16 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
             await message.delete()
         except Exception as e:
             print("DELETE LINK ERROR:", e)
+        return
+
+    custom_links = get_ad_links_for_check(message.chat.id)
+
+    if has_custom_ad_link(text, custom_links):
+        try:
+            await message.delete()
+        except Exception as e:
+            print("DELETE CUSTOM AD LINK ERROR:", e)
+    
         return
 
     ad_phrases = get_ad_phrases_for_check(message.chat.id)
