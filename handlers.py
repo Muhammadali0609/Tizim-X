@@ -331,3 +331,44 @@ async def clean_service_message(update: Update, context: ContextTypes.DEFAULT_TY
         await message.delete()
     except Exception as e:
         print("DELETE SERVICE MESSAGE ERROR:", e)
+
+async def group_settings_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    chat_id = int(query.data.split(":")[1])
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("GROUP SETTINGS ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    keyboard = [
+        [
+            InlineKeyboardButton(TEXTS[lang]["btn_bad_words"], callback_data=f"panel:bad_words:{chat_id}"),
+            InlineKeyboardButton(TEXTS[lang]["btn_ads"], callback_data=f"panel:ads:{chat_id}"),
+        ],
+        [
+            InlineKeyboardButton(TEXTS[lang]["btn_warnings"], callback_data=f"panel:warnings:{chat_id}"),
+            InlineKeyboardButton(TEXTS[lang]["btn_restrictions"], callback_data=f"panel:restrictions:{chat_id}"),
+        ],
+        [
+            InlineKeyboardButton(TEXTS[lang]["btn_settings"], callback_data=f"panel:settings:{chat_id}"),
+        ],
+        [
+            InlineKeyboardButton(TEXTS[lang]["btn_transfer_settings"], callback_data=f"panel:transfer:{chat_id}"),
+        ],
+    ]
+
+    await query.edit_message_text(
+        TEXTS[lang]["group_panel"].format(title=chat.title),
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
