@@ -368,9 +368,35 @@ async def group_settings_callback(update: Update, context: ContextTypes.DEFAULT_
         [
             InlineKeyboardButton(TEXTS[lang]["btn_transfer_settings"], callback_data=f"panel:transfer:{chat_id}"),
         ],
+        [
+            InlineKeyboardButton(TEXTS[lang]["back_button"], callback_data="back_groups")
+        ],
     ]
 
     await query.edit_message_text(
         TEXTS[lang]["group_panel"].format(title=chat.title),
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+async def back_groups_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+
+    lang = get_user_language(user_id)
+
+    groups = get_user_groups(user_id)
+
+    keyboard = []
+
+    for chat_id, title in groups:
+        keyboard.append([
+            InlineKeyboardButton(
+                title,
+                callback_data=f"group_settings:{chat_id}"
+            )
+        ])
+
+    await query.edit_message_text(
+        TEXTS[lang]["choose_group"],
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
