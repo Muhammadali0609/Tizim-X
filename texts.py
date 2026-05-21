@@ -38,6 +38,10 @@ TEXTS = {
         "btn_next": "Вперёд ➡️",
         "btn_search": "🔍 Поиск",
         "btn_back_panel": "⬅️ В меню",
+
+        "btn_add_bad_word": "➕ Добавить мат",
+        "add_bad_word_prompt": "✍️ Введите новый мат.\n\nМожно сразу несколько слов, например:\nмат1 мат2 мат3",
+        "bad_words_added": "✅ Мат добавлен в группу.",
     },
     "uz": {
         "start": (
@@ -78,5 +82,9 @@ TEXTS = {
         "btn_next": "Keyingi ➡️",
         "btn_search": "🔍 Qidirish",
         "btn_back_panel": "⬅️ Menyuga",
+
+        "btn_add_bad_word": "➕ So‘kinish qo‘shish",
+        "add_bad_word_prompt": "✍️ Yangi so‘kinishni kiriting.\n\nBir nechta so‘z yuborishingiz mumkin, masalan:\nso‘z1 so‘z2 so‘z3",
+        "bad_words_added": "✅ So‘kinish guruhga qo‘shildi.",
     }
 }
