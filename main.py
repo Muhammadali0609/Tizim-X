@@ -51,6 +51,8 @@ def main():
     app.add_handler(CommandHandler("uz", set_group_language))
     app.add_handler(CallbackQueryHandler(group_settings_callback, pattern="^group_settings:"))
     app.add_handler(CallbackQueryHandler(back_groups_callback, pattern="^back_groups$"))
+    app.add_handler(CallbackQueryHandler(bad_words_panel_callback, pattern="^bad_words_panel:"))
+    app.add_handler(CallbackQueryHandler(bad_words_panel_callback, pattern="^bad_words_page:"))
 
     app.run_webhook(
         listen="0.0.0.0",
