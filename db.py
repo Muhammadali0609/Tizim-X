@@ -555,3 +555,20 @@ def delete_ad_exception_by_index(chat_id: int, index: int) -> bool:
 def get_ad_exceptions_for_check(chat_id: int) -> list[str]:
     rows = get_ad_exceptions(chat_id)
     return [row[1].lower() for row in rows]
+
+def set_group_number_setting(chat_id: int, key: str, value: int):
+    allowed_keys = {
+        "bad_words_warn_limit",
+        "ads_warn_limit",
+    }
+
+    if key not in allowed_keys:
+        return
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                f"UPDATE tizimx_groups SET {key} = %s WHERE chat_id = %s",
+                (value, chat_id)
+            )
+        conn.commit()
