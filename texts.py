@@ -69,6 +69,16 @@ TEXTS = {
         "btn_add_ad_phrase": "➕ Добавить фразу",
         "add_ad_phrase_prompt": "✍️ Введите рекламную фразу.",
         "ad_phrase_added": "✅ Рекламная фраза добавлена.",
+
+        "btn_delete_ad_link": "🗑 Удалить ссылку",
+        "delete_ad_link_prompt": "🗑 Введите номер ссылки для удаления.",
+        "ad_link_deleted": "✅ Ссылка удалена.",
+        "ad_link_not_found": "❌ Такой ссылки нет.",
+        
+        "btn_delete_ad_phrase": "🗑 Удалить фразу",
+        "delete_ad_phrase_prompt": "🗑 Введите номер фразы для удаления.",
+        "ad_phrase_deleted": "✅ Фраза удалена.",
+        "ad_phrase_not_found": "❌ Такой фразы нет.",
     },
     "uz": {
         "start": (
@@ -140,5 +150,15 @@ TEXTS = {
         "btn_add_ad_phrase": "➕ Ibora qo‘shish",
         "add_ad_phrase_prompt": "✍️ Reklama iborasini kiriting.",
         "ad_phrase_added": "✅ Reklama iborasi qo‘shildi.",
+
+        "btn_delete_ad_link": "🗑 Havolani o‘chirish",
+        "delete_ad_link_prompt": "🗑 O‘chirish uchun havola raqamini kiriting.",
+        "ad_link_deleted": "✅ Havola o‘chirildi.",
+        "ad_link_not_found": "❌ Bunday havola yo‘q.",
+        
+        "btn_delete_ad_phrase": "🗑 Iborani o‘chirish",
+        "delete_ad_phrase_prompt": "🗑 O‘chirish uchun ibora raqamini kiriting.",
+        "ad_phrase_deleted": "✅ Ibora o‘chirildi.",
+        "ad_phrase_not_found": "❌ Bunday ibora yo‘q.",
     }
 }
