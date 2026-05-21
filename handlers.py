@@ -18,10 +18,13 @@ from db import(save_user_language,
     get_ad_links,
     add_ad_links,
     find_bad_word,
-    delete_bad_word
+    delete_bad_word,
+    get_ad_phrases,
+    add_ad_phrases,
+    get_ad_phrases_for_check
 )
 from texts import TEXTS
-from filters import has_link, has_bad_word
+from filters import has_link, has_bad_word, has_ad_phrase
 from admins import is_admin
 import asyncio
 import math
@@ -169,6 +172,16 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
             await message.delete()
         except Exception as e:
             print("DELETE LINK ERROR:", e)
+        return
+
+    ad_phrases = get_ad_phrases_for_check(message.chat.id)
+
+    if has_ad_phrase(text, ad_phrases):
+        try:
+            await message.delete()
+        except Exception as e:
+            print("DELETE AD PHRASE ERROR:", e)
+    
         return
     
     if settings["anti_bad_words"]:
@@ -673,6 +686,33 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
         await message.reply_text(TEXTS[lang]["bad_words_added"])
         return
 
+    if context.user_data.get("state") == "adding_ad_phrase":
+        chat_id = context.user_data.get("target_chat_id")
+    
+        try:
+            chat = await context.bot.get_chat(chat_id)
+    
+            if not await is_admin(chat, user_id):
+                await message.reply_text(TEXTS[lang]["access_denied"])
+                context.user_data.clear()
+                return
+    
+        except Exception as e:
+            print("ADD AD PHRASE TEXT ACCESS ERROR:", e)
+            await message.reply_text(TEXTS[lang]["access_denied"])
+            context.user_data.clear()
+            return
+    
+        phrase = " ".join(message.text.strip().lower().split())
+    
+        if phrase:
+            add_ad_phrases(chat_id, [phrase])
+    
+        context.user_data.clear()
+    
+        await message.reply_text(TEXTS[lang]["ad_phrase_added"])
+        return
+
 def build_ads_panel(lang: str, chat_id: int, anti_links: bool):
     status = (
         TEXTS[lang]["links_enabled"]
@@ -704,7 +744,7 @@ def build_ads_panel(lang: str, chat_id: int, anti_links: bool):
         [
             InlineKeyboardButton(
                 TEXTS[lang]["btn_ad_phrases"],
-                callback_data=f"ads_phrases:{chat_id}"
+                callback_data=f"ad_phrases_panel:{chat_id}:0"
             )
         ],
         [
@@ -993,3 +1033,153 @@ async def delete_bad_word_callback(update: Update, context: ContextTypes.DEFAULT
     await query.answer(TEXTS[lang]["bad_word_deleted"], show_alert=True)
 
     await query.edit_message_text(TEXTS[lang]["bad_word_deleted"])
+
+def build_ad_phrase_pages(rows):
+    pages = []
+    current_page = []
+    current_length = 0
+
+    for index, (_, phrase) in enumerate(rows, start=1):
+        line = f"{index}. {phrase}"
+        line_length = len(line) + 1
+
+        if current_page and current_length + line_length > 3000:
+            pages.append(current_page)
+            current_page = []
+            current_length = 0
+
+        current_page.append(line)
+        current_length += line_length
+
+    if current_page:
+        pages.append(current_page)
+
+    return pages
+
+def build_ad_phrases_keyboard(lang: str, chat_id: int, page: int, total_pages: int):
+    keyboard = []
+    nav_buttons = []
+
+    if page > 0:
+        nav_buttons.append(
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_prev"],
+                callback_data=f"ad_phrases_page:{chat_id}:{page - 1}"
+            )
+        )
+
+    if page < total_pages - 1:
+        nav_buttons.append(
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_next"],
+                callback_data=f"ad_phrases_page:{chat_id}:{page + 1}"
+            )
+        )
+
+    if nav_buttons:
+        keyboard.append(nav_buttons)
+
+    keyboard.append([
+        InlineKeyboardButton(
+            TEXTS[lang]["btn_add_ad_phrase"],
+            callback_data=f"ad_phrases_add:{chat_id}"
+        )
+    ])
+
+    keyboard.append([
+        InlineKeyboardButton(
+            TEXTS[lang]["back_button"],
+            callback_data=f"ads_panel:{chat_id}"
+        )
+    ])
+
+    return InlineKeyboardMarkup(keyboard)
+
+async def ad_phrases_panel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    data = query.data.split(":")
+    chat_id = int(data[1])
+    page = int(data[2]) if len(data) > 2 else 0
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("AD PHRASES ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    rows = get_ad_phrases(chat_id)
+
+    if not rows:
+        await query.edit_message_text(
+            TEXTS[lang]["ad_phrases_empty"],
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        TEXTS[lang]["btn_add_ad_phrase"],
+                        callback_data=f"ad_phrases_add:{chat_id}"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        TEXTS[lang]["back_button"],
+                        callback_data=f"ads_panel:{chat_id}"
+                    )
+                ]
+            ])
+        )
+        return
+
+    pages = build_ad_phrase_pages(rows)
+    total_pages = len(pages)
+
+    if page >= total_pages:
+        page = total_pages - 1
+
+    phrases_text = "\n".join(pages[page])
+
+    await query.edit_message_text(
+        TEXTS[lang]["ad_phrases_title"].format(
+            phrases=phrases_text,
+            page=page + 1,
+            total_pages=total_pages
+        ),
+        reply_markup=build_ad_phrases_keyboard(
+            lang=lang,
+            chat_id=chat_id,
+            page=page,
+            total_pages=total_pages
+        )
+    )
+
+async def add_ad_phrase_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    chat_id = int(query.data.split(":")[1])
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("ADD AD PHRASE ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    context.user_data["state"] = "adding_ad_phrase"
+    context.user_data["target_chat_id"] = chat_id
+
+    await query.message.reply_text(TEXTS[lang]["add_ad_phrase_prompt"])
