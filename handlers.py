@@ -188,6 +188,11 @@ async def new_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
         except Exception as e:
             print("FORCE SUBSCRIBE ERROR:", e)
 
+    try:
+        await message.delete()
+    except Exception as e:
+        print("DELETE JOIN MESSAGE ERROR:", e)
+
 async def check_subscription_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
 
