@@ -89,6 +89,25 @@ TEXTS = {
         "delete_ad_exception_prompt": "🗑 Введите номер исключения для удаления.",
         "ad_exception_deleted": "✅ Исключение удалено.",
         "ad_exception_not_found": "❌ Такого исключения нет.",
+
+        "warnings_panel": (
+            "⚠️ Предупреждения\n\n"
+            "Здесь вы можете управлять предупреждениями за нарушения.\n\n"
+            "Предупреждение за мат: {bad_words_status}\n"
+            "Предупреждение за рекламу: {ads_status}"
+        ),
+        
+        "warn_enabled": "🟢 ВКЛ",
+        "warn_disabled": "🔴 ОТКЛ",
+        
+        "btn_warn_bad_words_on": "🟢 Включить предупреждение за мат",
+        "btn_warn_bad_words_off": "🔴 Выключить предупреждение за мат",
+        
+        "btn_warn_ads_on": "🟢 Включить предупреждение за рекламу",
+        "btn_warn_ads_off": "🔴 Выключить предупреждение за рекламу",
+        
+        "btn_bad_words_warn_limit": "🤬 Число предупреждений за мат: {limit}",
+        "btn_ads_warn_limit": "🚫 Число предупреждений за рекламу: {limit}",
     },
     "uz": {
         "start": (
@@ -180,5 +199,24 @@ TEXTS = {
         "delete_ad_exception_prompt": "🗑 O‘chirish uchun istisno raqamini kiriting.",
         "ad_exception_deleted": "✅ Istisno o‘chirildi.",
         "ad_exception_not_found": "❌ Bunday istisno yo‘q.",
+
+        "warnings_panel": (
+            "⚠️ Ogohlantirishlar\n\n"
+            "Bu yerda qoidabuzarliklar uchun ogohlantirishlarni boshqarishingiz mumkin.\n\n"
+            "So‘kinish uchun ogohlantirish: {bad_words_status}\n"
+            "Reklama uchun ogohlantirish: {ads_status}"
+        ),
+        
+        "warn_enabled": "🟢 YOQILGAN",
+        "warn_disabled": "🔴 O‘CHIRILGAN",
+        
+        "btn_warn_bad_words_on": "🟢 So‘kinish uchun ogohlantirishni yoqish",
+        "btn_warn_bad_words_off": "🔴 So‘kinish uchun ogohlantirishni o‘chirish",
+        
+        "btn_warn_ads_on": "🟢 Reklama uchun ogohlantirishni yoqish",
+        "btn_warn_ads_off": "🔴 Reklama uchun ogohlantirishni o‘chirish",
+        
+        "btn_bad_words_warn_limit": "🤬 So‘kinish ogohlantirish soni: {limit}",
+        "btn_ads_warn_limit": "🚫 Reklama ogohlantirish soni: {limit}",
     }
 }
