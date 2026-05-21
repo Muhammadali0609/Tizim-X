@@ -12,7 +12,8 @@ from db import(save_user_language,
     get_user_groups,
     get_bad_words_page,
     get_bad_words_count,
-    add_bad_words
+    add_bad_words,
+    get_bad_words_for_check
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word
@@ -165,12 +166,16 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
             print("DELETE LINK ERROR:", e)
         return
     
-    if settings["anti_bad_words"] and has_bad_word(text):
-        try:
-            await message.delete()
-        except Exception as e:
-            print("DELETE BAD WORD ERROR:", e)
-        return
+    if settings["anti_bad_words"]:
+        bad_words = get_bad_words_for_check(message.chat.id)
+    
+        if has_bad_word(text, bad_words):
+            try:
+                await message.delete()
+            except Exception as e:
+                print("DELETE BAD WORD ERROR:", e)
+    
+            return
 
 async def set_group_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = update.message
