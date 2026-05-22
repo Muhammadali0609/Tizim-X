@@ -34,6 +34,7 @@ from handlers import (start_command,
     warnings_set_limit_callback,
     restrictions_panel_callback,
     restrictions_toggle_callback,
+    restrictions_duration_callback,
 )
 from db import setup_database
 
@@ -99,6 +100,7 @@ def main():
     app.add_handler(CallbackQueryHandler(warnings_set_limit_callback, pattern="^warnings_set_limit:"))
     app.add_handler(CallbackQueryHandler(restrictions_panel_callback, pattern="^restrictions_panel:"))
     app.add_handler(CallbackQueryHandler(restrictions_toggle_callback, pattern="^restrictions_toggle:"))
+    app.add_handler(CallbackQueryHandler(restrictions_duration_callback, pattern="^restrictions_duration:"))
     
     app.run_webhook(
         listen="0.0.0.0",
