@@ -193,6 +193,16 @@ def get_group_settings(chat_id: int) -> dict:
             "anti_bad_words": False,
             "silent_mode": True,
             "clean_service_messages": True,
+            "force_subscribe": False,
+            "warn_bad_words": False,
+            "warn_ads": False,
+            "bad_words_warn_limit": 3,
+            "ads_warn_limit": 3,
+            "punish_bad_words": True,
+            "punish_ads": True,
+            "bad_words_punish_seconds": 86400,
+            "ads_punish_seconds": 86400,
+            "anti_usernames": False,
         }
 
     return {
