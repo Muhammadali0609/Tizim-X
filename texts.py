@@ -118,6 +118,10 @@ TEXTS = {
         ),
         "reason_bad_word": "мат",
         "reason_ads": "реклама",
+        "limit_reached": (
+            "🔒 {name} временно ограничен на 1 день.\n\n"
+            "Причина: превышен лимит предупреждений."
+        ),
     },
     "uz": {
         "start": (
@@ -238,5 +242,9 @@ TEXTS = {
         ),
         "reason_bad_word": "so‘kinish",
         "reason_ads": "reklama",
+        "limit_reached": (
+            "🔒 {name} 1 kunga vaqtincha cheklandi.\n\n"
+            "Sabab: ogohlantirishlar limiti oshib ketdi."
+        ),
     }
 }
