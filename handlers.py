@@ -2795,3 +2795,21 @@ async def transfer_all_callback(update: Update, context: ContextTypes.DEFAULT_TY
         text,
         reply_markup=keyboard
     )
+
+async def transfer_selected_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    chat_id = int(query.data.split(":")[1])
+
+    state = get_transfer_state(context, chat_id)
+
+    if not any(state.values()):
+        await query.answer(
+            TEXTS[lang]["transfer_nothing_selected"],
+            show_alert=True
+        )
+        return
+
+    await query.answer()
