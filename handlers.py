@@ -1818,6 +1818,7 @@ async def handle_warning(
     reason_key: str,
     limit: int,
     punish_enabled: bool,
+    show_warning: bool,
 ):
     user = message.from_user
 
