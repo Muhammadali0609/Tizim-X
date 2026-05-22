@@ -331,14 +331,20 @@ async def new_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
             keyboard = []
 
             for _, target_chat, _ in required_subs:
-                username = target_chat.replace("@", "")
+                try:
+                    target = await context.bot.get_chat(target_chat)
             
-                keyboard.append([
-                    InlineKeyboardButton(
-                        f"📢 {target_chat}",
-                        url=f"https://t.me/{username}"
-                    )
-                ])
+                    username = target_chat.replace("@", "")
+            
+                    keyboard.append([
+                        InlineKeyboardButton(
+                            f"📢 {target.title}",
+                            url=f"https://t.me/{username}"
+                        )
+                    ])
+            
+                except Exception as e:
+                    print("GET REQUIRED SUB TITLE ERROR:", e)
             
             keyboard.append([
                 InlineKeyboardButton(
