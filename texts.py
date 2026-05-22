@@ -156,6 +156,7 @@ TEXTS = {
             "1mo = 1 месяц"
         ),
         "duration_saved": "✅ Срок ограничения сохранён.",
+        "btn_open_section": "↩️ Открыть раздел",
     },
     "uz": {
         "start": (
@@ -314,5 +315,6 @@ TEXTS = {
             "1mo = 1 oy"
         ),
         "duration_saved": "✅ Cheklov muddati saqlandi.",
+        "btn_open_section": "↩️ Bo‘limni ochish",
     }
 }
