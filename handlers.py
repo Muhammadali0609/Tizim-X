@@ -1824,6 +1824,14 @@ async def handle_warning(
 
     count = add_warning(message.chat.id, user.id, reason)
 
+    if count >= limit:
+        reset_warnings(message.chat.id, user.id, reason)
+
+        if punish_enabled:
+            await punish_user_for_warnings(message, lang, reason_key)
+
+        return
+
     if show_warning:
         await send_warning_message(
             message=message,
@@ -1833,13 +1841,7 @@ async def handle_warning(
             limit=limit
         )
 
-    if count >= limit:
-        reset_warnings(message.chat.id, user.id, reason)
-
-        if punish_enabled:
-            await punish_user_for_warnings(message, lang)
-
-async def punish_user_for_warnings(message, lang: str):
+async def punish_user_for_warnings(message, lang: str, reason_key: str):
     user = message.from_user
 
     until_date = datetime.now(timezone.utc) + timedelta(days=1)
@@ -1854,6 +1856,7 @@ async def punish_user_for_warnings(message, lang: str):
 
     await message.chat.send_message(
         TEXTS[lang]["limit_reached"].format(
-            name=user.first_name
+            name=user.first_name,
+            reason=TEXTS[lang][reason_key]
         )
     )
