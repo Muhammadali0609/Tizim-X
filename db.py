@@ -643,3 +643,20 @@ def remove_group_admin(chat_id: int, user_id: int):
                 WHERE chat_id = %s AND user_id = %s
             """, (chat_id, user_id))
         conn.commit()
+
+def set_punish_duration(chat_id: int, key: str, seconds: int):
+    allowed_keys = {
+        "bad_words_punish_seconds",
+        "ads_punish_seconds",
+    }
+
+    if key not in allowed_keys:
+        return
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                f"UPDATE tizimx_groups SET {key} = %s WHERE chat_id = %s",
+                (seconds, chat_id)
+            )
+        conn.commit()
