@@ -1864,3 +1864,155 @@ async def punish_user_for_warnings(message, lang: str, reason_key: str):
             reason=TEXTS[lang][reason_key]
         )
     )
+
+def format_duration(seconds: int, lang: str) -> str:
+    if seconds < 60:
+        return f"{seconds} сек" if lang == "ru" else f"{seconds} soniya"
+
+    minutes = seconds // 60
+
+    if minutes < 60:
+        return f"{minutes} мин" if lang == "ru" else f"{minutes} daqiqa"
+
+    hours = minutes // 60
+
+    if hours < 24:
+        return f"{hours} ч" if lang == "ru" else f"{hours} soat"
+
+    days = hours // 24
+
+    if days < 7:
+        return f"{days} дн" if lang == "ru" else f"{days} kun"
+
+    weeks = days // 7
+
+    if weeks < 4:
+        return f"{weeks} нед" if lang == "ru" else f"{weeks} hafta"
+
+    months = days // 30
+    return f"{months} мес" if lang == "ru" else f"{months} oy"
+
+def build_restrictions_panel(lang: str, chat_id: int, settings: dict):
+    bad_words_status = (
+        TEXTS[lang]["warn_enabled"]
+        if settings["punish_bad_words"]
+        else TEXTS[lang]["warn_disabled"]
+    )
+
+    ads_status = (
+        TEXTS[lang]["warn_enabled"]
+        if settings["punish_ads"]
+        else TEXTS[lang]["warn_disabled"]
+    )
+
+    text = TEXTS[lang]["restrictions_panel"].format(
+        bad_words_status=bad_words_status,
+        ads_status=ads_status,
+        bad_words_duration=format_duration(settings["bad_words_punish_seconds"], lang),
+        ads_duration=format_duration(settings["ads_punish_seconds"], lang),
+    )
+
+    bad_words_btn = (
+        TEXTS[lang]["btn_punish_bad_words_off"]
+        if settings["punish_bad_words"]
+        else TEXTS[lang]["btn_punish_bad_words_on"]
+    )
+
+    ads_btn = (
+        TEXTS[lang]["btn_punish_ads_off"]
+        if settings["punish_ads"]
+        else TEXTS[lang]["btn_punish_ads_on"]
+    )
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                bad_words_btn,
+                callback_data=f"restrictions_toggle:punish_bad_words:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                ads_btn,
+                callback_data=f"restrictions_toggle:punish_ads:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_bad_words_punish_duration"],
+                callback_data=f"restrictions_duration:bad_words:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_ads_punish_duration"],
+                callback_data=f"restrictions_duration:ads:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["back_button"],
+                callback_data=f"group_settings:{chat_id}"
+            )
+        ],
+    ]
+
+    return text, InlineKeyboardMarkup(keyboard)
+
+async def restrictions_panel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    chat_id = int(query.data.split(":")[1])
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("RESTRICTIONS PANEL ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    settings = get_group_settings(chat_id)
+    text, keyboard = build_restrictions_panel(lang, chat_id, settings)
+
+    await query.edit_message_text(text, reply_markup=keyboard)
+
+
+async def restrictions_toggle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    _, key, chat_id = query.data.split(":")
+    chat_id = int(chat_id)
+
+    if key not in ["punish_bad_words", "punish_ads"]:
+        return
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("RESTRICTIONS TOGGLE ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    settings = get_group_settings(chat_id)
+    new_value = not settings[key]
+
+    set_group_setting(chat_id, key, new_value)
+
+    settings = get_group_settings(chat_id)
+    text, keyboard = build_restrictions_panel(lang, chat_id, settings)
+
+    await query.edit_message_text(text, reply_markup=keyboard)
