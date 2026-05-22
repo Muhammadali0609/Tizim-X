@@ -1943,7 +1943,10 @@ async def handle_warning(
 async def punish_user_for_warnings(message, lang: str, reason_key: str, seconds: int):
     user = message.from_user
 
-    until_date = datetime.now(timezone.utc) + timedelta(seconds=seconds)
+    if seconds == -1:
+        until_date = None
+    else:
+        until_date = datetime.now(timezone.utc) + timedelta(seconds=seconds)
 
     await message.chat.restrict_member(
         user_id=user.id,
@@ -1962,6 +1965,9 @@ async def punish_user_for_warnings(message, lang: str, reason_key: str, seconds:
     )
 
 def format_duration(seconds: int, lang: str) -> str:
+    if seconds == -1:
+        return "Навсегда" if lang == "ru" else "Doimiy"
+    
     units = [
         (2592000, "месяц", "месяца", "месяцев", "oy"),
         (604800, "неделя", "недели", "недель", "hafta"),
@@ -2119,6 +2125,11 @@ async def restrictions_toggle_callback(update: Update, context: ContextTypes.DEF
     await query.edit_message_text(text, reply_markup=keyboard)
 
 def parse_duration(text: str):
+    text = text.lower().strip()
+
+    if text in ["forever", "навсегда"]:
+        return -1
+        
     units = {
         "s": 1,
         "m": 60,
@@ -2128,6 +2139,7 @@ def parse_duration(text: str):
         "mo": 2592000,
     }
 
+    max_seconds = 365 * 24 * 60 * 60
     parts = text.lower().split()
 
     if not parts:
@@ -2153,6 +2165,9 @@ def parse_duration(text: str):
 
         used_units.add(unit)
         total_seconds += value * units[unit]
+
+        if total_seconds > max_seconds:
+            return None
 
     return total_seconds
 
