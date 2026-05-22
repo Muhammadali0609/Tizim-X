@@ -367,6 +367,8 @@ def set_group_setting(chat_id: int, key: str, value: bool):
         "clean_service_messages",
         "warn_bad_words",
         "warn_ads",
+        "punish_bad_words",
+        "punish_ads",
     }
 
     if key not in allowed_keys:
