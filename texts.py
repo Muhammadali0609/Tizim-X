@@ -220,6 +220,7 @@ TEXTS = {
         "btn_transfer_delete_settings": "Настройки удаления: {status}",
         "btn_transfer_all": "🌟 Все настройки",
         "btn_transfer_selected": "🚀 Перенести выбранные",
+        "transfer_nothing_selected": "❌ Для переноса выберите хотя бы один пункт.",
     },
     "uz": {
         "start": (
@@ -442,5 +443,6 @@ TEXTS = {
         "btn_transfer_delete_settings": "O‘chirish sozlamalari: {status}",
         "btn_transfer_all": "🌟 Barcha sozlamalar",
         "btn_transfer_selected": "🚀 Tanlanganlarni ko‘chirish",
+        "transfer_nothing_selected": "❌ Ko‘chirish uchun kamida bitta bandni tanlang.",
     }
 }
