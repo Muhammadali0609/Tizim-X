@@ -37,7 +37,7 @@ from db import(save_user_language,
     set_punish_duration,
     get_required_subs,
     add_required_sub,
-    delete_required_sub_by_index
+    delete_required_sub_by_index,
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username
@@ -310,9 +310,10 @@ async def new_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
     if message.chat.type not in ["group", "supergroup"]:
         return
 
-    required_channel, force_subscribe = get_required_channel(message.chat.id)
-
-    if not force_subscribe or not required_channel:
+    settings = get_group_settings(message.chat.id)
+    required_subs = get_required_subs(message.chat.id)
+    
+    if not settings["force_subscribe"] or not required_subs:
         return
 
     for user in message.new_chat_members:
@@ -327,20 +328,24 @@ async def new_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
                 )
             )
 
-            keyboard = [
-                [
+            keyboard = []
+
+            for _, target_chat, _ in required_subs:
+                username = target_chat.replace("@", "")
+            
+                keyboard.append([
                     InlineKeyboardButton(
-                        "📢 Подписаться",
-                        url=f"https://t.me/{required_channel.replace('@', '')}"
+                        f"📢 {target_chat}",
+                        url=f"https://t.me/{username}"
                     )
-                ],
-                [
-                    InlineKeyboardButton(
-                        "✅ Проверить",
-                        callback_data=f"check_sub:{message.chat.id}:{user.id}"
-                    )
-                ]
-            ]
+                ])
+            
+            keyboard.append([
+                InlineKeyboardButton(
+                    "✅ Проверить",
+                    callback_data=f"check_sub:{message.chat.id}:{user.id}"
+                )
+            ])
 
             await message.chat.send_message(
                 f"{user.first_name}, чтобы писать в группе, подпишитесь на канал.",
@@ -366,56 +371,69 @@ async def check_subscription_callback(update: Update, context: ContextTypes.DEFA
         await query.answer("Bu tugma siz uchun emas", show_alert=True)
         return
 
-    required_channel, force_subscribe = get_required_channel(chat_id)
+    settings = get_group_settings(chat_id)
+    required_subs = get_required_subs(chat_id)
 
-    if not force_subscribe or not required_channel:
+    if not settings["force_subscribe"] or not required_subs:
         await query.answer("Sozlama topilmadi", show_alert=True)
         return
 
-    channel_username = required_channel.replace("@", "")
+    not_subscribed = []
 
-    try:
-        member = await context.bot.get_chat_member(
-            chat_id=f"@{channel_username}",
-            user_id=target_user_id
-        )
-
-        if member.status in [
-            ChatMemberStatus.MEMBER,
-            ChatMemberStatus.ADMINISTRATOR,
-            ChatMemberStatus.OWNER,
-        ]:
-            await context.bot.restrict_chat_member(
-                chat_id=chat_id,
-                user_id=target_user_id,
-                permissions=ChatPermissions(
-                    can_send_messages=True,
-                    can_send_audios=True,
-                    can_send_documents=True,
-                    can_send_photos=True,
-                    can_send_videos=True,
-                    can_send_video_notes=True,
-                    can_send_voice_notes=True,
-                    can_send_polls=True,
-                    can_send_other_messages=True,
-                    can_add_web_page_previews=True,
-                    can_invite_users=True,
-                )
+    for _, target_chat, _ in required_subs:
+        try:
+            member = await context.bot.get_chat_member(
+                chat_id=target_chat,
+                user_id=target_user_id
             )
 
-            await query.answer("✅ Obuna tasdiqlandi", show_alert=True)
+            if member.status not in [
+                ChatMemberStatus.MEMBER,
+                ChatMemberStatus.ADMINISTRATOR,
+                ChatMemberStatus.OWNER,
+            ]:
+                not_subscribed.append(target_chat)
 
-            try:
-                await query.message.delete()
-            except Exception as e:
-                print("DELETE SUB MESSAGE ERROR:", e)
+        except Exception as e:
+            print("CHECK REQUIRED SUB ERROR:", e)
+            not_subscribed.append(target_chat)
 
-        else:
-            await query.answer("❌ Avval kanalga obuna bo‘ling", show_alert=True)
+    if not_subscribed:
+        await query.answer(
+            "❌ Siz barcha kanallarga obuna bo‘lmadingiz",
+            show_alert=True
+        )
+        return
+
+    try:
+        await context.bot.restrict_chat_member(
+            chat_id=chat_id,
+            user_id=target_user_id,
+            permissions=ChatPermissions(
+                can_send_messages=True,
+                can_send_audios=True,
+                can_send_documents=True,
+                can_send_photos=True,
+                can_send_videos=True,
+                can_send_video_notes=True,
+                can_send_voice_notes=True,
+                can_send_polls=True,
+                can_send_other_messages=True,
+                can_add_web_page_previews=True,
+                can_invite_users=True,
+            )
+        )
+
+        await query.answer("✅ Obuna tasdiqlandi", show_alert=True)
+
+        try:
+            await query.message.delete()
+        except Exception as e:
+            print("DELETE SUB MESSAGE ERROR:", e)
 
     except Exception as e:
-        print("CHECK SUB ERROR:", e)
-        await query.answer("❌ Obunani tekshirib bo‘lmadi", show_alert=True)
+        print("RESTRICT MEMBER ERROR:", e)
+        await query.answer("❌ Xatolik yuz berdi", show_alert=True)
 
 async def clean_service_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = update.message
