@@ -38,7 +38,8 @@ from db import(save_user_language,
     get_required_subs,
     add_required_sub,
     delete_required_sub_by_index,
-    delete_required_sub_by_id
+    delete_required_sub_by_id,
+    copy_settings
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username
@@ -2958,4 +2959,47 @@ async def transfer_target_callback(update: Update, context: ContextTypes.DEFAULT
             items=items_text
         ),
         reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+async def transfer_confirm_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    _, source_chat_id, target_chat_id = query.data.split(":")
+    source_chat_id = int(source_chat_id)
+    target_chat_id = int(target_chat_id)
+
+    try:
+        source_chat = await context.bot.get_chat(source_chat_id)
+        target_chat = await context.bot.get_chat(target_chat_id)
+
+        if not await is_admin(source_chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+        if not await is_admin(target_chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("TRANSFER CONFIRM ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    state = get_transfer_state(context, source_chat_id)
+
+    if not any(state.values()):
+        await query.answer(
+            TEXTS[lang]["transfer_nothing_selected"],
+            show_alert=True
+        )
+        return
+
+    copy_settings(source_chat_id, target_chat_id, state)
+
+    context.user_data.pop(f"transfer:{source_chat_id}", None)
+
+    await query.edit_message_text(
+        TEXTS[lang]["transfer_done"]
     )
