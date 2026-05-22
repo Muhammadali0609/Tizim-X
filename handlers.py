@@ -701,7 +701,12 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
     
         context.user_data.clear()
     
-        await message.reply_text(TEXTS[lang]["duration_saved"])
+        await reply_success_with_back(
+            message,
+            lang,
+            "duration_saved",
+            f"restrictions_panel:{chat_id}"
+        )
         return
     
     if context.user_data.get("state") == "adding_ad_exception":
@@ -714,7 +719,12 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
     
         context.user_data.clear()
     
-        await message.reply_text(TEXTS[lang]["ad_exception_added"])
+        await reply_success_with_back(
+            message,
+            lang,
+            "ad_exception_added",
+            f"ad_exceptions_panel:{chat_id}:0"
+        )
         return
     
     
@@ -734,7 +744,12 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
             return
         
         context.user_data.clear()
-        await message.reply_text(TEXTS[lang]["ad_exception_deleted"])
+        await reply_success_with_back(
+            message,
+            lang,
+            "ad_exception_deleted",
+            f"ad_exceptions_panel:{chat_id}:0"
+        )
         return
     
     if context.user_data.get("state") == "deleting_ad_link":
@@ -753,7 +768,12 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
             return
         
         context.user_data.clear()
-        await message.reply_text(TEXTS[lang]["ad_link_deleted"])
+        await reply_success_with_back(
+            message,
+            lang,
+            "ad_link_deleted",
+            f"ad_links_panel:{chat_id}:0"
+        )
         return
     
     if context.user_data.get("state") == "deleting_ad_phrase":
@@ -772,7 +792,12 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
             return
         
         context.user_data.clear()
-        await message.reply_text(TEXTS[lang]["ad_phrase_deleted"])
+        await reply_success_with_back(
+            message,
+            lang,
+            "ad_phrase_deleted",
+            f"ad_phrases_panel:{chat_id}:0"
+        )
         return
     
     if context.user_data.get("state") == "adding_ad_links":
@@ -799,7 +824,12 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
 
         context.user_data.clear()
 
-        await message.reply_text(TEXTS[lang]["ad_links_added"])
+        await reply_success_with_back(
+            message,
+            lang,
+            "ad_links_added",
+            f"ad_links_panel:{chat_id}:0"
+        )
         return
 
     if context.user_data.get("state") == "searching_bad_word":
@@ -873,7 +903,12 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
 
         context.user_data.clear()
 
-        await message.reply_text(TEXTS[lang]["bad_words_added"])
+        await reply_success_with_back(
+            message,
+            lang,
+            "bad_words_added",
+            f"bad_words_panel:{chat_id}:0"
+        )
         return
 
     if context.user_data.get("state") == "adding_ad_phrase":
@@ -900,7 +935,12 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
     
         context.user_data.clear()
     
-        await message.reply_text(TEXTS[lang]["ad_phrase_added"])
+        await reply_success_with_back(
+            message,
+            lang,
+            "ad_phrase_added",
+            f"ad_phrases_panel:{chat_id}:0"
+        )
         return
 
 def build_ads_panel(lang: str, chat_id: int, anti_links: bool):
@@ -1227,7 +1267,17 @@ async def delete_bad_word_callback(update: Update, context: ContextTypes.DEFAULT
 
     await query.answer(TEXTS[lang]["bad_word_deleted"], show_alert=True)
 
-    await query.edit_message_text(TEXTS[lang]["bad_word_deleted"])
+    await query.edit_message_text(
+        TEXTS[lang]["bad_word_deleted"],
+        reply_markup=InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["btn_open_section"],
+                    callback_data=f"bad_words_panel:{chat_id}:0"
+                )
+            ]
+        ])
+    )
 
 def build_ad_phrase_pages(rows):
     pages = []
@@ -2129,3 +2179,16 @@ async def restrictions_duration_callback(update: Update, context: ContextTypes.D
     context.user_data["duration_type"] = duration_type
 
     await query.message.reply_text(TEXTS[lang]["enter_duration_prompt"])
+
+async def reply_success_with_back(message, lang: str, text_key: str, callback_data: str):
+    await message.reply_text(
+        TEXTS[lang][text_key],
+        reply_markup=InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["btn_open_section"],
+                    callback_data=callback_data
+                )
+            ]
+        ])
+    )
