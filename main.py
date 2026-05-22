@@ -39,6 +39,8 @@ from handlers import (start_command,
     settings_toggle_callback,
     required_subs_panel_callback,
     required_subs_toggle_callback,
+    add_required_sub_callback,
+    delete_required_sub_start_callback,
 )
 from db import setup_database
 
@@ -109,6 +111,8 @@ def main():
     app.add_handler(CallbackQueryHandler(settings_toggle_callback, pattern="^settings_toggle:"))
     app.add_handler(CallbackQueryHandler(required_subs_panel_callback, pattern="^required_subs_panel:"))
     app.add_handler(CallbackQueryHandler(required_subs_toggle_callback, pattern="^required_subs_toggle:"))
+    app.add_handler(CallbackQueryHandler(add_required_sub_callback, pattern="^required_subs_add:"))
+    app.add_handler(CallbackQueryHandler(delete_required_sub_start_callback, pattern="^required_subs_delete:"))
     
     app.run_webhook(
         listen="0.0.0.0",
