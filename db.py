@@ -108,6 +108,16 @@ def setup_database():
                     UNIQUE(chat_id, exception)
                 )
             """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS tizimx_warnings (
+                    chat_id BIGINT NOT NULL,
+                    user_id BIGINT NOT NULL,
+                    reason TEXT NOT NULL,
+                    count INTEGER NOT NULL DEFAULT 0,
+                    updated_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                    PRIMARY KEY (chat_id, user_id, reason)
+                )
+            """)
         conn.commit()
 
 def get_user_language(user_id: int) -> str:
@@ -572,3 +582,22 @@ def set_group_number_setting(chat_id: int, key: str, value: int):
                 (value, chat_id)
             )
         conn.commit()
+
+def add_warning(chat_id: int, user_id: int, reason: str) -> int:
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO tizimx_warnings (chat_id, user_id, reason, count)
+                VALUES (%s, %s, %s, 1)
+                ON CONFLICT (chat_id, user_id, reason)
+                DO UPDATE SET
+                    count = tizimx_warnings.count + 1,
+                    updated_at = NOW()
+                RETURNING count
+            """, (chat_id, user_id, reason))
+
+            row = cur.fetchone()
+
+        conn.commit()
+
+    return row[0]
