@@ -135,6 +135,26 @@ TEXTS = {
         "btn_punish_ads_off": "🔴 Выключить ограничение за рекламу",
         "btn_bad_words_punish_duration": "⏳ Срок за мат",
         "btn_ads_punish_duration": "⏳ Срок за рекламу",
+
+        "enter_duration_prompt": (
+            "⏳ Введите срок ограничения.\n\n"
+            "Примеры:\n"
+            "30m = 30 минут\n"
+            "12h = 12 часов\n"
+            "7d = 7 дней\n"
+            "2d 5h = 2 дня 5 часов\n"
+            "1mo = 1 месяц"
+        ),
+        "invalid_duration_format": (
+            "❌ Такой формат не поддерживается.\n\n"
+            "Примеры:\n"
+            "30m = 30 минут\n"
+            "12h = 12 часов\n"
+            "7d = 7 дней\n"
+            "2d 5h = 2 дня 5 часов\n"
+            "1mo = 1 месяц"
+        ),
+        "duration_saved": "✅ Срок ограничения сохранён.",
     },
     "uz": {
         "start": (
@@ -272,5 +292,25 @@ TEXTS = {
         "btn_punish_ads_off": "🔴 Reklama uchun cheklovni o‘chirish",
         "btn_bad_words_punish_duration": "⏳ So‘kinish uchun muddat",
         "btn_ads_punish_duration": "⏳ Reklama uchun muddat",
+
+        "enter_duration_prompt": (
+            "⏳ Cheklov muddatini kiriting.\n\n"
+            "Misollar:\n"
+            "30m = 30 daqiqa\n"
+            "12h = 12 soat\n"
+            "7d = 7 kun\n"
+            "2d 5h = 2 kun 5 soat\n"
+            "1mo = 1 oy"
+        ),
+        "invalid_duration_format": (
+            "❌ Bunday format qo‘llab-quvvatlanmaydi.\n\n"
+            "Misollar:\n"
+            "30m = 30 daqiqa\n"
+            "12h = 12 soat\n"
+            "7d = 7 kun\n"
+            "2d 5h = 2 kun 5 soat\n"
+            "1mo = 1 oy"
+        ),
+        "duration_saved": "✅ Cheklov muddati saqlandi.",
     }
 }
