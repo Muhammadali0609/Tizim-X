@@ -1,6 +1,7 @@
 from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ChatPermissions, ReplyKeyboardMarkup
 from telegram.constants import ChatMemberStatus
 from telegram.ext import ContextTypes
+from datetime import datetime, timedelta, timezone
 from db import(save_user_language,
     get_user_language,
     save_group,
@@ -30,7 +31,8 @@ from db import(save_user_language,
     delete_ad_exception_by_index,
     get_ad_exceptions_for_check,
     set_group_number_setting,
-    add_warning
+    add_warning,
+    reset_warnings
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception
@@ -186,14 +188,13 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
             await message.delete()
     
             if settings["warn_ads"]:
-                count = add_warning(message.chat.id, user.id, "ads")
-    
-                await send_warning_message(
+                await handle_warning(
                     message=message,
                     lang=lang,
+                    reason="ads",
                     reason_key="reason_ads",
-                    count=count,
-                    limit=settings["ads_warn_limit"]
+                    limit=settings["ads_warn_limit"],
+                    punish_enabled=settings["punish_ads"],
                 )
     
         except Exception as e:
@@ -208,14 +209,13 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
             await message.delete()
     
             if settings["warn_ads"]:
-                count = add_warning(message.chat.id, user.id, "ads")
-    
-                await send_warning_message(
+                await handle_warning(
                     message=message,
                     lang=lang,
+                    reason="ads",
                     reason_key="reason_ads",
-                    count=count,
-                    limit=settings["ads_warn_limit"]
+                    limit=settings["ads_warn_limit"],
+                    punish_enabled=settings["punish_ads"],
                 )
     
         except Exception as e:
@@ -230,14 +230,13 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
             await message.delete()
     
             if settings["warn_ads"]:
-                count = add_warning(message.chat.id, user.id, "ads")
-    
-                await send_warning_message(
+                await handle_warning(
                     message=message,
                     lang=lang,
+                    reason="ads",
                     reason_key="reason_ads",
-                    count=count,
-                    limit=settings["ads_warn_limit"]
+                    limit=settings["ads_warn_limit"],
+                    punish_enabled=settings["punish_ads"],
                 )
     
         except Exception as e:
@@ -253,14 +252,13 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
                 await message.delete()
     
                 if settings["warn_bad_words"]:
-                    count = add_warning(message.chat.id, user.id, "bad_words")
-    
-                    await send_warning_message(
+                    await handle_warning(
                         message=message,
                         lang=lang,
+                        reason="bad_words",
                         reason_key="reason_bad_word",
-                        count=count,
-                        limit=settings["bad_words_warn_limit"]
+                        limit=settings["bad_words_warn_limit"],
+                        punish_enabled=settings["punish_bad_words"],
                     )
     
             except Exception as e:
@@ -1801,14 +1799,47 @@ async def warnings_set_limit_callback(update: Update, context: ContextTypes.DEFA
         reply_markup=keyboard
     )
 
-async def send_warning_message(message, lang: str, reason_key: str, count: int, limit: int):
+async def handle_warning(
+    message,
+    lang: str,
+    reason: str,
+    reason_key: str,
+    limit: int,
+    punish_enabled: bool,
+):
     user = message.from_user
 
+    count = add_warning(message.chat.id, user.id, reason)
+
+    await send_warning_message(
+        message=message,
+        lang=lang,
+        reason_key=reason_key,
+        count=count,
+        limit=limit
+    )
+
+    if count >= limit:
+        reset_warnings(message.chat.id, user.id, reason)
+
+        if punish_enabled:
+            await punish_user_for_warnings(message, lang)
+
+async def punish_user_for_warnings(message, lang: str):
+    user = message.from_user
+
+    until_date = datetime.now(timezone.utc) + timedelta(days=1)
+
+    await message.chat.restrict_member(
+        user_id=user.id,
+        permissions=ChatPermissions(
+            can_send_messages=False
+        ),
+        until_date=until_date
+    )
+
     await message.chat.send_message(
-        TEXTS[lang]["warning_message"].format(
-            name=user.first_name,
-            reason=TEXTS[lang][reason_key],
-            count=count,
-            limit=limit
+        TEXTS[lang]["limit_reached"].format(
+            name=user.first_name
         )
     )
