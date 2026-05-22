@@ -737,3 +737,78 @@ def delete_required_sub_by_id(sub_id: int):
                 (sub_id,)
             )
         conn.commit()
+
+def copy_settings(source_chat_id: int, target_chat_id: int, state: dict):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+
+            if state["delete_settings"]:
+                cur.execute("""
+                    UPDATE tizimx_groups target
+                    SET anti_bad_words = source.anti_bad_words,
+                        anti_links = source.anti_links,
+                        anti_usernames = source.anti_usernames
+                    FROM tizimx_groups source
+                    WHERE source.chat_id = %s
+                      AND target.chat_id = %s
+                """, (source_chat_id, target_chat_id))
+
+            if state["warnings"]:
+                cur.execute("""
+                    UPDATE tizimx_groups target
+                    SET warn_bad_words = source.warn_bad_words,
+                        warn_ads = source.warn_ads,
+                        bad_words_warn_limit = source.bad_words_warn_limit,
+                        ads_warn_limit = source.ads_warn_limit
+                    FROM tizimx_groups source
+                    WHERE source.chat_id = %s
+                      AND target.chat_id = %s
+                """, (source_chat_id, target_chat_id))
+
+            if state["restrictions"]:
+                cur.execute("""
+                    UPDATE tizimx_groups target
+                    SET punish_bad_words = source.punish_bad_words,
+                        punish_ads = source.punish_ads,
+                        bad_words_punish_seconds = source.bad_words_punish_seconds,
+                        ads_punish_seconds = source.ads_punish_seconds
+                    FROM tizimx_groups source
+                    WHERE source.chat_id = %s
+                      AND target.chat_id = %s
+                """, (source_chat_id, target_chat_id))
+
+            if state["bad_words"]:
+                cur.execute("""
+                    INSERT INTO tizimx_bad_words (chat_id, word)
+                    SELECT %s, word
+                    FROM tizimx_bad_words
+                    WHERE chat_id = %s
+                    ON CONFLICT (chat_id, word) DO NOTHING
+                """, (target_chat_id, source_chat_id))
+
+            if state["ads"]:
+                cur.execute("""
+                    INSERT INTO tizimx_ad_links (chat_id, link)
+                    SELECT %s, link
+                    FROM tizimx_ad_links
+                    WHERE chat_id = %s
+                    ON CONFLICT (chat_id, link) DO NOTHING
+                """, (target_chat_id, source_chat_id))
+
+                cur.execute("""
+                    INSERT INTO tizimx_ad_phrases (chat_id, phrase)
+                    SELECT %s, phrase
+                    FROM tizimx_ad_phrases
+                    WHERE chat_id = %s
+                    ON CONFLICT (chat_id, phrase) DO NOTHING
+                """, (target_chat_id, source_chat_id))
+
+                cur.execute("""
+                    INSERT INTO tizimx_ad_exceptions (chat_id, exception)
+                    SELECT %s, exception
+                    FROM tizimx_ad_exceptions
+                    WHERE chat_id = %s
+                    ON CONFLICT (chat_id, exception) DO NOTHING
+                """, (target_chat_id, source_chat_id))
+
+        conn.commit()
