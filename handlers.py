@@ -728,14 +728,13 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
             return
     
         deleted = delete_ad_exception_by_index(chat_id, int(text))
-    
+
+        if not deleted:
+            await message.reply_text(TEXTS[lang]["ad_exception_not_found"])
+            return
+        
         context.user_data.clear()
-    
-        await message.reply_text(
-            TEXTS[lang]["ad_exception_deleted"]
-            if deleted
-            else TEXTS[lang]["ad_exception_not_found"]
-        )
+        await message.reply_text(TEXTS[lang]["ad_exception_deleted"])
         return
     
     if context.user_data.get("state") == "deleting_ad_link":
@@ -748,16 +747,14 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
             return
     
         deleted = delete_ad_link_by_index(chat_id, int(text))
-    
+
+        if not deleted:
+            await message.reply_text(TEXTS[lang]["ad_link_not_found"])
+            return
+        
         context.user_data.clear()
-    
-        await message.reply_text(
-            TEXTS[lang]["ad_link_deleted"]
-            if deleted
-            else TEXTS[lang]["ad_link_not_found"]
-        )
+        await message.reply_text(TEXTS[lang]["ad_link_deleted"])
         return
-    
     
     if context.user_data.get("state") == "deleting_ad_phrase":
         chat_id = context.user_data.get("target_chat_id")
@@ -769,14 +766,13 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
             return
     
         deleted = delete_ad_phrase_by_index(chat_id, int(text))
-    
+
+        if not deleted:
+            await message.reply_text(TEXTS[lang]["ad_phrase_not_found"])
+            return
+        
         context.user_data.clear()
-    
-        await message.reply_text(
-            TEXTS[lang]["ad_phrase_deleted"]
-            if deleted
-            else TEXTS[lang]["ad_phrase_not_found"]
-        )
+        await message.reply_text(TEXTS[lang]["ad_phrase_deleted"])
         return
     
     if context.user_data.get("state") == "adding_ad_links":
