@@ -38,6 +38,7 @@ from db import(save_user_language,
     get_required_subs,
     add_required_sub,
     delete_required_sub_by_index,
+    delete_required_sub_by_id
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username
@@ -311,7 +312,7 @@ async def new_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
         return
 
     settings = get_group_settings(message.chat.id)
-    required_subs = get_required_subs(message.chat.id)
+    required_subs = await get_valid_required_subs(context, message.chat.id)
     
     if not settings["force_subscribe"] or not required_subs:
         return
@@ -378,7 +379,7 @@ async def check_subscription_callback(update: Update, context: ContextTypes.DEFA
         return
 
     settings = get_group_settings(chat_id)
-    required_subs = get_required_subs(chat_id)
+    required_subs = await get_valid_required_subs(context, chat_id)
 
     if not settings["force_subscribe"] or not required_subs:
         await query.answer("Sozlama topilmadi", show_alert=True)
@@ -2419,7 +2420,7 @@ async def settings_toggle_callback(update: Update, context: ContextTypes.DEFAULT
         reply_markup=keyboard
     )
 
-def build_required_subs_panel(lang: str, chat_id: int, settings: dict):
+def build_required_subs_panel(lang: str, chat_id: int, settings: dict, rows):
     status = (
         TEXTS[lang]["warn_enabled"]
         if settings["force_subscribe"]
@@ -2431,8 +2432,6 @@ def build_required_subs_panel(lang: str, chat_id: int, settings: dict):
         if settings["force_subscribe"]
         else TEXTS[lang]["btn_required_subs_on"]
     )
-
-    rows = get_required_subs(chat_id)
 
     if rows:
         subs_text = "\n".join(
@@ -2495,9 +2494,10 @@ async def required_subs_panel_callback(update: Update, context: ContextTypes.DEF
         await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
         return
 
+    valid_rows = await get_valid_required_subs(context, chat_id)
     settings = get_group_settings(chat_id)
-
-    text, keyboard = build_required_subs_panel(lang, chat_id, settings)
+    
+    text, keyboard = build_required_subs_panel(lang, chat_id, settings, valid_rows)
 
     await query.edit_message_text(
         text,
@@ -2524,13 +2524,29 @@ async def required_subs_toggle_callback(update: Update, context: ContextTypes.DE
         await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
         return
 
+    valid_rows = await get_valid_required_subs(context, chat_id)
     settings = get_group_settings(chat_id)
 
-    set_group_setting(chat_id, "force_subscribe", not settings["force_subscribe"])
+    new_value = not settings["force_subscribe"]
 
+    if new_value and not valid_rows:
+        await query.answer(
+            TEXTS[lang]["required_subs_empty_alert"],
+            show_alert=True
+        )
+        return
+
+    set_group_setting(chat_id, "force_subscribe", new_value)
+
+    valid_rows = await get_valid_required_subs(context, chat_id)
     settings = get_group_settings(chat_id)
 
-    text, keyboard = build_required_subs_panel(lang, chat_id, settings)
+    text, keyboard = build_required_subs_panel(
+        lang,
+        chat_id,
+        settings,
+        valid_rows
+    )
 
     await query.edit_message_text(
         text,
@@ -2602,3 +2618,21 @@ def normalize_required_sub(text: str):
         return None
 
     return f"@{username}"
+
+async def get_valid_required_subs(context, chat_id: int):
+    rows = get_required_subs(chat_id)
+    valid_rows = []
+
+    for sub_id, target_chat, invite_link in rows:
+        try:
+            await context.bot.get_chat(target_chat)
+            valid_rows.append((sub_id, target_chat, invite_link))
+
+        except Exception as e:
+            print("REMOVE BROKEN REQUIRED SUB:", target_chat, e)
+            delete_required_sub_by_id(sub_id)
+
+    if not valid_rows:
+        set_group_setting(chat_id, "force_subscribe", False)
+
+    return valid_rows
