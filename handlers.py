@@ -200,6 +200,7 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
                 limit=settings["ads_warn_limit"],
                 punish_enabled=settings["punish_ads"],
                 show_warning=settings["warn_ads"],
+                punish_seconds=settings["ads_punish_seconds"],
             )
     
         except Exception as e:
@@ -221,6 +222,7 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
                 limit=settings["ads_warn_limit"],
                 punish_enabled=settings["punish_ads"],
                 show_warning=settings["warn_ads"],
+                punish_seconds=settings["ads_punish_seconds"],
             )
     
         except Exception as e:
@@ -242,6 +244,7 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
                 limit=settings["ads_warn_limit"],
                 punish_enabled=settings["punish_ads"],
                 show_warning=settings["warn_ads"],
+                punish_seconds=settings["ads_punish_seconds"],
             )
     
         except Exception as e:
@@ -264,6 +267,7 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
                     limit=settings["bad_words_warn_limit"],
                     punish_enabled=settings["punish_bad_words"],
                     show_warning=settings["warn_bad_words"],
+                    punish_seconds=settings["bad_words_punish_seconds"],
                 )
     
             except Exception as e:
@@ -1864,6 +1868,7 @@ async def handle_warning(
     limit: int,
     punish_enabled: bool,
     show_warning: bool,
+    punish_seconds: int,
 ):
     user = message.from_user
 
@@ -1873,7 +1878,12 @@ async def handle_warning(
         reset_warnings(message.chat.id, user.id, reason)
 
         if punish_enabled:
-            await punish_user_for_warnings(message, lang, reason_key)
+            await punish_user_for_warnings(
+                message,
+                lang,
+                reason_key,
+                punish_seconds
+            )
 
         return
 
@@ -1886,10 +1896,10 @@ async def handle_warning(
             limit=limit
         )
 
-async def punish_user_for_warnings(message, lang: str, reason_key: str):
+async def punish_user_for_warnings(message, lang: str, reason_key: str, seconds: int):
     user = message.from_user
 
-    until_date = datetime.now(timezone.utc) + timedelta(days=1)
+    until_date = datetime.now(timezone.utc) + timedelta(seconds=seconds)
 
     await message.chat.restrict_member(
         user_id=user.id,
