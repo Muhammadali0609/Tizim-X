@@ -184,6 +184,17 @@ TEXTS = {
         "btn_required_subs_off": "🔴 Выключить обязательные подписки",
         "btn_add_required_sub": "➕ Добавить подписку",
         "btn_delete_required_sub": "🗑 Удалить подписку",
+
+        "add_required_sub_prompt": (
+            "➕ Отправьте канал или группу для обязательной подписки.\n\n"
+            "Можно отправить:\n"
+            "@username\n"
+            "-1001234567890"
+        ),
+        "required_sub_added": "✅ Подписка добавлена.",
+        "delete_required_sub_prompt": "🗑 Введите номер подписки для удаления.",
+        "required_sub_deleted": "✅ Подписка удалена.",
+        "required_sub_not_found": "❌ Такой подписки нет.",
     },
     "uz": {
         "start": (
@@ -370,5 +381,16 @@ TEXTS = {
         "btn_required_subs_off": "🔴 Majburiy obunalarni o‘chirish",
         "btn_add_required_sub": "➕ Obuna qo‘shish",
         "btn_delete_required_sub": "🗑 Obunani o‘chirish",
+
+        "add_required_sub_prompt": (
+            "➕ Majburiy obuna uchun kanal yoki guruhni yuboring.\n\n"
+            "Yuborishingiz mumkin:\n"
+            "@username\n"
+            "-1001234567890"
+        ),
+        "required_sub_added": "✅ Obuna qo‘shildi.",
+        "delete_required_sub_prompt": "🗑 O‘chirish uchun obuna raqamini kiriting.",
+        "required_sub_deleted": "✅ Obuna o‘chirildi.",
+        "required_sub_not_found": "❌ Bunday obuna yo‘q.",
     }
 }
