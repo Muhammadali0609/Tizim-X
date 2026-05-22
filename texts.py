@@ -120,7 +120,7 @@ TEXTS = {
         "reason_ads": "реклама",
         "limit_reached": (
             "🔒 {name} временно ограничен на 1 день.\n\n"
-            "Причина: превышен лимит предупреждений."
+            "Причина: {reason}"
         ),
     },
     "uz": {
@@ -244,7 +244,7 @@ TEXTS = {
         "reason_ads": "reklama",
         "limit_reached": (
             "🔒 {name} 1 kunga vaqtincha cheklandi.\n\n"
-            "Sabab: ogohlantirishlar limiti oshib ketdi."
+            "Sabab: {reason}"
         ),
     }
 }
