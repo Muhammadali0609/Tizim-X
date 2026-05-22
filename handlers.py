@@ -180,18 +180,34 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     if await is_admin(message.chat, user.id):
         return
-    
+
     text = message.text
 
     ad_exceptions = get_ad_exceptions_for_check(message.chat.id)
 
     if has_ad_exception(text, ad_exceptions):
         return
-    
-    if settings["anti_links"] and has_link(text):
+
+    ad_violation = False
+
+    if has_link(text):
+        ad_violation = True
+
+    custom_links = get_ad_links_for_check(message.chat.id)
+
+    if has_custom_ad_link(text, custom_links):
+        ad_violation = True
+
+    ad_phrases = get_ad_phrases_for_check(message.chat.id)
+
+    if has_ad_phrase(text, ad_phrases):
+        ad_violation = True
+
+    if ad_violation:
         try:
-            await message.delete()
-    
+            if settings["anti_links"]:
+                await message.delete()
+
             await handle_warning(
                 message=message,
                 lang=lang,
@@ -202,80 +218,34 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
                 show_warning=settings["warn_ads"],
                 punish_seconds=settings["ads_punish_seconds"],
             )
-    
+
         except Exception as e:
-            print("DELETE LINK ERROR:", e)
-    
+            print("AD VIOLATION ERROR:", e)
+
         return
 
-    if settings["anti_links"]:
-        custom_links = get_ad_links_for_check(message.chat.id)
-    
-        if has_custom_ad_link(text, custom_links):
-            try:
-                await message.delete()
-    
-                await handle_warning(
-                    message=message,
-                    lang=lang,
-                    reason="ads",
-                    reason_key="reason_ads",
-                    limit=settings["ads_warn_limit"],
-                    punish_enabled=settings["punish_ads"],
-                    show_warning=settings["warn_ads"],
-                    punish_seconds=settings["ads_punish_seconds"],
-                )
-    
-            except Exception as e:
-                print("DELETE CUSTOM AD LINK ERROR:", e)
-    
-            return
+    bad_words = get_bad_words_for_check(message.chat.id)
 
-    if settings["anti_links"]:
-        ad_phrases = get_ad_phrases_for_check(message.chat.id)
-    
-        if has_ad_phrase(text, ad_phrases):
-            try:
+    if has_bad_word(text, bad_words):
+        try:
+            if settings["anti_bad_words"]:
                 await message.delete()
-    
-                await handle_warning(
-                    message=message,
-                    lang=lang,
-                    reason="ads",
-                    reason_key="reason_ads",
-                    limit=settings["ads_warn_limit"],
-                    punish_enabled=settings["punish_ads"],
-                    show_warning=settings["warn_ads"],
-                    punish_seconds=settings["ads_punish_seconds"],
-                )
-    
-            except Exception as e:
-                print("DELETE AD PHRASE ERROR:", e)
-    
-            return
-    
-    if settings["anti_bad_words"]:
-        bad_words = get_bad_words_for_check(message.chat.id)
-    
-        if has_bad_word(text, bad_words):
-            try:
-                await message.delete()
-    
-                await handle_warning(
-                    message=message,
-                    lang=lang,
-                    reason="bad_words",
-                    reason_key="reason_bad_word",
-                    limit=settings["bad_words_warn_limit"],
-                    punish_enabled=settings["punish_bad_words"],
-                    show_warning=settings["warn_bad_words"],
-                    punish_seconds=settings["bad_words_punish_seconds"],
-                )
-    
-            except Exception as e:
-                print("DELETE BAD WORD ERROR:", e)
-    
-            return
+
+            await handle_warning(
+                message=message,
+                lang=lang,
+                reason="bad_words",
+                reason_key="reason_bad_word",
+                limit=settings["bad_words_warn_limit"],
+                punish_enabled=settings["punish_bad_words"],
+                show_warning=settings["warn_bad_words"],
+                punish_seconds=settings["bad_words_punish_seconds"],
+            )
+
+        except Exception as e:
+            print("BAD WORD VIOLATION ERROR:", e)
+
+        return
 
 async def set_group_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = update.message
