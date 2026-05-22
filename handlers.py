@@ -96,7 +96,7 @@ async def settings_button_handler(update: Update, context: ContextTypes.DEFAULT_
 
     valid_groups = []
 
-    for chat_id, title in groups:
+    for chat_id, title in valid_groups:
         try:
             chat = await context.bot.get_chat(chat_id)
 
@@ -1797,6 +1797,18 @@ async def warnings_set_limit_callback(update: Update, context: ContextTypes.DEFA
     await query.edit_message_text(
         text,
         reply_markup=keyboard
+    )
+
+async def send_warning_message(message, lang: str, reason_key: str, count: int, limit: int):
+    user = message.from_user
+
+    await message.chat.send_message(
+        TEXTS[lang]["warning_message"].format(
+            name=user.first_name,
+            reason=TEXTS[lang][reason_key],
+            count=count,
+            limit=limit
+        )
     )
 
 async def handle_warning(
