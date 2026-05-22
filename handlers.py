@@ -32,7 +32,8 @@ from db import(save_user_language,
     get_ad_exceptions_for_check,
     set_group_number_setting,
     add_warning,
-    reset_warnings
+    reset_warnings,
+    remove_group_admin
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception
@@ -100,13 +101,14 @@ async def settings_button_handler(update: Update, context: ContextTypes.DEFAULT_
         try:
             chat = await context.bot.get_chat(chat_id)
 
-            if not await is_admin(chat, user_id):
-                continue
-    
-            valid_groups.append((chat_id, title))
+            if await is_admin(chat, user_id):
+                valid_groups.append((chat_id, title))
+            else:
+                remove_group_admin(chat_id, user_id)
 
         except Exception as e:
             print("CHECK USER GROUP ACCESS ERROR:", e)
+            remove_group_admin(chat_id, user_id)
 
     if not valid_groups:
         await message.reply_text(TEXTS[lang]["no_groups"])
