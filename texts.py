@@ -7,7 +7,7 @@ TEXTS = {
         "choose_language": "🌐 Выберите язык:",
         "language_saved": "✅ Язык сохранён: Русский",
         "group_connected": (
-            "✅ TizimX подключён к группе.\n\n"
+            "✅ TizimX подключён к группе."
         ),
         "no_admin_rights": (
             "Для работы модерации выдайте боту права администратора."
@@ -131,7 +131,7 @@ TEXTS = {
         "choose_language": "🌐 Tilni tanlang:",
         "language_saved": "✅ Til saqlandi: O‘zbekcha",
         "group_connected": (
-            "✅ TizimX guruhga ulandi.\n\n"
+            "✅ TizimX guruhga ulandi."
         ),
         "no_admin_rights": (
             "Moderatsiya ishlashi uchun botga administrator huquqini bering."
