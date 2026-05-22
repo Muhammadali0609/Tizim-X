@@ -4,9 +4,7 @@ URL_PATTERN = re.compile(
     r"("
     r"https?://"
     r"|www\."
-    r"|t\.me/"
-    r"|telegram\.me/"
-    r"|[a-zA-Z0-9-]+\.(com|ru|uz|net|org|io|app|dev|co|me|info|biz|site|online|shop|xyz|link|tv|gg|ai|tech)\b"
+    r"|[a-zA-Z0-9-]+\.(com|ru|uz|net|org|io|app|dev|info|site|shop|xyz|link|tv|gg|ai|tech)\b"
     r")",
     re.IGNORECASE
 )
@@ -65,3 +63,13 @@ def has_ad_exception(text: str, exceptions: list[str]) -> bool:
     text = text.lower()
 
     return any(exception in text for exception in exceptions)
+
+USERNAME_PATTERN = re.compile(
+    r"(?<!\w)@[a-zA-Z0-9_]{5,32}\b"
+)
+
+def has_username(text: str) -> bool:
+    if not text:
+        return False
+
+    return bool(USERNAME_PATTERN.search(text))
