@@ -156,6 +156,22 @@ TEXTS = {
         ),
         "duration_saved": "✅ Срок ограничения сохранён.",
         "btn_open_section": "↩️ Открыть раздел",
+
+        "settings_panel": (
+            "⚙️ Настройки\n\n"
+            "Удаление матов: {bad_words_status}\n"
+            "Удаление рекламы: {ads_status}\n"
+            "Удаление @username: {usernames_status}"
+        ),
+        
+        "btn_toggle_bad_words_on": "🟢 Включить удаление матов",
+        "btn_toggle_bad_words_off": "🔴 Выключить удаление матов",
+        
+        "btn_toggle_ads_on": "🟢 Включить удаление рекламы",
+        "btn_toggle_ads_off": "🔴 Выключить удаление рекламы",
+        
+        "btn_toggle_usernames_on": "🟢 Включить удаление @username",
+        "btn_toggle_usernames_off": "🔴 Выключить удаление @username",
     },
     "uz": {
         "start": (
@@ -314,5 +330,21 @@ TEXTS = {
         ),
         "duration_saved": "✅ Cheklov muddati saqlandi.",
         "btn_open_section": "↩️ Bo‘limni ochish",
+
+        "settings_panel": (
+            "⚙️ Sozlamalar\n\n"
+            "So‘kinishlarni o‘chirish: {bad_words_status}\n"
+            "Reklamalarni o‘chirish: {ads_status}\n"
+            "@username o‘chirish: {usernames_status}"
+        ),
+        
+        "btn_toggle_bad_words_on": "🟢 So‘kinishlarni tozalashni yoqish",
+        "btn_toggle_bad_words_off": "🔴 So‘kinishlarni tozalashni o‘chirish",
+        
+        "btn_toggle_ads_on": "🟢 Reklamalarni tozalashni yoqish",
+        "btn_toggle_ads_off": "🔴 Reklamalarni tozalashni o‘chirish",
+        
+        "btn_toggle_usernames_on": "🟢 @username tozalashni yoqish",
+        "btn_toggle_usernames_off": "🔴 @username tozalashni o‘chirish",
     }
 }
