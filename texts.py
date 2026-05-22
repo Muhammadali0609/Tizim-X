@@ -174,6 +174,16 @@ TEXTS = {
         "btn_toggle_usernames_off": "🔴 Выключить удаление @username",
 
         "btn_required_subs": "📌 Обязательные подписки",
+        "required_subs_panel": (
+            "📌 Обязательные подписки\n\n"
+            "Статус: {status}\n\n"
+            "Список:\n{subs}"
+        ),
+        "required_subs_empty": "Пока пусто.",
+        "btn_required_subs_on": "🟢 Включить обязательные подписки",
+        "btn_required_subs_off": "🔴 Выключить обязательные подписки",
+        "btn_add_required_sub": "➕ Добавить подписку",
+        "btn_delete_required_sub": "🗑 Удалить подписку",
     },
     "uz": {
         "start": (
@@ -350,5 +360,15 @@ TEXTS = {
         "btn_toggle_usernames_off": "🔴 @username tozalashni o‘chirish",
 
         "btn_required_subs": "📌 Majburiy obunalar",
+        "required_subs_panel": (
+            "📌 Majburiy obunalar\n\n"
+            "Holat: {status}\n\n"
+            "Ro‘yxat:\n{subs}"
+        ),
+        "required_subs_empty": "Hozircha bo‘sh.",
+        "btn_required_subs_on": "🟢 Majburiy obunalarni yoqish",
+        "btn_required_subs_off": "🔴 Majburiy obunalarni o‘chirish",
+        "btn_add_required_sub": "➕ Obuna qo‘shish",
+        "btn_delete_required_sub": "🗑 Obunani o‘chirish",
     }
 }
