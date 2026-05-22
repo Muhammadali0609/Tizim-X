@@ -207,6 +207,7 @@ TEXTS = {
             "❌ Не удалось найти этот канал или группу.\n\n"
             "Проверьте username или добавьте бота туда админом."
         ),
+        "required_subs_empty_alert": "❌ Чтобы включить обязательные подписки, сначала добавьте хотя бы одну подписку.",
     },
     "uz": {
         "start": (
@@ -416,5 +417,6 @@ TEXTS = {
             "❌ Bu kanal yoki guruh topilmadi.\n\n"
             "Username ni tekshiring yoki botni u yerga admin qiling."
         ),
+        "required_subs_empty_alert": "❌ Majburiy obunani yoqish uchun avval kamida bitta obuna qo‘shing.",
     }
 }
