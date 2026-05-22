@@ -37,6 +37,8 @@ from handlers import (start_command,
     restrictions_duration_callback,
     settings_panel_callback,
     settings_toggle_callback,
+    required_subs_panel_callback,
+    required_subs_toggle_callback,
 )
 from db import setup_database
 
@@ -105,6 +107,8 @@ def main():
     app.add_handler(CallbackQueryHandler(restrictions_duration_callback, pattern="^restrictions_duration:"))
     app.add_handler(CallbackQueryHandler(settings_panel_callback, pattern="^settings_panel:"))
     app.add_handler(CallbackQueryHandler(settings_toggle_callback, pattern="^settings_toggle:"))
+    app.add_handler(CallbackQueryHandler(required_subs_panel_callback, pattern="^required_subs_panel:"))
+    app.add_handler(CallbackQueryHandler(required_subs_toggle_callback, pattern="^required_subs_toggle:"))
     
     app.run_webhook(
         listen="0.0.0.0",
