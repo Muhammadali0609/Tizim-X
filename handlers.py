@@ -474,7 +474,7 @@ async def group_settings_callback(update: Update, context: ContextTypes.DEFAULT_
         ],
         [
             InlineKeyboardButton(TEXTS[lang]["btn_warnings"], callback_data=f"warnings_panel:{chat_id}"),
-            InlineKeyboardButton(TEXTS[lang]["btn_restrictions"], callback_data=f"panel:restrictions:{chat_id}"),
+            InlineKeyboardButton(TEXTS[lang]["btn_restrictions"], callback_data=f"restrictions_panel:{chat_id}"),
         ],
         [
             InlineKeyboardButton(TEXTS[lang]["btn_settings"], callback_data=f"panel:settings:{chat_id}"),
