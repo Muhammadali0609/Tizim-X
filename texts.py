@@ -172,6 +172,8 @@ TEXTS = {
         
         "btn_toggle_usernames_on": "🟢 Включить удаление @username",
         "btn_toggle_usernames_off": "🔴 Выключить удаление @username",
+
+        "btn_required_subs": "📌 Обязательные подписки",
     },
     "uz": {
         "start": (
@@ -346,5 +348,7 @@ TEXTS = {
         
         "btn_toggle_usernames_on": "🟢 @username tozalashni yoqish",
         "btn_toggle_usernames_off": "🔴 @username tozalashni o‘chirish",
+
+        "btn_required_subs": "📌 Majburiy obunalar",
     }
 }
