@@ -621,3 +621,12 @@ def reset_warnings(chat_id: int, user_id: int, reason: str):
                 WHERE chat_id = %s AND user_id = %s AND reason = %s
             """, (chat_id, user_id, reason))
         conn.commit()
+
+def remove_group_admin(chat_id: int, user_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                DELETE FROM tizimx_group_admins
+                WHERE chat_id = %s AND user_id = %s
+            """, (chat_id, user_id))
+        conn.commit()
