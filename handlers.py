@@ -823,11 +823,11 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
     
         result = find_bad_word(chat_id, query_text)
     
-        context.user_data.clear()
-    
         if not result:
             await message.reply_text(TEXTS[lang]["bad_word_not_found"])
             return
+
+        context.user_data.clear()
     
         await message.reply_text(
             TEXTS[lang]["bad_word_found"].format(
