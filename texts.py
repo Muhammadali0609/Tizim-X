@@ -92,7 +92,6 @@ TEXTS = {
 
         "warnings_panel": (
             "⚠️ Предупреждения\n\n"
-            "Здесь вы можете управлять предупреждениями за нарушения.\n\n"
             "Предупреждение за мат:\n {bad_words_status}\n"
             "Предупреждение за рекламу:\n {ads_status}"
         ),
@@ -125,10 +124,10 @@ TEXTS = {
         ),
         "restrictions_panel": (
             "🔒 Ограничения\n\n"
-            "Ограничение за мат: {bad_words_status}\n"
-            "Ограничение за рекламу: {ads_status}\n\n"
-            "Срок ограничения за мат: {bad_words_duration}\n"
-            "Срок ограничения за рекламу: {ads_duration}"
+            "Ограничение за мат:\n {bad_words_status}\n"
+            "Ограничение за рекламу:\n {ads_status}\n\n"
+            "Срок ограничения за мат:\n {bad_words_duration}\n"
+            "Срок ограничения за рекламу:\n {ads_duration}"
         ),
         "btn_punish_bad_words_on": "🟢 Включить ограничение за мат",
         "btn_punish_bad_words_off": "🔴 Выключить ограничение за мат",
@@ -251,7 +250,6 @@ TEXTS = {
 
         "warnings_panel": (
             "⚠️ Ogohlantirishlar\n\n"
-            "Bu yerda qoidabuzarliklar uchun ogohlantirishlarni boshqarishingiz mumkin.\n\n"
             "So‘kinish uchun ogohlantirish:\n {bad_words_status}\n"
             "Reklama uchun ogohlantirish:\n {ads_status}"
         ),
@@ -284,10 +282,10 @@ TEXTS = {
         ),
         "restrictions_panel": (
             "🔒 Cheklovlar\n\n"
-            "So‘kinish uchun cheklov: {bad_words_status}\n"
-            "Reklama uchun cheklov: {ads_status}\n\n"
-            "So‘kinish uchun cheklov muddati: {bad_words_duration}\n"
-            "Reklama uchun cheklov muddati: {ads_duration}"
+            "So‘kinish uchun cheklov:\n {bad_words_status}\n"
+            "Reklama uchun cheklov:\n {ads_status}\n\n"
+            "So‘kinish uchun cheklov muddati:\n {bad_words_duration}\n"
+            "Reklama uchun cheklov muddati:\n {ads_duration}"
         ),
         "btn_punish_bad_words_on": "🟢 So‘kinish uchun cheklovni yoqish",
         "btn_punish_bad_words_off": "🔴 So‘kinish uchun cheklovni o‘chirish",
