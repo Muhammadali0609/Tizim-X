@@ -221,6 +221,8 @@ TEXTS = {
         "btn_transfer_all": "🌟 Все настройки",
         "btn_transfer_selected": "🚀 Перенести выбранные",
         "transfer_nothing_selected": "❌ Для переноса выберите хотя бы один пункт.",
+        "transfer_choose_group": "📂 Выберите группу, куда перенести настройки:",
+        "transfer_no_target_groups": "❌ Нет другой доступной группы для переноса.",
     },
     "uz": {
         "start": (
@@ -444,5 +446,7 @@ TEXTS = {
         "btn_transfer_all": "🌟 Barcha sozlamalar",
         "btn_transfer_selected": "🚀 Tanlanganlarni ko‘chirish",
         "transfer_nothing_selected": "❌ Ko‘chirish uchun kamida bitta bandni tanlang.",
+        "transfer_choose_group": "📂 Sozlamalar ko‘chiriladigan guruhni tanlang:",
+        "transfer_no_target_groups": "❌ Ko‘chirish uchun boshqa mavjud guruh yo‘q.",
     }
 }
