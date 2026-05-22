@@ -119,7 +119,8 @@ TEXTS = {
         "reason_bad_word": "мат",
         "reason_ads": "реклама",
         "limit_reached": (
-            "🔒 {name} временно ограничен на 1 день.\n\n"
+            "🔒 {name} временно ограничен.\n\n"
+            "Срок: {duration}\n"
             "Причина: {reason}"
         ),
         "restrictions_panel": (
@@ -276,7 +277,8 @@ TEXTS = {
         "reason_bad_word": "so‘kinish",
         "reason_ads": "reklama",
         "limit_reached": (
-            "🔒 {name} 1 kunga vaqtincha cheklandi.\n\n"
+            "🔒 {name} vaqtincha cheklandi.\n\n"
+            "Muddat: {duration}\n"
             "Sabab: {reason}"
         ),
         "restrictions_panel": (
