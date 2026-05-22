@@ -37,7 +37,7 @@ from db import(save_user_language,
     set_punish_duration
 )
 from texts import TEXTS
-from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception
+from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username
 from admins import is_admin
 import asyncio
 import math
@@ -188,6 +188,14 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
     if has_ad_exception(text, ad_exceptions):
         return
 
+    if settings["anti_usernames"] and has_username(text):
+        try:
+            await message.delete()
+        except Exception as e:
+            print("DELETE USERNAME ERROR:", e)
+    
+        return
+    
     ad_violation = False
 
     if has_link(text):
