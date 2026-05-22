@@ -35,7 +35,9 @@ from db import(save_user_language,
     reset_warnings,
     remove_group_admin,
     set_punish_duration,
-    get_required_subs
+    get_required_subs,
+    add_required_sub,
+    delete_required_sub_by_index
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username
@@ -649,6 +651,50 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
     user_id = update.effective_user.id
     lang = get_user_language(user_id)
 
+    if context.user_data.get("state") == "adding_required_sub":
+        chat_id = context.user_data.get("target_chat_id")
+    
+        target_chat = message.text.strip()
+    
+        if target_chat:
+            add_required_sub(chat_id, target_chat)
+    
+        context.user_data.clear()
+    
+        await reply_success_with_back(
+            message,
+            lang,
+            "required_sub_added",
+            f"required_subs_panel:{chat_id}"
+        )
+        return
+    
+    
+    if context.user_data.get("state") == "deleting_required_sub":
+        chat_id = context.user_data.get("target_chat_id")
+    
+        text = message.text.strip().split()[0]
+    
+        if not text.isdigit():
+            await message.reply_text(TEXTS[lang]["required_sub_not_found"])
+            return
+    
+        deleted = delete_required_sub_by_index(chat_id, int(text))
+    
+        if not deleted:
+            await message.reply_text(TEXTS[lang]["required_sub_not_found"])
+            return
+    
+        context.user_data.clear()
+    
+        await reply_success_with_back(
+            message,
+            lang,
+            "required_sub_deleted",
+            f"required_subs_panel:{chat_id}"
+        )
+        return
+    
     if context.user_data.get("state") == "setting_punish_duration":
         chat_id = context.user_data.get("target_chat_id")
         duration_type = context.user_data.get("duration_type")
@@ -2452,3 +2498,52 @@ async def required_subs_toggle_callback(update: Update, context: ContextTypes.DE
         text,
         reply_markup=keyboard
     )
+
+async def add_required_sub_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    chat_id = int(query.data.split(":")[1])
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("ADD REQUIRED SUB ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    context.user_data["state"] = "adding_required_sub"
+    context.user_data["target_chat_id"] = chat_id
+
+    await query.message.reply_text(TEXTS[lang]["add_required_sub_prompt"])
+
+
+async def delete_required_sub_start_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    chat_id = int(query.data.split(":")[1])
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("DELETE REQUIRED SUB ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    context.user_data["state"] = "deleting_required_sub"
+    context.user_data["target_chat_id"] = chat_id
+
+    await query.message.reply_text(TEXTS[lang]["delete_required_sub_prompt"])
