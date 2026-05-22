@@ -96,7 +96,7 @@ async def settings_button_handler(update: Update, context: ContextTypes.DEFAULT_
 
     valid_groups = []
 
-    for chat_id, title in valid_groups:
+    for chat_id, title in groups:
         try:
             chat = await context.bot.get_chat(chat_id)
 
