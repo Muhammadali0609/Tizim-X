@@ -728,3 +728,12 @@ def delete_required_sub_by_index(chat_id: int, index: int) -> bool:
         conn.commit()
 
     return True
+
+def delete_required_sub_by_id(sub_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "DELETE FROM tizimx_required_subs WHERE id = %s",
+                (sub_id,)
+            )
+        conn.commit()
