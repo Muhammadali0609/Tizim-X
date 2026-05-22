@@ -140,6 +140,16 @@ def setup_database():
                     PRIMARY KEY (chat_id, user_id, reason)
                 )
             """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS tizimx_required_subs (
+                    id BIGSERIAL PRIMARY KEY,
+                    chat_id BIGINT NOT NULL,
+                    target_chat TEXT NOT NULL,
+                    invite_link TEXT,
+                    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                    UNIQUE(chat_id, target_chat)
+                )
+            """)
         conn.commit()
 
 def get_user_language(user_id: int) -> str:
@@ -676,3 +686,45 @@ def set_punish_duration(chat_id: int, key: str, seconds: int):
                 (seconds, chat_id)
             )
         conn.commit()
+
+def get_required_subs(chat_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, target_chat, invite_link
+                FROM tizimx_required_subs
+                WHERE chat_id = %s
+                ORDER BY id
+            """, (chat_id,))
+            return cur.fetchall()
+
+
+def add_required_sub(chat_id: int, target_chat: str, invite_link: str | None = None):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO tizimx_required_subs (chat_id, target_chat, invite_link)
+                VALUES (%s, %s, %s)
+                ON CONFLICT (chat_id, target_chat)
+                DO UPDATE SET invite_link = EXCLUDED.invite_link
+            """, (chat_id, target_chat, invite_link))
+        conn.commit()
+
+
+def delete_required_sub_by_index(chat_id: int, index: int) -> bool:
+    rows = get_required_subs(chat_id)
+
+    if index < 1 or index > len(rows):
+        return False
+
+    sub_id = rows[index - 1][0]
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(
+                "DELETE FROM tizimx_required_subs WHERE chat_id = %s AND id = %s",
+                (chat_id, sub_id)
+            )
+        conn.commit()
+
+    return True
