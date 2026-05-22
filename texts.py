@@ -159,9 +159,9 @@ TEXTS = {
 
         "settings_panel": (
             "⚙️ Настройки\n\n"
-            "Удаление матов: {bad_words_status}\n"
-            "Удаление рекламы: {ads_status}\n"
-            "Удаление @username: {usernames_status}"
+            "Удаление матов:\n{bad_words_status}\n"
+            "Удаление рекламы:\n{ads_status}\n"
+            "Удаление @username:\n{usernames_status}"
         ),
         
         "btn_toggle_bad_words_on": "🟢 Включить удаление матов",
@@ -333,9 +333,9 @@ TEXTS = {
 
         "settings_panel": (
             "⚙️ Sozlamalar\n\n"
-            "So‘kinishlarni o‘chirish: {bad_words_status}\n"
-            "Reklamalarni o‘chirish: {ads_status}\n"
-            "@username o‘chirish: {usernames_status}"
+            "So‘kinishlarni o‘chirish:\n{bad_words_status}\n"
+            "Reklamalarni o‘chirish:\n{ads_status}\n"
+            "@username o‘chirish:\n{usernames_status}"
         ),
         
         "btn_toggle_bad_words_on": "🟢 So‘kinishlarni tozalashni yoqish",
