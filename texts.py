@@ -208,6 +208,18 @@ TEXTS = {
             "Проверьте username или добавьте бота туда админом."
         ),
         "required_subs_empty_alert": "❌ Чтобы включить обязательные подписки, сначала добавьте хотя бы одну подписку.",
+
+        "transfer_panel": (
+            "🔁 Перенос настроек\n\n"
+            "Выберите настройки и данные, которые хотите перенести."
+        ),
+        "btn_transfer_bad_words": "Словарь матов: {status}",
+        "btn_transfer_ads": "Список реклам: {status}",
+        "btn_transfer_warnings": "Предупреждения и лимиты: {status}",
+        "btn_transfer_restrictions": "Ограничения и сроки: {status}",
+        "btn_transfer_delete_settings": "Настройки удаления: {status}",
+        "btn_transfer_all": "🌟 Все настройки",
+        "btn_transfer_selected": "🚀 Перенести выбранные",
     },
     "uz": {
         "start": (
@@ -418,5 +430,17 @@ TEXTS = {
             "Username ni tekshiring yoki botni u yerga admin qiling."
         ),
         "required_subs_empty_alert": "❌ Majburiy obunani yoqish uchun avval kamida bitta obuna qo‘shing.",
+
+        "transfer_panel": (
+            "🔁 Sozlamalarni ko‘chirish\n\n"
+            "Ko‘chirmoqchi bo‘lgan sozlamalar va ma’lumotlarni tanlang."
+        ),
+        "btn_transfer_bad_words": "So‘kinishlar lug‘ati: {status}",
+        "btn_transfer_ads": "Reklamalar ro‘yxati: {status}",
+        "btn_transfer_warnings": "Ogohlantirishlar va limitlar: {status}",
+        "btn_transfer_restrictions": "Cheklovlar va muddatlar: {status}",
+        "btn_transfer_delete_settings": "O‘chirish sozlamalari: {status}",
+        "btn_transfer_all": "🌟 Barcha sozlamalar",
+        "btn_transfer_selected": "🚀 Tanlanganlarni ko‘chirish",
     }
 }
