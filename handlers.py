@@ -33,7 +33,8 @@ from db import(save_user_language,
     set_group_number_setting,
     add_warning,
     reset_warnings,
-    remove_group_admin
+    remove_group_admin,
+    set_punish_duration
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception
@@ -660,6 +661,46 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
     user_id = update.effective_user.id
     lang = get_user_language(user_id)
 
+    if context.user_data.get("state") == "setting_punish_duration":
+        chat_id = context.user_data.get("target_chat_id")
+        duration_type = context.user_data.get("duration_type")
+    
+        try:
+            chat = await context.bot.get_chat(chat_id)
+    
+            if not await is_admin(chat, user_id):
+                await message.reply_text(TEXTS[lang]["access_denied"])
+                context.user_data.clear()
+                return
+    
+        except Exception as e:
+            print("SET DURATION ACCESS ERROR:", e)
+            await message.reply_text(TEXTS[lang]["access_denied"])
+            context.user_data.clear()
+            return
+    
+        seconds = parse_duration(message.text)
+    
+        if not seconds:
+            await message.reply_text(TEXTS[lang]["invalid_duration_format"])
+            context.user_data.clear()
+            return
+    
+        if duration_type == "bad_words":
+            key = "bad_words_punish_seconds"
+        elif duration_type == "ads":
+            key = "ads_punish_seconds"
+        else:
+            context.user_data.clear()
+            return
+    
+        set_punish_duration(chat_id, key, seconds)
+    
+        context.user_data.clear()
+    
+        await message.reply_text(TEXTS[lang]["duration_saved"])
+        return
+    
     if context.user_data.get("state") == "adding_ad_exception":
         chat_id = context.user_data.get("target_chat_id")
     
@@ -2016,3 +2057,67 @@ async def restrictions_toggle_callback(update: Update, context: ContextTypes.DEF
     text, keyboard = build_restrictions_panel(lang, chat_id, settings)
 
     await query.edit_message_text(text, reply_markup=keyboard)
+
+def parse_duration(text: str):
+    units = {
+        "s": 1,
+        "m": 60,
+        "h": 3600,
+        "d": 86400,
+        "w": 604800,
+        "mo": 2592000,
+    }
+
+    parts = text.lower().split()
+
+    if not parts:
+        return None
+
+    used_units = set()
+    total_seconds = 0
+
+    for part in parts:
+        match = re.fullmatch(r"(\d+)(mo|s|m|h|d|w)", part)
+
+        if not match:
+            return None
+
+        value = int(match.group(1))
+        unit = match.group(2)
+
+        if value <= 0:
+            return None
+
+        if unit in used_units:
+            return None
+
+        used_units.add(unit)
+        total_seconds += value * units[unit]
+
+    return total_seconds
+
+async def restrictions_duration_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    _, duration_type, chat_id = query.data.split(":")
+    chat_id = int(chat_id)
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("RESTRICTIONS DURATION ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    context.user_data["state"] = "setting_punish_duration"
+    context.user_data["target_chat_id"] = chat_id
+    context.user_data["duration_type"] = duration_type
+
+    await query.message.reply_text(TEXTS[lang]["enter_duration_prompt"])
