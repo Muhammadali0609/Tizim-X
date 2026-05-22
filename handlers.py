@@ -654,10 +654,25 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
     if context.user_data.get("state") == "adding_required_sub":
         chat_id = context.user_data.get("target_chat_id")
     
-        target_chat = message.text.strip()
+        target_chat = normalize_required_sub(message.text)
     
-        if target_chat:
-            add_required_sub(chat_id, target_chat)
+        if not target_chat:
+            await message.reply_text(TEXTS[lang]["required_sub_invalid"])
+            return
+    
+        try:
+            target = await context.bot.get_chat(target_chat)
+    
+            if target.type not in ["channel", "group", "supergroup"]:
+                await message.reply_text(TEXTS[lang]["required_sub_invalid"])
+                return
+    
+        except Exception as e:
+            print("REQUIRED SUB VALIDATION ERROR:", e)
+            await message.reply_text(TEXTS[lang]["required_sub_not_accessible"])
+            return
+    
+        add_required_sub(chat_id, target_chat)
     
         context.user_data.clear()
     
@@ -668,7 +683,6 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
             f"required_subs_panel:{chat_id}"
         )
         return
-    
     
     if context.user_data.get("state") == "deleting_required_sub":
         chat_id = context.user_data.get("target_chat_id")
@@ -2547,3 +2561,20 @@ async def delete_required_sub_start_callback(update: Update, context: ContextTyp
     context.user_data["target_chat_id"] = chat_id
 
     await query.message.reply_text(TEXTS[lang]["delete_required_sub_prompt"])
+
+def normalize_required_sub(text: str):
+    text = text.strip()
+
+    if text.startswith("@"):
+        username = text[1:]
+    else:
+        match = re.fullmatch(r"https://t\.me/([a-zA-Z0-9_]{5,32})/?", text)
+        if not match:
+            return None
+
+        username = match.group(1)
+
+    if not re.fullmatch(r"[a-zA-Z0-9_]{5,32}", username):
+        return None
+
+    return f"@{username}"
