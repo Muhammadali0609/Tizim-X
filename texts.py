@@ -195,6 +195,18 @@ TEXTS = {
         "delete_required_sub_prompt": "🗑 Введите номер подписки для удаления.",
         "required_sub_deleted": "✅ Подписка удалена.",
         "required_sub_not_found": "❌ Такой подписки нет.",
+
+        "required_sub_invalid": (
+            "❌ Неверный канал или группа.\n\n"
+            "Отправьте в формате:\n"
+            "@username\n"
+            "или\n"
+            "https://t.me/username"
+        ),
+        "required_sub_not_accessible": (
+            "❌ Не удалось найти этот канал или группу.\n\n"
+            "Проверьте username или добавьте бота туда админом."
+        ),
     },
     "uz": {
         "start": (
@@ -392,5 +404,17 @@ TEXTS = {
         "delete_required_sub_prompt": "🗑 O‘chirish uchun obuna raqamini kiriting.",
         "required_sub_deleted": "✅ Obuna o‘chirildi.",
         "required_sub_not_found": "❌ Bunday obuna yo‘q.",
+
+        "required_sub_invalid": (
+            "❌ Kanal yoki guruh noto‘g‘ri.\n\n"
+            "Quyidagi formatda yuboring:\n"
+            "@username\n"
+            "yoki\n"
+            "https://t.me/username"
+        ),
+        "required_sub_not_accessible": (
+            "❌ Bu kanal yoki guruh topilmadi.\n\n"
+            "Username ni tekshiring yoki botni u yerga admin qiling."
+        ),
     }
 }
