@@ -687,7 +687,6 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
     
         if not seconds:
             await message.reply_text(TEXTS[lang]["invalid_duration_format"])
-            context.user_data.clear()
             return
     
         if duration_type == "bad_words":
@@ -726,7 +725,6 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
     
         if not text.isdigit():
             await message.reply_text(TEXTS[lang]["ad_exception_not_found"])
-            context.user_data.clear()
             return
     
         deleted = delete_ad_exception_by_index(chat_id, int(text))
@@ -747,7 +745,6 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
     
         if not text.isdigit():
             await message.reply_text(TEXTS[lang]["ad_link_not_found"])
-            context.user_data.clear()
             return
     
         deleted = delete_ad_link_by_index(chat_id, int(text))
@@ -769,7 +766,6 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
     
         if not text.isdigit():
             await message.reply_text(TEXTS[lang]["ad_phrase_not_found"])
-            context.user_data.clear()
             return
     
         deleted = delete_ad_phrase_by_index(chat_id, int(text))
