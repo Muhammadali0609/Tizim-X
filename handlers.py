@@ -29,7 +29,8 @@ from db import(save_user_language,
     add_ad_exceptions,
     delete_ad_exception_by_index,
     get_ad_exceptions_for_check,
-    set_group_number_setting
+    set_group_number_setting,
+    add_warning
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception
@@ -167,7 +168,7 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
     save_group(message.chat.id, message.chat.title)
 
     settings = get_group_settings(message.chat.id)
-    
+    lang = get_group_language(message.chat.id)
     user = message.from_user
 
     if await is_admin(message.chat, user.id):
@@ -183,8 +184,21 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
     if settings["anti_links"] and has_link(text):
         try:
             await message.delete()
+    
+            if settings["warn_ads"]:
+                count = add_warning(message.chat.id, user.id, "ads")
+    
+                await send_warning_message(
+                    message=message,
+                    lang=lang,
+                    reason_key="reason_ads",
+                    count=count,
+                    limit=settings["ads_warn_limit"]
+                )
+    
         except Exception as e:
             print("DELETE LINK ERROR:", e)
+    
         return
 
     custom_links = get_ad_links_for_check(message.chat.id)
@@ -192,6 +206,18 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
     if has_custom_ad_link(text, custom_links):
         try:
             await message.delete()
+    
+            if settings["warn_ads"]:
+                count = add_warning(message.chat.id, user.id, "ads")
+    
+                await send_warning_message(
+                    message=message,
+                    lang=lang,
+                    reason_key="reason_ads",
+                    count=count,
+                    limit=settings["ads_warn_limit"]
+                )
+    
         except Exception as e:
             print("DELETE CUSTOM AD LINK ERROR:", e)
     
@@ -202,6 +228,18 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
     if has_ad_phrase(text, ad_phrases):
         try:
             await message.delete()
+    
+            if settings["warn_ads"]:
+                count = add_warning(message.chat.id, user.id, "ads")
+    
+                await send_warning_message(
+                    message=message,
+                    lang=lang,
+                    reason_key="reason_ads",
+                    count=count,
+                    limit=settings["ads_warn_limit"]
+                )
+    
         except Exception as e:
             print("DELETE AD PHRASE ERROR:", e)
     
@@ -213,6 +251,18 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
         if has_bad_word(text, bad_words):
             try:
                 await message.delete()
+    
+                if settings["warn_bad_words"]:
+                    count = add_warning(message.chat.id, user.id, "bad_words")
+    
+                    await send_warning_message(
+                        message=message,
+                        lang=lang,
+                        reason_key="reason_bad_word",
+                        count=count,
+                        limit=settings["bad_words_warn_limit"]
+                    )
+    
             except Exception as e:
                 print("DELETE BAD WORD ERROR:", e)
     
@@ -1749,4 +1799,16 @@ async def warnings_set_limit_callback(update: Update, context: ContextTypes.DEFA
     await query.edit_message_text(
         text,
         reply_markup=keyboard
+    )
+
+async def send_warning_message(message, lang: str, reason_key: str, count: int, limit: int):
+    user = message.from_user
+
+    await message.chat.send_message(
+        TEXTS[lang]["warning_message"].format(
+            name=user.first_name,
+            reason=TEXTS[lang][reason_key],
+            count=count,
+            limit=limit
+        )
     )
