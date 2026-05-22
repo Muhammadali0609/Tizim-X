@@ -223,6 +223,20 @@ TEXTS = {
         "transfer_nothing_selected": "❌ Для переноса выберите хотя бы один пункт.",
         "transfer_choose_group": "📂 Выберите группу, куда перенести настройки:",
         "transfer_no_target_groups": "❌ Нет другой доступной группы для переноса.",
+
+        "transfer_confirm_text": (
+            "⚠️ Подтвердите перенос настроек\n\n"
+            "Из группы:\n{source_title}\n\n"
+            "В группу:\n{target_title}\n\n"
+            "Будет перенесено:\n{items}"
+        ),
+        "btn_confirm": "✅ Подтвердить",
+        
+        "transfer_item_bad_words": "• Словарь матов",
+        "transfer_item_ads": "• Список реклам",
+        "transfer_item_warnings": "• Предупреждения и лимиты",
+        "transfer_item_restrictions": "• Ограничения и сроки",
+        "transfer_item_delete_settings": "• Настройки удаления",
     },
     "uz": {
         "start": (
@@ -448,5 +462,19 @@ TEXTS = {
         "transfer_nothing_selected": "❌ Ko‘chirish uchun kamida bitta bandni tanlang.",
         "transfer_choose_group": "📂 Sozlamalar ko‘chiriladigan guruhni tanlang:",
         "transfer_no_target_groups": "❌ Ko‘chirish uchun boshqa mavjud guruh yo‘q.",
+
+        "transfer_confirm_text": (
+            "⚠️ Sozlamalarni ko‘chirishni tasdiqlang\n\n"
+            "Qaysi guruhdan:\n{source_title}\n\n"
+            "Qaysi guruhga:\n{target_title}\n\n"
+            "Ko‘chiriladi:\n{items}"
+        ),
+        "btn_confirm": "✅ Tasdiqlash",
+        
+        "transfer_item_bad_words": "• So‘kinishlar lug‘ati",
+        "transfer_item_ads": "• Reklamalar ro‘yxati",
+        "transfer_item_warnings": "• Ogohlantirishlar va limitlar",
+        "transfer_item_restrictions": "• Cheklovlar va muddatlar",
+        "transfer_item_delete_settings": "• O‘chirish sozlamalari",
     }
 }
