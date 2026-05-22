@@ -126,8 +126,8 @@ TEXTS = {
             "🔒 Ограничения\n\n"
             "Ограничение за мат:\n {bad_words_status}\n"
             "Ограничение за рекламу:\n {ads_status}\n\n"
-            "Срок ограничения за мат:\n {bad_words_duration}\n"
-            "Срок ограничения за рекламу:\n {ads_duration}"
+            "Срок ограничения за мат:\n 🕓{bad_words_duration}\n"
+            "Срок ограничения за рекламу:\n 🕓{ads_duration}"
         ),
         "btn_punish_bad_words_on": "🟢 Включить ограничение за мат",
         "btn_punish_bad_words_off": "🔴 Выключить ограничение за мат",
@@ -263,8 +263,8 @@ TEXTS = {
         "btn_warn_ads_on": "🟢 Reklama uchun ogohlantirishni yoqish",
         "btn_warn_ads_off": "🔴 Reklama uchun ogohlantirishni o‘chirish",
         
-        "btn_bad_words_warn_limit": "🤬 So‘kinish ogohlantirish soni: {limit}",
-        "btn_ads_warn_limit": "🚫 Reklama ogohlantirish soni: {limit}",
+        "btn_bad_words_warn_limit": "🤬 So‘kinishni ogohlantirish soni: {limit}",
+        "btn_ads_warn_limit": "🚫 Reklamani ogohlantirish soni: {limit}",
         "choose_warn_limit": "⚠️ Ogohlantirishlar sonini tanlang:",
         "warn_limit_saved": "✅ Ogohlantirishlar soni saqlandi.",
 
@@ -284,8 +284,8 @@ TEXTS = {
             "🔒 Cheklovlar\n\n"
             "So‘kinish uchun cheklov:\n {bad_words_status}\n"
             "Reklama uchun cheklov:\n {ads_status}\n\n"
-            "So‘kinish uchun cheklov muddati:\n {bad_words_duration}\n"
-            "Reklama uchun cheklov muddati:\n {ads_duration}"
+            "So‘kinish uchun cheklov muddati:\n 🕓{bad_words_duration}\n"
+            "Reklama uchun cheklov muddati:\n 🕓{ads_duration}"
         ),
         "btn_punish_bad_words_on": "🟢 So‘kinish uchun cheklovni yoqish",
         "btn_punish_bad_words_off": "🔴 So‘kinish uchun cheklovni o‘chirish",
