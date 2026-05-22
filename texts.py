@@ -237,6 +237,7 @@ TEXTS = {
         "transfer_item_warnings": "• Предупреждения и лимиты",
         "transfer_item_restrictions": "• Ограничения и сроки",
         "transfer_item_delete_settings": "• Настройки удаления",
+        "transfer_done": "✅ Настройки успешно перенесены.",
     },
     "uz": {
         "start": (
@@ -476,5 +477,6 @@ TEXTS = {
         "transfer_item_warnings": "• Ogohlantirishlar va limitlar",
         "transfer_item_restrictions": "• Cheklovlar va muddatlar",
         "transfer_item_delete_settings": "• O‘chirish sozlamalari",
+        "transfer_done": "✅ Sozlamalar muvaffaqiyatli ko‘chirildi.",
     }
 }
