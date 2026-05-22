@@ -465,6 +465,9 @@ async def group_settings_callback(update: Update, context: ContextTypes.DEFAULT_
             InlineKeyboardButton(TEXTS[lang]["btn_settings"], callback_data=f"settings_panel:{chat_id}"),
         ],
         [
+            InlineKeyboardButton(TEXTS[lang]["btn_required_subs"], callback_data=f"required_subs_panel:{chat_id}")
+        ],
+        [
             InlineKeyboardButton(TEXTS[lang]["btn_transfer_settings"], callback_data=f"panel:transfer:{chat_id}"),
         ],
         [
