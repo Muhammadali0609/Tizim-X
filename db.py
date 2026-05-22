@@ -64,6 +64,15 @@ def setup_database():
                 ADD COLUMN IF NOT EXISTS ads_warn_limit INTEGER NOT NULL DEFAULT 3
             """)
             cur.execute("""
+                ALTER TABLE tizimx_groups
+                ADD COLUMN IF NOT EXISTS punish_bad_words BOOLEAN NOT NULL DEFAULT TRUE
+            """)
+            
+            cur.execute("""
+                ALTER TABLE tizimx_groups
+                ADD COLUMN IF NOT EXISTS punish_ads BOOLEAN NOT NULL DEFAULT TRUE
+            """)
+            cur.execute("""
                 CREATE TABLE IF NOT EXISTS tizimx_group_admins (
                     chat_id BIGINT NOT NULL,
                     user_id BIGINT NOT NULL,
@@ -159,7 +168,7 @@ def get_group_settings(chat_id: int) -> dict:
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT anti_links, anti_bad_words, silent_mode, clean_service_messages, force_subscribe, warn_bad_words, warn_ads, bad_words_warn_limit, ads_warn_limit
+                SELECT anti_links, anti_bad_words, silent_mode, clean_service_messages, force_subscribe, warn_bad_words, warn_ads, bad_words_warn_limit, ads_warn_limit, punish_bad_words, punish_ads
                 FROM tizimx_groups
                 WHERE chat_id = %s
             """, (chat_id,))
@@ -183,6 +192,8 @@ def get_group_settings(chat_id: int) -> dict:
         "warn_ads": row[6],
         "bad_words_warn_limit": row[7],
         "ads_warn_limit": row[8],
+        "punish_bad_words": row[9],
+        "punish_ads": row[10],
     }
 
 def get_group_language(chat_id: int) -> str:
@@ -601,3 +612,12 @@ def add_warning(chat_id: int, user_id: int, reason: str) -> int:
         conn.commit()
 
     return row[0]
+
+def reset_warnings(chat_id: int, user_id: int, reason: str):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                DELETE FROM tizimx_warnings
+                WHERE chat_id = %s AND user_id = %s AND reason = %s
+            """, (chat_id, user_id, reason))
+        conn.commit()
