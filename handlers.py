@@ -2192,3 +2192,146 @@ async def reply_success_with_back(message, lang: str, text_key: str, callback_da
             ]
         ])
     )
+
+def build_settings_panel(lang: str, chat_id: int, settings: dict):
+    bad_words_status = (
+        TEXTS[lang]["warn_enabled"]
+        if settings["anti_bad_words"]
+        else TEXTS[lang]["warn_disabled"]
+    )
+
+    ads_status = (
+        TEXTS[lang]["warn_enabled"]
+        if settings["anti_links"]
+        else TEXTS[lang]["warn_disabled"]
+    )
+
+    usernames_status = (
+        TEXTS[lang]["warn_enabled"]
+        if settings["anti_usernames"]
+        else TEXTS[lang]["warn_disabled"]
+    )
+
+    text = TEXTS[lang]["settings_panel"].format(
+        bad_words_status=bad_words_status,
+        ads_status=ads_status,
+        usernames_status=usernames_status,
+    )
+
+    bad_words_btn = (
+        TEXTS[lang]["btn_toggle_bad_words_off"]
+        if settings["anti_bad_words"]
+        else TEXTS[lang]["btn_toggle_bad_words_on"]
+    )
+
+    ads_btn = (
+        TEXTS[lang]["btn_toggle_ads_off"]
+        if settings["anti_links"]
+        else TEXTS[lang]["btn_toggle_ads_on"]
+    )
+
+    usernames_btn = (
+        TEXTS[lang]["btn_toggle_usernames_off"]
+        if settings["anti_usernames"]
+        else TEXTS[lang]["btn_toggle_usernames_on"]
+    )
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                bad_words_btn,
+                callback_data=f"settings_toggle:anti_bad_words:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                ads_btn,
+                callback_data=f"settings_toggle:anti_links:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                usernames_btn,
+                callback_data=f"settings_toggle:anti_usernames:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["back_button"],
+                callback_data=f"group_settings:{chat_id}"
+            )
+        ]
+    ]
+
+    return text, InlineKeyboardMarkup(keyboard)
+
+async def settings_panel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    chat_id = int(query.data.split(":")[1])
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("SETTINGS PANEL ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    settings = get_group_settings(chat_id)
+
+    text, keyboard = build_settings_panel(lang, chat_id, settings)
+
+    await query.edit_message_text(
+        text,
+        reply_markup=keyboard
+    )
+
+
+async def settings_toggle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    _, key, chat_id = query.data.split(":")
+    chat_id = int(chat_id)
+
+    allowed = [
+        "anti_bad_words",
+        "anti_links",
+        "anti_usernames",
+    ]
+
+    if key not in allowed:
+        return
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("SETTINGS TOGGLE ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    settings = get_group_settings(chat_id)
+
+    set_group_setting(chat_id, key, not settings[key])
+
+    settings = get_group_settings(chat_id)
+
+    text, keyboard = build_settings_panel(lang, chat_id, settings)
+
+    await query.edit_message_text(
+        text,
+        reply_markup=keyboard
+    )
