@@ -187,15 +187,15 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
         try:
             await message.delete()
     
-            if settings["warn_ads"]:
-                await handle_warning(
-                    message=message,
-                    lang=lang,
-                    reason="ads",
-                    reason_key="reason_ads",
-                    limit=settings["ads_warn_limit"],
-                    punish_enabled=settings["punish_ads"],
-                )
+            await handle_warning(
+                message=message,
+                lang=lang,
+                reason="ads",
+                reason_key="reason_ads",
+                limit=settings["ads_warn_limit"],
+                punish_enabled=settings["punish_ads"],
+                show_warning=settings["warn_ads"],
+            )
     
         except Exception as e:
             print("DELETE LINK ERROR:", e)
@@ -208,15 +208,15 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
         try:
             await message.delete()
     
-            if settings["warn_ads"]:
-                await handle_warning(
-                    message=message,
-                    lang=lang,
-                    reason="ads",
-                    reason_key="reason_ads",
-                    limit=settings["ads_warn_limit"],
-                    punish_enabled=settings["punish_ads"],
-                )
+            await handle_warning(
+                message=message,
+                lang=lang,
+                reason="ads",
+                reason_key="reason_ads",
+                limit=settings["ads_warn_limit"],
+                punish_enabled=settings["punish_ads"],
+                show_warning=settings["warn_ads"],
+            )
     
         except Exception as e:
             print("DELETE CUSTOM AD LINK ERROR:", e)
@@ -229,15 +229,15 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
         try:
             await message.delete()
     
-            if settings["warn_ads"]:
-                await handle_warning(
-                    message=message,
-                    lang=lang,
-                    reason="ads",
-                    reason_key="reason_ads",
-                    limit=settings["ads_warn_limit"],
-                    punish_enabled=settings["punish_ads"],
-                )
+            await handle_warning(
+                message=message,
+                lang=lang,
+                reason="ads",
+                reason_key="reason_ads",
+                limit=settings["ads_warn_limit"],
+                punish_enabled=settings["punish_ads"],
+                show_warning=settings["warn_ads"],
+            )
     
         except Exception as e:
             print("DELETE AD PHRASE ERROR:", e)
@@ -251,15 +251,15 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
             try:
                 await message.delete()
     
-                if settings["warn_bad_words"]:
-                    await handle_warning(
-                        message=message,
-                        lang=lang,
-                        reason="bad_words",
-                        reason_key="reason_bad_word",
-                        limit=settings["bad_words_warn_limit"],
-                        punish_enabled=settings["punish_bad_words"],
-                    )
+                await handle_warning(
+                    message=message,
+                    lang=lang,
+                    reason="bad_words",
+                    reason_key="reason_bad_word",
+                    limit=settings["bad_words_warn_limit"],
+                    punish_enabled=settings["punish_bad_words"],
+                    show_warning=settings["warn_bad_words"],
+                )
     
             except Exception as e:
                 print("DELETE BAD WORD ERROR:", e)
@@ -1823,13 +1823,14 @@ async def handle_warning(
 
     count = add_warning(message.chat.id, user.id, reason)
 
-    await send_warning_message(
-        message=message,
-        lang=lang,
-        reason_key=reason_key,
-        count=count,
-        limit=limit
-    )
+    if show_warning:
+        await send_warning_message(
+            message=message,
+            lang=lang,
+            reason_key=reason_key,
+            count=count,
+            limit=limit
+        )
 
     if count >= limit:
         reset_warnings(message.chat.id, user.id, reason)
