@@ -34,7 +34,8 @@ from db import(save_user_language,
     add_warning,
     reset_warnings,
     remove_group_admin,
-    set_punish_duration
+    set_punish_duration,
+    get_required_subs
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username
@@ -2328,6 +2329,124 @@ async def settings_toggle_callback(update: Update, context: ContextTypes.DEFAULT
     settings = get_group_settings(chat_id)
 
     text, keyboard = build_settings_panel(lang, chat_id, settings)
+
+    await query.edit_message_text(
+        text,
+        reply_markup=keyboard
+    )
+
+def build_required_subs_panel(lang: str, chat_id: int, settings: dict):
+    status = (
+        TEXTS[lang]["warn_enabled"]
+        if settings["force_subscribe"]
+        else TEXTS[lang]["warn_disabled"]
+    )
+
+    toggle_text = (
+        TEXTS[lang]["btn_required_subs_off"]
+        if settings["force_subscribe"]
+        else TEXTS[lang]["btn_required_subs_on"]
+    )
+
+    rows = get_required_subs(chat_id)
+
+    if rows:
+        subs_text = "\n".join(
+            f"{i}. {target_chat}"
+            for i, (_, target_chat, _) in enumerate(rows, start=1)
+        )
+    else:
+        subs_text = TEXTS[lang]["required_subs_empty"]
+
+    text = TEXTS[lang]["required_subs_panel"].format(
+        status=status,
+        subs=subs_text
+    )
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                toggle_text,
+                callback_data=f"required_subs_toggle:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_add_required_sub"],
+                callback_data=f"required_subs_add:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_delete_required_sub"],
+                callback_data=f"required_subs_delete:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["back_button"],
+                callback_data=f"group_settings:{chat_id}"
+            )
+        ],
+    ]
+
+    return text, InlineKeyboardMarkup(keyboard)
+
+async def required_subs_panel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    chat_id = int(query.data.split(":")[1])
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("REQUIRED SUBS PANEL ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    settings = get_group_settings(chat_id)
+
+    text, keyboard = build_required_subs_panel(lang, chat_id, settings)
+
+    await query.edit_message_text(
+        text,
+        reply_markup=keyboard
+    )
+
+
+async def required_subs_toggle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    chat_id = int(query.data.split(":")[1])
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("REQUIRED SUBS TOGGLE ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    settings = get_group_settings(chat_id)
+
+    set_group_setting(chat_id, "force_subscribe", not settings["force_subscribe"])
+
+    settings = get_group_settings(chat_id)
+
+    text, keyboard = build_required_subs_panel(lang, chat_id, settings)
 
     await query.edit_message_text(
         text,
