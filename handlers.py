@@ -1912,36 +1912,42 @@ async def punish_user_for_warnings(message, lang: str, reason_key: str, seconds:
     await message.chat.send_message(
         TEXTS[lang]["limit_reached"].format(
             name=user.first_name,
+            duration=format_duration(seconds, lang),
             reason=TEXTS[lang][reason_key]
         )
     )
 
 def format_duration(seconds: int, lang: str) -> str:
-    if seconds < 60:
-        return f"{seconds} сек" if lang == "ru" else f"{seconds} soniya"
+    units = [
+        (2592000, "месяц", "месяца", "месяцев", "oy"),
+        (604800, "неделя", "недели", "недель", "hafta"),
+        (86400, "день", "дня", "дней", "kun"),
+        (3600, "час", "часа", "часов", "soat"),
+        (60, "минута", "минуты", "минут", "daqiqa"),
+        (1, "секунда", "секунды", "секунд", "soniya"),
+    ]
 
-    minutes = seconds // 60
+    parts = []
 
-    if minutes < 60:
-        return f"{minutes} мин" if lang == "ru" else f"{minutes} daqiqa"
+    for unit_seconds, ru_one, ru_two, ru_many, uz_word in units:
+        value = seconds // unit_seconds
 
-    hours = minutes // 60
+        if value:
+            seconds %= unit_seconds
 
-    if hours < 24:
-        return f"{hours} ч" if lang == "ru" else f"{hours} soat"
+            if lang == "ru":
+                if value % 10 == 1 and value % 100 != 11:
+                    word = ru_one
+                elif value % 10 in [2, 3, 4] and value % 100 not in [12, 13, 14]:
+                    word = ru_two
+                else:
+                    word = ru_many
 
-    days = hours // 24
+                parts.append(f"{value} {word}")
+            else:
+                parts.append(f"{value} {uz_word}")
 
-    if days < 7:
-        return f"{days} дн" if lang == "ru" else f"{days} kun"
-
-    weeks = days // 7
-
-    if weeks < 4:
-        return f"{weeks} нед" if lang == "ru" else f"{weeks} hafta"
-
-    months = days // 30
-    return f"{months} мес" if lang == "ru" else f"{months} oy"
+    return " ".join(parts) if parts else ("0 секунд" if lang == "ru" else "0 soniya")
 
 def build_restrictions_panel(lang: str, chat_id: int, settings: dict):
     bad_words_status = (
