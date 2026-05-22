@@ -2885,3 +2885,77 @@ async def get_valid_target_groups(context, user_id: int, source_chat_id: int):
             print("TRANSFER TARGET GROUP ERROR:", e)
 
     return valid_groups
+
+def build_transfer_items_text(lang: str, state: dict):
+    items = []
+
+    if state["bad_words"]:
+        items.append(TEXTS[lang]["transfer_item_bad_words"])
+
+    if state["ads"]:
+        items.append(TEXTS[lang]["transfer_item_ads"])
+
+    if state["warnings"]:
+        items.append(TEXTS[lang]["transfer_item_warnings"])
+
+    if state["restrictions"]:
+        items.append(TEXTS[lang]["transfer_item_restrictions"])
+
+    if state["delete_settings"]:
+        items.append(TEXTS[lang]["transfer_item_delete_settings"])
+
+    return "\n".join(items)
+
+async def transfer_target_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    _, source_chat_id, target_chat_id = query.data.split(":")
+    source_chat_id = int(source_chat_id)
+    target_chat_id = int(target_chat_id)
+
+    try:
+        source_chat = await context.bot.get_chat(source_chat_id)
+        target_chat = await context.bot.get_chat(target_chat_id)
+
+        if not await is_admin(source_chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+        if not await is_admin(target_chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("TRANSFER TARGET ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    state = get_transfer_state(context, source_chat_id)
+
+    items_text = build_transfer_items_text(lang, state)
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_confirm"],
+                callback_data=f"transfer_confirm:{source_chat_id}:{target_chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["back_button"],
+                callback_data=f"transfer_selected:{source_chat_id}"
+            )
+        ],
+    ]
+
+    await query.edit_message_text(
+        TEXTS[lang]["transfer_confirm_text"].format(
+            source_title=source_chat.title,
+            target_title=target_chat.title,
+            items=items_text
+        ),
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
