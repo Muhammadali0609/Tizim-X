@@ -208,49 +208,51 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
     
         return
 
-    custom_links = get_ad_links_for_check(message.chat.id)
+    if settings["anti_links"]:
+        custom_links = get_ad_links_for_check(message.chat.id)
+    
+        if has_custom_ad_link(text, custom_links):
+            try:
+                await message.delete()
+    
+                await handle_warning(
+                    message=message,
+                    lang=lang,
+                    reason="ads",
+                    reason_key="reason_ads",
+                    limit=settings["ads_warn_limit"],
+                    punish_enabled=settings["punish_ads"],
+                    show_warning=settings["warn_ads"],
+                    punish_seconds=settings["ads_punish_seconds"],
+                )
+    
+            except Exception as e:
+                print("DELETE CUSTOM AD LINK ERROR:", e)
+    
+            return
 
-    if has_custom_ad_link(text, custom_links):
-        try:
-            await message.delete()
+    if settings["anti_links"]:
+        ad_phrases = get_ad_phrases_for_check(message.chat.id)
     
-            await handle_warning(
-                message=message,
-                lang=lang,
-                reason="ads",
-                reason_key="reason_ads",
-                limit=settings["ads_warn_limit"],
-                punish_enabled=settings["punish_ads"],
-                show_warning=settings["warn_ads"],
-                punish_seconds=settings["ads_punish_seconds"],
-            )
+        if has_ad_phrase(text, ad_phrases):
+            try:
+                await message.delete()
     
-        except Exception as e:
-            print("DELETE CUSTOM AD LINK ERROR:", e)
+                await handle_warning(
+                    message=message,
+                    lang=lang,
+                    reason="ads",
+                    reason_key="reason_ads",
+                    limit=settings["ads_warn_limit"],
+                    punish_enabled=settings["punish_ads"],
+                    show_warning=settings["warn_ads"],
+                    punish_seconds=settings["ads_punish_seconds"],
+                )
     
-        return
-
-    ad_phrases = get_ad_phrases_for_check(message.chat.id)
-
-    if has_ad_phrase(text, ad_phrases):
-        try:
-            await message.delete()
+            except Exception as e:
+                print("DELETE AD PHRASE ERROR:", e)
     
-            await handle_warning(
-                message=message,
-                lang=lang,
-                reason="ads",
-                reason_key="reason_ads",
-                limit=settings["ads_warn_limit"],
-                punish_enabled=settings["punish_ads"],
-                show_warning=settings["warn_ads"],
-                punish_seconds=settings["ads_punish_seconds"],
-            )
-    
-        except Exception as e:
-            print("DELETE AD PHRASE ERROR:", e)
-    
-        return
+            return
     
     if settings["anti_bad_words"]:
         bad_words = get_bad_words_for_check(message.chat.id)
