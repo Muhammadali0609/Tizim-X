@@ -110,6 +110,14 @@ TEXTS = {
         "btn_ads_warn_limit": "🚫 Число предупреждений за рекламу: {limit}",
         "choose_warn_limit": "⚠️ Выберите число предупреждений:",
         "warn_limit_saved": "✅ Число предупреждений сохранено.",
+
+        "warning_message": (
+            "⚠️ {name}, нарушение правил группы.\n\n"
+            "Причина: {reason}\n"
+            "Предупреждение: {count}/{limit}"
+        ),
+        "reason_bad_word": "мат",
+        "reason_ads": "реклама",
     },
     "uz": {
         "start": (
@@ -222,5 +230,13 @@ TEXTS = {
         "btn_ads_warn_limit": "🚫 Reklama ogohlantirish soni: {limit}",
         "choose_warn_limit": "⚠️ Ogohlantirishlar sonini tanlang:",
         "warn_limit_saved": "✅ Ogohlantirishlar soni saqlandi.",
+
+        "warning_message": (
+            "⚠️ {name}, guruh qoidasi buzildi.\n\n"
+            "Sabab: {reason}\n"
+            "Ogohlantirish: {count}/{limit}"
+        ),
+        "reason_bad_word": "so‘kinish",
+        "reason_ads": "reklama",
     }
 }
