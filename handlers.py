@@ -2782,18 +2782,42 @@ async def transfer_all_callback(update: Update, context: ContextTypes.DEFAULT_TY
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
-    chat_id = int(query.data.split(":")[1])
+    source_chat_id = int(query.data.split(":")[1])
 
-    state = get_transfer_state(context, chat_id)
+    state = get_transfer_state(context, source_chat_id)
 
     for key in state:
         state[key] = True
 
-    text, keyboard = build_transfer_panel(lang, chat_id, state)
+    target_groups = await get_valid_target_groups(context, user_id, source_chat_id)
+
+    if not target_groups:
+        await query.answer(
+            TEXTS[lang]["transfer_no_target_groups"],
+            show_alert=True
+        )
+        return
+
+    keyboard = []
+
+    for chat_id, title in target_groups:
+        keyboard.append([
+            InlineKeyboardButton(
+                title,
+                callback_data=f"transfer_target:{source_chat_id}:{chat_id}"
+            )
+        ])
+
+    keyboard.append([
+        InlineKeyboardButton(
+            TEXTS[lang]["back_button"],
+            callback_data=f"transfer_panel:{source_chat_id}"
+        )
+    ])
 
     await query.edit_message_text(
-        text,
-        reply_markup=keyboard
+        TEXTS[lang]["transfer_choose_group"],
+        reply_markup=InlineKeyboardMarkup(keyboard)
     )
 
 async def transfer_selected_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -2801,9 +2825,9 @@ async def transfer_selected_callback(update: Update, context: ContextTypes.DEFAU
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
-    chat_id = int(query.data.split(":")[1])
+    source_chat_id = int(query.data.split(":")[1])
 
-    state = get_transfer_state(context, chat_id)
+    state = get_transfer_state(context, source_chat_id)
 
     if not any(state.values()):
         await query.answer(
@@ -2812,4 +2836,52 @@ async def transfer_selected_callback(update: Update, context: ContextTypes.DEFAU
         )
         return
 
-    await query.answer()
+    target_groups = await get_valid_target_groups(context, user_id, source_chat_id)
+
+    if not target_groups:
+        await query.answer(
+            TEXTS[lang]["transfer_no_target_groups"],
+            show_alert=True
+        )
+        return
+
+    keyboard = []
+
+    for chat_id, title in target_groups:
+        keyboard.append([
+            InlineKeyboardButton(
+                title,
+                callback_data=f"transfer_target:{source_chat_id}:{chat_id}"
+            )
+        ])
+
+    keyboard.append([
+        InlineKeyboardButton(
+            TEXTS[lang]["back_button"],
+            callback_data=f"transfer_panel:{source_chat_id}"
+        )
+    ])
+
+    await query.edit_message_text(
+        TEXTS[lang]["transfer_choose_group"],
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+async def get_valid_target_groups(context, user_id: int, source_chat_id: int):
+    groups = get_user_groups(user_id)
+    valid_groups = []
+
+    for chat_id, title in groups:
+        if chat_id == source_chat_id:
+            continue
+
+        try:
+            chat = await context.bot.get_chat(chat_id)
+
+            if await is_admin(chat, user_id):
+                valid_groups.append((chat_id, title))
+
+        except Exception as e:
+            print("TRANSFER TARGET GROUP ERROR:", e)
+
+    return valid_groups
