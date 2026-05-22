@@ -496,7 +496,7 @@ async def group_settings_callback(update: Update, context: ContextTypes.DEFAULT_
             InlineKeyboardButton(TEXTS[lang]["btn_required_subs"], callback_data=f"required_subs_panel:{chat_id}")
         ],
         [
-            InlineKeyboardButton(TEXTS[lang]["btn_transfer_settings"], callback_data=f"panel:transfer:{chat_id}"),
+            InlineKeyboardButton(TEXTS[lang]["btn_transfer_settings"], callback_data=f"transfer_panel:{chat_id}"),
         ],
         [
             InlineKeyboardButton(TEXTS[lang]["back_button"], callback_data="back_groups")
@@ -2636,3 +2636,162 @@ async def get_valid_required_subs(context, chat_id: int):
         set_group_setting(chat_id, "force_subscribe", False)
 
     return valid_rows
+
+def get_transfer_state(context, chat_id: int):
+    key = f"transfer:{chat_id}"
+
+    if key not in context.user_data:
+        context.user_data[key] = {
+            "bad_words": True,
+            "ads": True,
+            "warnings": True,
+            "restrictions": True,
+            "delete_settings": True,
+        }
+
+    return context.user_data[key]
+
+def build_transfer_panel(lang: str, chat_id: int, state: dict):
+    def status(value: bool):
+        return "✅" if value else "❌"
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_transfer_bad_words"].format(
+                    status=status(state["bad_words"])
+                ),
+                callback_data=f"transfer_toggle:bad_words:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_transfer_ads"].format(
+                    status=status(state["ads"])
+                ),
+                callback_data=f"transfer_toggle:ads:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_transfer_warnings"].format(
+                    status=status(state["warnings"])
+                ),
+                callback_data=f"transfer_toggle:warnings:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_transfer_restrictions"].format(
+                    status=status(state["restrictions"])
+                ),
+                callback_data=f"transfer_toggle:restrictions:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_transfer_delete_settings"].format(
+                    status=status(state["delete_settings"])
+                ),
+                callback_data=f"transfer_toggle:delete_settings:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_transfer_all"],
+                callback_data=f"transfer_all:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_transfer_selected"],
+                callback_data=f"transfer_selected:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["back_button"],
+                callback_data=f"group_settings:{chat_id}"
+            )
+        ],
+    ]
+
+    return TEXTS[lang]["transfer_panel"], InlineKeyboardMarkup(keyboard)
+
+async def transfer_panel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    chat_id = int(query.data.split(":")[1])
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("TRANSFER PANEL ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    state = get_transfer_state(context, chat_id)
+
+    text, keyboard = build_transfer_panel(lang, chat_id, state)
+
+    await query.edit_message_text(
+        text,
+        reply_markup=keyboard
+    )
+
+
+async def transfer_toggle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    _, key, chat_id = query.data.split(":")
+    chat_id = int(chat_id)
+
+    allowed = [
+        "bad_words",
+        "ads",
+        "warnings",
+        "restrictions",
+        "delete_settings",
+    ]
+
+    if key not in allowed:
+        return
+
+    state = get_transfer_state(context, chat_id)
+    state[key] = not state[key]
+
+    text, keyboard = build_transfer_panel(lang, chat_id, state)
+
+    await query.edit_message_text(
+        text,
+        reply_markup=keyboard
+    )
+
+
+async def transfer_all_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    chat_id = int(query.data.split(":")[1])
+
+    state = get_transfer_state(context, chat_id)
+
+    for key in state:
+        state[key] = True
+
+    text, keyboard = build_transfer_panel(lang, chat_id, state)
+
+    await query.edit_message_text(
+        text,
+        reply_markup=keyboard
+    )
