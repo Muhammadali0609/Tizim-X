@@ -100,8 +100,10 @@ async def settings_button_handler(update: Update, context: ContextTypes.DEFAULT_
         try:
             chat = await context.bot.get_chat(chat_id)
 
-            if await is_admin(chat, user_id):
-                valid_groups.append((chat_id, title))
+            if not await is_admin(chat, user_id):
+                continue
+    
+            valid_groups.append((chat_id, title))
 
         except Exception as e:
             print("CHECK USER GROUP ACCESS ERROR:", e)
