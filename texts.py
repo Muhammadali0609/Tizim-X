@@ -122,6 +122,19 @@ TEXTS = {
             "🔒 {name} временно ограничен на 1 день.\n\n"
             "Причина: {reason}"
         ),
+        "restrictions_panel": (
+            "🔒 Ограничения\n\n"
+            "Ограничение за мат: {bad_words_status}\n"
+            "Ограничение за рекламу: {ads_status}\n\n"
+            "Срок ограничения за мат: {bad_words_duration}\n"
+            "Срок ограничения за рекламу: {ads_duration}"
+        ),
+        "btn_punish_bad_words_on": "🟢 Включить ограничение за мат",
+        "btn_punish_bad_words_off": "🔴 Выключить ограничение за мат",
+        "btn_punish_ads_on": "🟢 Включить ограничение за рекламу",
+        "btn_punish_ads_off": "🔴 Выключить ограничение за рекламу",
+        "btn_bad_words_punish_duration": "⏳ Срок за мат",
+        "btn_ads_punish_duration": "⏳ Срок за рекламу",
     },
     "uz": {
         "start": (
@@ -246,5 +259,18 @@ TEXTS = {
             "🔒 {name} 1 kunga vaqtincha cheklandi.\n\n"
             "Sabab: {reason}"
         ),
+        "restrictions_panel": (
+            "🔒 Cheklovlar\n\n"
+            "So‘kinish uchun cheklov: {bad_words_status}\n"
+            "Reklama uchun cheklov: {ads_status}\n\n"
+            "So‘kinish uchun cheklov muddati: {bad_words_duration}\n"
+            "Reklama uchun cheklov muddati: {ads_duration}"
+        ),
+        "btn_punish_bad_words_on": "🟢 So‘kinish uchun cheklovni yoqish",
+        "btn_punish_bad_words_off": "🔴 So‘kinish uchun cheklovni o‘chirish",
+        "btn_punish_ads_on": "🟢 Reklama uchun cheklovni yoqish",
+        "btn_punish_ads_off": "🔴 Reklama uchun cheklovni o‘chirish",
+        "btn_bad_words_punish_duration": "⏳ So‘kinish uchun muddat",
+        "btn_ads_punish_duration": "⏳ Reklama uchun muddat",
     }
 }
