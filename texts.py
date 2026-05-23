@@ -1,8 +1,17 @@
 TEXTS = {
     "ru": {
         "start": (
-            "🛡 Добро пожаловать в TizimX\n\n"
-            "Умная система управления и модерации Telegram-групп."
+            "Добро пожаловать в TizimX.\n\n"
+            "TizimX — это система автоматической модерации и управления Telegram-группами.\n\n"
+            "Бот помогает автоматически контролировать:\n"
+            "• мат и оскорбления\n"
+            "• рекламу и ссылки\n"
+            "• предупреждения и ограничения\n"
+            "• обязательные подписки\n"
+            "• ручную модерацию участников\n"
+            "• и многое другое\n\n"
+            "Добавьте бота в группу и выдайте права администратора для полноценной работы.\n\n"
+            "Подробная информация и инструкции доступны в разделе «Инструкция»."
         ),
         "choose_language": "🌐 Выберите язык:",
         "language_saved": "✅ Язык сохранён: Русский",
@@ -262,8 +271,17 @@ TEXTS = {
     },
     "uz": {
         "start": (
-            "🛡 TizimX ga xush kelibsiz\n\n"
-            "Telegram guruhlarini boshqarish va moderatsiya qilish uchun aqlli tizim."
+            "TizimX ga xush kelibsiz.\n\n"
+            "TizimX — Telegram guruhlarini avtomatik boshqarish va moderatsiya qilish tizimi.\n\n"
+            "Bot quyidagilarni avtomatik nazorat qiladi:\n"
+            "• so‘kinish va haqoratlar\n"
+            "• reklama va havolalar\n"
+            "• ogohlantirish va cheklovlar\n"
+            "• majburiy obunalar\n"
+            "• qo‘lda moderatsiya qilish\n"
+            "• va yana k‘op narsalar\n\n"
+            "Botdan to‘liq foydalanish uchun uni guruhga qo‘shib administrator huquqlarini bering.\n\n"
+            "Batafsil ma’lumot va qo‘llanmalar «Instruksiya» bo‘limida mavjud."
         ),
         "choose_language": "🌐 Tilni tanlang:",
         "language_saved": "✅ Til saqlandi: O‘zbekcha",
