@@ -467,7 +467,7 @@ TEXTS = {
 
             "<blockquote>Например:\n"
             "• @username\n"
-            "• @название_канала</blockquote>\n\n"
+            "• Привет @username, как ты</blockquote>\n\n"
 
             "Однако:\n"
             "• t.me/\n"
@@ -951,7 +951,7 @@ TEXTS = {
 
             "<blockquote>Masalan:\n"
             "• @username\n"
-            "• @kanal_nomi</blockquote>\n\n"
+            "• Salom @username, qalaysan</blockquote>\n\n"
 
             "Ammo quyidagilar:\n"
             "• t.me/\n"
