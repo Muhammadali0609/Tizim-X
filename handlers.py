@@ -3135,13 +3135,6 @@ async def apply_manual_mute(message, context, target_user, seconds, lang):
         )
     )
 
-    await asyncio.sleep(3)
-
-    try:
-        await msg.delete()
-    except Exception as e:
-        print("DELETE MUTE RESULT MESSAGE ERROR:", e)
-
 async def mute_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = update.message
 
