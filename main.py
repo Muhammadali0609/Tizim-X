@@ -47,6 +47,7 @@ from handlers import (start_command,
     transfer_selected_callback,
     transfer_target_callback,
     transfer_confirm_callback,
+    group_plan_callback,
 )
 from db import setup_database
 
@@ -125,6 +126,7 @@ def main():
     app.add_handler(CallbackQueryHandler(transfer_selected_callback, pattern="^transfer_selected:"))
     app.add_handler(CallbackQueryHandler(transfer_target_callback, pattern="^transfer_target:"))
     app.add_handler(CallbackQueryHandler(transfer_confirm_callback, pattern="^transfer_confirm:"))
+    app.add_handler(CallbackQueryHandler(group_plan_callback, pattern="^group_plan:"))
     
     app.run_webhook(
         listen="0.0.0.0",
