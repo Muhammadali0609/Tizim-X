@@ -2,6 +2,7 @@ from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ChatPer
 from telegram.constants import ChatMemberStatus
 from telegram.ext import ContextTypes
 from datetime import datetime, timedelta, timezone
+from zoneinfo import ZoneInfo
 from db import(save_user_language,
     get_user_language,
     save_group,
@@ -3044,7 +3045,10 @@ async def group_plan_callback(update: Update, context: ContextTypes.DEFAULT_TYPE
     plan_text = TEXTS[lang].get(f"plan_{plan_name}", plan_name)
 
     if expires_at:
-        expires_text = expires_at.strftime("%d.%m.%Y %H:%M")
+        local_time = expires_at.astimezone(
+            ZoneInfo("Asia/Tashkent")
+        )
+        expires_text = local_time.strftime("%d.%m.%Y %H:%M")
     else:
         expires_text = "—"
 
