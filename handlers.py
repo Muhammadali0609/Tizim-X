@@ -3074,3 +3074,153 @@ async def group_plan_callback(update: Update, context: ContextTypes.DEFAULT_TYPE
         ),
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
+
+async def delete_admin_command(message):
+    try:
+        await message.delete()
+    except Exception as e:
+        print("DELETE ADMIN COMMAND ERROR:", e)
+
+async def resolve_mute_target(message, context, args):
+    if message.reply_to_message:
+        return message.reply_to_message.from_user
+
+    if not args:
+        return None
+
+    raw_target = args[0].strip()
+
+    if raw_target.isdigit():
+        try:
+            member = await context.bot.get_chat_member(
+                chat_id=message.chat.id,
+                user_id=int(raw_target)
+            )
+            return member.user
+        except Exception as e:
+            print("MUTE ID FIND ERROR:", e)
+            return None
+
+    if raw_target.startswith("@"):
+        try:
+            member = await context.bot.get_chat_member(
+                chat_id=message.chat.id,
+                user_id=raw_target
+            )
+            return member.user
+        except Exception as e:
+            print("MUTE USERNAME FIND ERROR:", e)
+            return None
+
+    return None
+
+async def apply_manual_mute(message, context, target_user, seconds, lang):
+    if seconds == -1:
+        until_date = None
+    else:
+        until_date = datetime.now(timezone.utc) + timedelta(seconds=seconds)
+
+    await message.chat.restrict_member(
+        user_id=target_user.id,
+        permissions=ChatPermissions(
+            can_send_messages=False
+        ),
+        until_date=until_date
+    )
+
+    msg = await message.chat.send_message(
+        TEXTS[lang]["user_muted"].format(
+            name=target_user.first_name,
+            duration=format_duration(seconds, lang)
+        )
+    )
+
+    await asyncio.sleep(3)
+
+    try:
+        await msg.delete()
+    except Exception as e:
+        print("DELETE MUTE RESULT MESSAGE ERROR:", e)
+
+async def mute_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = update.message
+
+    if not message or message.chat.type not in ["group", "supergroup"]:
+        return
+
+    await delete_admin_command(message)
+
+    user = message.from_user
+    lang = get_group_language(message.chat.id)
+
+    if not await is_admin(message.chat, user.id):
+        return
+
+    args = context.args
+
+    target_user = await resolve_mute_target(message, context, args)
+
+    if not target_user:
+        msg = await message.chat.send_message(TEXTS[lang]["user_not_found"])
+        await asyncio.sleep(3)
+        await msg.delete()
+        return
+
+    if message.reply_to_message:
+        duration_text = args[0] if args else "forever"
+    else:
+        duration_text = args[1] if len(args) >= 2 else "forever"
+
+    seconds = parse_duration(duration_text)
+
+    if seconds is None:
+        msg = await message.chat.send_message(TEXTS[lang]["invalid_mute_duration"])
+        await asyncio.sleep(3)
+        await msg.delete()
+        return
+
+    try:
+        await apply_manual_mute(message, context, target_user, seconds, lang)
+    except Exception as e:
+        print("MANUAL MUTE ERROR:", e)
+
+async def dmute_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = update.message
+
+    if not message or message.chat.type not in ["group", "supergroup"]:
+        return
+
+    await delete_admin_command(message)
+
+    user = message.from_user
+    lang = get_group_language(message.chat.id)
+
+    if not await is_admin(message.chat, user.id):
+        return
+
+    if not message.reply_to_message:
+        msg = await message.chat.send_message(TEXTS[lang]["user_not_found"])
+        await asyncio.sleep(3)
+        await msg.delete()
+        return
+
+    target_user = message.reply_to_message.from_user
+    duration_text = context.args[0] if context.args else "forever"
+
+    seconds = parse_duration(duration_text)
+
+    if seconds is None:
+        msg = await message.chat.send_message(TEXTS[lang]["invalid_mute_duration"])
+        await asyncio.sleep(3)
+        await msg.delete()
+        return
+
+    try:
+        await message.reply_to_message.delete()
+    except Exception as e:
+        print("DELETE DMUTE TARGET MESSAGE ERROR:", e)
+
+    try:
+        await apply_manual_mute(message, context, target_user, seconds, lang)
+    except Exception as e:
+        print("DMUTE ERROR:", e)
