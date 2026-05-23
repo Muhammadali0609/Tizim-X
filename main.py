@@ -62,6 +62,7 @@ from handlers import (start_command,
     unban_command,
     language_toggle_handler,
     guide_button_handler,
+    guide_callback,
 )
 from db import setup_database
 
@@ -155,6 +156,7 @@ def main():
     app.add_handler(CallbackQueryHandler(transfer_target_callback, pattern="^transfer_target:"))
     app.add_handler(CallbackQueryHandler(transfer_confirm_callback, pattern="^transfer_confirm:"))
     app.add_handler(CallbackQueryHandler(group_plan_callback, pattern="^group_plan:"))
+    app.add_handler(CallbackQueryHandler(guide_callback, pattern="^guide:"))
     
     app.run_webhook(
         listen="0.0.0.0",
