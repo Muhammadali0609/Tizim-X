@@ -3547,3 +3547,117 @@ async def dban_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     except Exception as e:
         print("DBAN ERROR:", e)
+
+async def send_temp_group_message(message, text: str):
+    msg = await message.chat.send_message(text)
+
+    await asyncio.sleep(3)
+
+    try:
+        await msg.delete()
+    except Exception as e:
+        print("DELETE TEMP GROUP MESSAGE ERROR:", e)
+
+async def unmute_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = update.message
+
+    if not message or message.chat.type not in ["group", "supergroup"]:
+        return
+
+    await delete_admin_command(message)
+
+    admin = message.from_user
+    lang = get_group_language(message.chat.id)
+
+    if not await is_admin(message.chat, admin.id):
+        return
+
+    if not context.args:
+        await send_temp_group_message(
+            message,
+            TEXTS[lang]["user_not_found"]
+        )
+        return
+
+    target_user = await resolve_mute_target(message, context, context.args)
+
+    if not target_user:
+        await send_temp_group_message(
+            message,
+            TEXTS[lang]["user_not_found"]
+        )
+        return
+
+    try:
+        await message.chat.restrict_member(
+            user_id=target_user.id,
+            permissions=ChatPermissions(
+                can_send_messages=True,
+                can_send_audios=True,
+                can_send_documents=True,
+                can_send_photos=True,
+                can_send_videos=True,
+                can_send_video_notes=True,
+                can_send_voice_notes=True,
+                can_send_polls=True,
+                can_send_other_messages=True,
+                can_add_web_page_previews=True,
+                can_invite_users=True,
+            )
+        )
+
+        await send_temp_group_message(
+            message,
+            TEXTS[lang]["user_unmuted"].format(
+                name=target_user.first_name
+            )
+        )
+
+    except Exception as e:
+        print("UNMUTE ERROR:", e)
+
+async def unban_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = update.message
+
+    if not message or message.chat.type not in ["group", "supergroup"]:
+        return
+
+    await delete_admin_command(message)
+
+    admin = message.from_user
+    lang = get_group_language(message.chat.id)
+
+    if not await is_admin(message.chat, admin.id):
+        return
+
+    if not context.args:
+        await send_temp_group_message(
+            message,
+            TEXTS[lang]["user_not_found"]
+        )
+        return
+
+    target_user = await resolve_mute_target(message, context, context.args)
+
+    if not target_user:
+        await send_temp_group_message(
+            message,
+            TEXTS[lang]["user_not_found"]
+        )
+        return
+
+    try:
+        await message.chat.unban_member(
+            user_id=target_user.id,
+            only_if_banned=True
+        )
+
+        await send_temp_group_message(
+            message,
+            TEXTS[lang]["user_unbanned"].format(
+                name=target_user.first_name
+            )
+        )
+
+    except Exception as e:
+        print("UNBAN ERROR:", e)
