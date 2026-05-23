@@ -39,7 +39,8 @@ from db import(save_user_language,
     add_required_sub,
     delete_required_sub_by_index,
     delete_required_sub_by_id,
-    copy_settings
+    copy_settings,
+    get_group_plan
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username
@@ -3017,4 +3018,55 @@ async def transfer_confirm_callback(update: Update, context: ContextTypes.DEFAUL
 
     await query.edit_message_text(
         TEXTS[lang]["transfer_done"]
+    )
+
+async def group_plan_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    chat_id = int(query.data.split(":")[1])
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("GROUP PLAN ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    plan_name, expires_at = get_group_plan(chat_id)
+
+    plan_text = TEXTS[lang].get(f"plan_{plan_name}", plan_name)
+
+    if expires_at:
+        expires_text = expires_at.strftime("%d.%m.%Y %H:%M")
+    else:
+        expires_text = "—"
+
+    keyboard = [
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_pay_plan"],
+                callback_data=f"pay_plan:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["back_button"],
+                callback_data=f"group_settings:{chat_id}"
+            )
+        ],
+    ]
+
+    await query.edit_message_text(
+        TEXTS[lang]["group_plan_text"].format(
+            plan=plan_text,
+            expires_at=expires_text
+        ),
+        reply_markup=InlineKeyboardMarkup(keyboard)
     )
