@@ -254,6 +254,8 @@ TEXTS = {
         "invalid_mute_duration": "❌ Неверный срок ограничения.",
         "user_not_found": "❌ Не удалось найти пользователя.",
         "user_muted": "🔒 {name} получил ограничение.\n\nСрок: {duration}",
+
+        "user_kicked": "👢 {name} удалён из группы.",
     },
     "uz": {
         "start": (
@@ -510,5 +512,7 @@ TEXTS = {
         "invalid_mute_duration": "❌ Cheklov muddati noto‘g‘ri.",
         "user_not_found": "❌ Foydalanuvchini topib bo‘lmadi.",
         "user_muted": "🔒 {name} cheklandi.\n\nMuddat: {duration}",
+
+        "user_kicked": "👢 {name} guruhdan chiqarildi.",
     }
 }
