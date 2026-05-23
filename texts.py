@@ -435,6 +435,49 @@ TEXTS = {
             "Отправка сообщения зависит от того, включён ли раздел "
             "<b>Предупреждения</b>."
         ),
+        "guide_settings_text": (
+            "<b>Настройки</b> — это раздел для быстрого управления "
+            "основными фильтрами и функциями бота.\n\n"
+
+            "Переключатели в этом разделе используются для "
+            "включения или отключения фильтров.\n\n"
+
+            "Каждая настройка независимо влияет на системы "
+            "рекламы и матов.\n\n"
+
+            "<b>Удаление матов</b>\n"
+            "Если данный переключатель включён, бот автоматически "
+            "удаляет сообщения с обнаруженными матами.\n\n"
+
+            "Если переключатель выключен:\n"
+            "• сообщение не удаляется\n"
+            "• однако предупреждения и ограничения продолжают работать\n\n"
+
+            "<b>Удаление рекламы</b>\n"
+            "Если данный переключатель включён, бот автоматически "
+            "удаляет рекламные сообщения и ссылки.\n\n"
+
+            "Если переключатель выключен:\n"
+            "• сообщение не удаляется\n"
+            "• однако предупреждения и ограничения продолжают работать\n\n"
+
+            "<b>Удаление @username</b>\n"
+            "Этот фильтр определяет текст в формате @username "
+            "и автоматически удаляет его.\n\n"
+
+            "Например:\n"
+            "• @username\n"
+            "• @название_канала\n\n"
+
+            "Однако:\n"
+            "• t.me/\n"
+            "• https://t.me/\n\n"
+
+            "не относятся к этому фильтру.\n\n"
+
+            "Если переключатель выключен, бот не реагирует "
+            "на сообщения с @username."
+        ),
     },
     "uz": {
         "start": (
@@ -875,6 +918,49 @@ TEXTS = {
 
             "Xabar yuborilishi <b>Ogohlantirishlar</b> bo‘limi "
             "yoqilgan yoki o‘chirilganligiga bog‘liq."
+        ),
+        "guide_settings_text": (
+            "<b>Sozlamalar</b> — botning asosiy filtr va funksiyalarini "
+            "tez boshqarish bo‘limi.\n\n"
+
+            "Ushbu bo‘limdagi tugmalar filtrlarni yoqish yoki "
+            "o‘chirish uchun ishlatiladi.\n\n"
+
+            "Har bir sozlama reklama va so‘kinish tizimlariga "
+            "mustaqil ta’sir qiladi.\n\n"
+
+            "<b>So‘kinishlarni o‘chirish</b>\n"
+            "Agar ushbu tugma yoqilgan bo‘lsa, bot aniqlangan "
+            "so‘kinishli xabarlarni avtomatik o‘chiradi.\n\n"
+
+            "Agar tugma o‘chirilgan bo‘lsa:\n"
+            "• xabar o‘chirilmaydi\n"
+            "• ammo ogohlantirish va cheklovlar ishlashda davom etadi\n\n"
+
+            "<b>Reklamalarni o‘chirish</b>\n"
+            "Agar ushbu tugma yoqilgan bo‘lsa, bot reklama "
+            "va havolali xabarlarni avtomatik o‘chiradi.\n\n"
+
+            "Agar tugma o‘chirilgan bo‘lsa:\n"
+            "• xabar o‘chirilmaydi\n"
+            "• ammo ogohlantirish va cheklovlar ishlashda davom etadi\n\n"
+
+            "<b>@username ni o‘chirish</b>\n"
+            "Bu filtr foydalanuvchi yuborgan @username "
+            "ko‘rinishidagi matnlarni aniqlaydi va avtomatik o‘chiradi.\n\n"
+
+            "Masalan:\n"
+            "• @username\n"
+            "• @kanal_nomi\n\n"
+
+            "Ammo quyidagilar:\n"
+            "• t.me/\n"
+            "• https://t.me/\n\n"
+
+            "ushbu filtrga kirmaydi.\n\n"
+
+            "Agar tugma o‘chirilgan bo‘lsa, bot "
+            "@username matnlariga ta’sir qilmaydi."
         ),
     }
 }
