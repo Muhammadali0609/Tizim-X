@@ -61,6 +61,7 @@ from handlers import (start_command,
     unmute_command,
     unban_command,
     language_toggle_handler,
+    guide_button_handler,
 )
 from db import setup_database
 
@@ -96,6 +97,7 @@ def main():
     app.add_handler(CallbackQueryHandler(check_subscription_callback, pattern="^check_sub:"))
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.Regex("^(⚙️ Управлять|⚙️ Boshqarish)$"), settings_button_handler))
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.Regex("^(🌐 Язык|🌐 Til)$"), language_toggle_handler))
+    app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.Regex("^(📘 Инструкция|📘 Qo‘llanma)$"), guide_button_handler))
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.TEXT & ~filters.COMMAND, private_text_handler))
     app.add_handler(CommandHandler("mute", mute_command))
     app.add_handler(CommandHandler("dmute", dmute_command))
