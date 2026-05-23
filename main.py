@@ -58,6 +58,8 @@ from handlers import (start_command,
     dkick_command,
     ban_command,
     dban_command,
+    unmute_command,
+    unban_command,
 )
 from db import setup_database
 
@@ -105,6 +107,8 @@ def main():
     app.add_handler(CommandHandler("dkick", dkick_command))
     app.add_handler(CommandHandler("ban", ban_command))
     app.add_handler(CommandHandler("dban", dban_command))
+    app.add_handler(CommandHandler("unmute", unmute_command))
+    app.add_handler(CommandHandler("unban", unban_command))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, check_group_message))
     app.add_handler(CallbackQueryHandler(group_settings_callback, pattern="^group_settings:"))
     app.add_handler(CallbackQueryHandler(back_groups_callback, pattern="^back_groups$"))
