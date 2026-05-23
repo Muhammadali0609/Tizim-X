@@ -848,3 +848,18 @@ def copy_settings(source_chat_id: int, target_chat_id: int, state: dict):
                 """, (target_chat_id, source_chat_id))
 
         conn.commit()
+
+def get_group_plan(chat_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT plan_name, plan_expires_at
+                FROM tizimx_groups
+                WHERE chat_id = %s
+            """, (chat_id,))
+            row = cur.fetchone()
+
+    if not row:
+        return "trial", None
+
+    return row[0], row[1]
