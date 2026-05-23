@@ -257,6 +257,8 @@ TEXTS = {
 
         "user_kicked": "👢 {name} удалён из группы.",
         "user_banned": "⛔️ {name} заблокирован в группе.",
+        "user_unmuted": "🔓 {name} снова может писать.",
+        "user_unbanned": "✅ {name} разблокирован.",
     },
     "uz": {
         "start": (
@@ -516,5 +518,7 @@ TEXTS = {
 
         "user_kicked": "👢 {name} guruhdan chiqarildi.",
         "user_banned": "⛔️ {name} guruhda bloklandi.",
+        "user_unmuted": "🔓 {name} yana yozishi mumkin.",
+        "user_unbanned": "✅ {name} blokdan chiqarildi.",
     }
 }
