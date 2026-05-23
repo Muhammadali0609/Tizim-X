@@ -333,10 +333,10 @@ TEXTS = {
             "Фильтр работает только если фраза полностью "
             "найдена внутри текста.\n\n"
             "Например, если добавлена фраза "
-            "<b>накручу ботов</b>:\n\n"
-            "• Я <b>накручу ботов</b>, пишите\n"
+            "<b><i>накручу ботов</i></b>:\n\n"
+            "• Я <b><i>накручу ботов</i></b>, пишите\n"
             "→ фильтр сработает\n\n"
-            "• Я <b>накручу</b> вам <b>ботов</b>, пишите\n"
+            "• Я <b><i>накручу</i></b> вам <b>ботов</b>, пишите\n"
             "→ фильтр не сработает\n\n"
             "Потому что фраза не была найдена "
             "в тексте как единое значение.\n\n"
@@ -350,6 +350,32 @@ TEXTS = {
             "Во всех разделах доступны кнопки "
             "<b>Добавить</b> и <b>Удалить</b>.\n\n"
             "Удаление работает только по номеру из списка."
+        ),
+        "guide_warnings_text": (
+            "<b>Предупреждения</b> — это система, которая автоматически "
+            "выдаёт предупреждения пользователю при нарушении правил.\n\n"
+            "Предупреждения для рекламы и матов работают отдельно "
+            "и имеют собственный счётчик.\n\n"
+            "Например:\n"
+            "• 2 предупреждения за рекламу\n"
+            "• 1 предупреждение за мат\n\n"
+            "В этом случае бот не объединяет их между собой.\n\n"
+            "<b>Включение предупреждений</b>\n"
+            "Если данный переключатель включён, бот отправляет сообщение "
+            "о нарушении и показывает текущее количество предупреждений пользователя.\n\n"
+            "Если переключатель выключен, бот не отправляет сообщение "
+            "с предупреждением, однако предупреждения всё равно продолжают учитываться.\n\n"
+            "<b>Лимит предупреждений</b>\n"
+            "В этом разделе вы можете указать, после какого количества "
+            "нарушений пользователь получит ограничение.\n\n"
+            "Однако выдавать ограничение или нет решает раздел <b>Ограничения</b>.\n\n"
+            "Например:\n"
+            "• если лимит установлен на 3\n"
+            "• пользователь нарушил правило 3 раза\n"
+            "→ бот автоматически применит ограничение\n\n"
+            "После ограничения предупреждения пользователя автоматически "
+            "сбрасываются до нуля.\n\n"
+            "Лимиты для рекламы и матов работают отдельно друг от друга."
         ),
     },
     "uz": {
@@ -683,10 +709,10 @@ TEXTS = {
             "Bot reklama mazmunidagi matnlarni ham aniqlay oladi. "
             "Yuborgan matningiz bir butun ma’lumot sifatida qabul qilinadi.\n\n"
             "Filtr faqat ibora matn ichida to‘liq ko‘rinishda topilganda ishlaydi.\n\n"
-            "Masalan, agar <b>odam yig‘aman</b> iborasi qo‘shilgan bo‘lsa:\n\n"
-            "• Men <b>odam yig‘aman</b>, yozinglar\n"
+            "Masalan, agar <b><i>odam yig‘aman</i></b> iborasi qo‘shilgan bo‘lsa:\n\n"
+            "• Men <b><i>odam yig‘aman</i></b>, yozinglar\n"
             "→ filtr ishlaydi\n\n"
-            "• Men <b>odam</b> sizlarga <b>yig‘aman</b>, yozinglar\n"
+            "• Men <b><i>odam</i></b> sizlarga <b><i>yig‘aman</i></b>, yozinglar\n"
             "→ filtr ishlamaydi\n\n"
             "Chunki ibora matn ichida bir butun holatda topilmadi.\n\n"
             "<b>Istisnolar</b>\n"
@@ -698,6 +724,42 @@ TEXTS = {
             "Barcha bo‘limlarda <b>Qo‘shish</b> va <b>O‘chirish</b> "
             "tugmalari mavjud.\n\n"
             "O‘chirish faqat ro‘yxatdagi raqam orqali ishlaydi."
+        ),
+        "guide_warnings_text": (
+            "<b>Ogohlantirishlar</b> — foydalanuvchi qoidalarni buzganida "
+            "unga avtomatik ogohlantirish beruvchi tizim.\n\n"
+
+            "Ogohlantirishlar reklama va so‘kinish filtrlari uchun alohida "
+            "ishlaydi va har biri o‘zining alohida hisobiga ega.\n\n"
+
+            "Masalan:\n"
+            "• reklama uchun 2 ta ogohlantirish\n"
+            "• so‘kinish uchun 1 ta ogohlantirish\n\n"
+
+            "Bot bu holatda ularni birlashtirmaydi.\n\n"
+
+            "<b>Ogohlantirishlarni yoqish</b>\n"
+            "Agar ushbu tugma yoqilgan bo‘lsa, bot foydalanuvchiga "
+            "qoidabuzarlik haqida xabar yuboradi va ogohlantirish sonini ko‘rsatadi.\n\n"
+
+            "Agar tugma o‘chirilgan bo‘lsa, bot ogohlantirish xabarini yubormaydi, "
+            "ammo ogohlantirishlar baribir hisoblanadi.\n\n"
+
+            "<b>Ogohlantirish limiti</b>\n"
+            "Bu bo‘limda foydalanuvchi necha marta qoida buzganidan keyin "
+            "cheklov olishini belgilashingiz mumkin.\n\n"
+
+            "Ammo cheklov berish yoki bermaslikni <b>Cheklovlar</b> bo‘limi hal qiladi.\n\n"
+
+            "Masalan:\n"
+            "• limit 3 bo‘lsa\n"
+            "• foydalanuvchi 3 marta qoida buzsa\n"
+            "→ bot avtomatik cheklov qo‘llaydi\n\n"
+
+            "Cheklovdan keyin foydalanuvchining ogohlantirishlari avtomatik "
+            "ravishda nolga tushiriladi.\n\n"
+
+            "Reklama va so‘kinish uchun limitlar alohida ishlaydi."
         ),
     }
 }
