@@ -377,6 +377,64 @@ TEXTS = {
             "сбрасываются до нуля.\n\n"
             "Лимиты для рекламы и матов работают отдельно друг от друга."
         ),
+        "guide_restrictions_text": (
+            "<b>Ограничения</b> — это система, которая определяет, "
+            "какое наказание получит пользователь после достижения "
+            "лимита предупреждений.\n\n"
+
+            "Ограничения для рекламы и матов работают отдельно "
+            "и имеют собственные независимые настройки.\n\n"
+
+            "Например:\n"
+            "• ban за рекламу\n"
+            "• mute на 1 день за мат\n\n"
+
+            "В этом случае бот не объединяет их между собой.\n\n"
+
+            "<b>Включение ограничений</b>\n"
+            "Если данный переключатель включён, бот автоматически "
+            "применяет наказание после достижения лимита предупреждений.\n\n"
+
+            "Если переключатель выключен, предупреждения продолжают "
+            "учитываться, однако ограничения выдаваться не будут.\n\n"
+
+            "<b>Срок ограничения</b>\n"
+            "В этом разделе вы можете указать, на какой срок "
+            "пользователь будет ограничен.\n\n"
+
+            "Бот поддерживает следующие форматы:\n\n"
+
+            "• s — секунды\n"
+            "• m — минуты\n"
+            "• h — часы\n"
+            "• d — дни\n"
+            "• w — недели\n"
+            "• mo — месяцы\n\n"
+
+            "Также поддерживаются:\n"
+            "• forever — вечный mute\n"
+            "• ban — исключение и блокировка пользователя\n\n"
+
+            "Например:\n"
+            "• <b>1d</b> — ограничение на 1 день\n"
+            "• <b>2h 30m</b> — ограничение на 2 часа 30 минут\n"
+            "• <b>forever</b> — вечное ограничение\n"
+            "• <b>ban</b> — пользователь будет исключён и заблокирован\n\n"
+
+            "Максимальный срок ограничения — <b>12 месяцев.</b>\n"
+            "Минимальный срок ограничения — <b>1 минута.</b>\n\n"
+
+            "❗️Форматы с повторяющимися значениями, например:\n"
+            "• 1m 1m\n"
+            "• 2h 2h 30m\n"
+            "не поддерживаются.\n\n"
+
+            "Если пользователь получает ограничение, бот автоматически "
+            "отправляет сообщение в группу и указывает причину ограничения.\n\n"
+
+            "Отправка сообщения зависит от того, включён ли раздел "
+            "<b>Предупреждения</b>."
+        ),
     },
     "uz": {
         "start": (
@@ -760,6 +818,63 @@ TEXTS = {
             "ravishda nolga tushiriladi.\n\n"
 
             "Reklama va so‘kinish uchun limitlar alohida ishlaydi."
+        ),
+        "guide_restrictions_text": (
+            "<b>Cheklovlar</b> — foydalanuvchi ogohlantirish limitiga "
+            "yetganidan keyin qanday jazo olishini boshqaruvchi tizim.\n\n"
+
+            "Cheklovlar reklama va so‘kinish uchun alohida ishlaydi "
+            "va har biri o‘zining mustaqil sozlamalariga ega.\n\n"
+
+            "Masalan:\n"
+            "• reklama uchun ban\n"
+            "• so‘kinish uchun 1 kun mute\n\n"
+
+            "Bot bu holatda ularni birlashtirmaydi.\n\n"
+
+            "<b>Cheklovlarni yoqish</b>\n"
+            "Agar ushbu tugma yoqilgan bo‘lsa, foydalanuvchi "
+            "ogohlantirish limitiga yetganda bot avtomatik "
+            "jazo qo‘llaydi.\n\n"
+
+            "Agar tugma o‘chirilgan bo‘lsa, ogohlantirishlar "
+            "hisoblanishda davom etadi, ammo hech qanday "
+            "cheklov berilmaydi.\n\n"
+
+            "<b>Cheklov muddati</b>\n"
+            "Bu bo‘limda foydalanuvchi qancha muddatga "
+            "cheklanishini belgilashingiz mumkin.\n\n"
+
+            "Bot quyidagi formatlarni qo‘llab-quvvatlaydi:\n\n"
+
+            "• s — soniya\n"
+            "• m — daqiqa\n"
+            "• h — soat\n"
+            "• d — kun\n"
+            "• w — hafta\n"
+            "• mo — oy\n\n"
+
+            "Shuningdek:\n"
+            "• forever — doimiy mute\n"
+            "• ban — haydash va bloklash\n\n"
+
+            "Masalan:\n"
+            "• <b>1d</b> — kiritsangiz, cheklov 1 kunga beriladi\n"
+            "• <b>2h 30m</b> — kiritsangiz, cheklov 2 soatu 30 daqiqaga beriladi\n"
+            "• <b>forever</b> — kiritsangiz, cheklov doimiyga beriladi\n"
+            "• <b>ban</b> — kiritsangiz, foydalanuvchi guruhdan haydaladi va bloklanadi\n\n"
+
+            "Maksimal cheklov muddati — <b>12 oy.</b>\n"
+            "Minimal cheklov muddati — <b>1 daqiqa.</b>\n\n"
+
+            "❗️<b>1m 1m</b> yoki <b>2h 2h 30m</b> kabi takrorlanuvchi "
+            "formatlar qo‘llab-quvvatlanmaydi.\n\n"
+
+            "Agar foydalanuvchi cheklansa, bot guruhga avtomatik "
+            "xabar yuboradi va cheklov sababini ko‘rsatadi.\n\n"
+
+            "Xabar yuborilishi <b>Ogohlantirishlar</b> bo‘limi "
+            "yoqilgan yoki o‘chirilganligiga bog‘liq."
         ),
     }
 }
