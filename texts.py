@@ -292,6 +292,23 @@ TEXTS = {
         "btn_guide_required_subs": "📘 Обязательные подписки",
         "btn_guide_transfer": "📘 Перенос настроек",
         "btn_guide_plan": "📘 План группы",
+        
+        "guide_bad_words_text": (
+            "<b>Маты</b> — это фильтр, который определяет запрещённые слова "
+            "в сообщениях пользователей, даже если они находятся внутри большого текста.\n\n"
+            "Добавить слова можно в этом разделе с помощью кнопки «Добавить».\n\n"
+            "Вы можете добавить сразу несколько слов одновременно, "
+            "разделяя их пробелом. Использовать запятые или другие "
+            "разделители не нужно.\n\n"
+            "Также поддерживаются слова с изменёнными символами и знаками, например:\n"
+            "• сло’во\n"
+            "• сл@во\n"
+            "• сл*во\n\n"
+            "Для проверки наличия слова в словаре используйте кнопку «Поиск». "
+            "Поиск принимает как сами слова, так и их номер в списке.\n\n"
+            "Чтобы удалить слово, сначала найдите его через «Поиск», "
+            "а затем нажмите кнопку «Удалить» в открывшемся окне."
+        )
     },
     "uz": {
         "start": (
@@ -586,5 +603,23 @@ TEXTS = {
         "btn_guide_required_subs": "📘 Majburiy obunalar",
         "btn_guide_transfer": "📘 Sozlamalarni ko‘chirish",
         "btn_guide_plan": "📘 Guruh tarif rejasi",
+        
+        "guide_bad_words_text": (
+            "<b>So‘kinishlar</b> — foydalanuvchi yuborgan xabardagi "
+            "taqiqlangan so‘zlarni aniqlovchi filtr hisoblanadi, "
+            "hatto ular katta matn ichida bo‘lsa ham.\n\n"
+            "So‘zlarni ushbu bo‘limdagi «Qo‘shish» tugmasi orqali qo‘shishingiz mumkin.\n\n"
+            "Bir vaqtning o‘zida bir nechta so‘zni qo‘shish mumkin. "
+            "Buning uchun so‘zlar orasini oddiy probel bilan ajrating. "
+            "Vergul yoki boshqa belgilar kerak emas.\n\n"
+            "Shuningdek, o‘zgartirilgan belgilar bilan yozilgan so‘zlar ham aniqlanadi, masalan:\n"
+            "• so’kinish\n"
+            "• s@kinish\n"
+            "• s*kinish\n\n"
+            "So‘z lug‘atda mavjudligini tekshirish uchun «Qidirish» tugmasidan foydalaning. "
+            "Qidiruv so‘zning o‘zi yoki uning ro‘yxatdagi raqami orqali ishlaydi.\n\n"
+            "So‘zni o‘chirish uchun avval uni «Qidirish» orqali toping, "
+            "so‘ng ochilgan oynada «O‘chirish» tugmasini bosing."
+        )
     }
 }
