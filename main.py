@@ -48,6 +48,8 @@ from handlers import (start_command,
     transfer_target_callback,
     transfer_confirm_callback,
     group_plan_callback,
+    mute_command,
+    dmute_command,
 )
 from db import setup_database
 
@@ -83,9 +85,11 @@ def main():
     app.add_handler(CallbackQueryHandler(check_subscription_callback, pattern="^check_sub:"))
     app.add_handler(MessageHandler(filters.Regex("^(⚙️ Управлять|⚙️ Boshqarish)$"), settings_button_handler))
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.TEXT & ~filters.COMMAND, private_text_handler))
-    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, check_group_message))
+    app.add_handler(CommandHandler("mute", mute_command))
+    app.add_handler(CommandHandler("dmute", dmute_command))
     app.add_handler(CommandHandler("ru", set_group_language))
     app.add_handler(CommandHandler("uz", set_group_language))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, check_group_message))
     app.add_handler(CallbackQueryHandler(group_settings_callback, pattern="^group_settings:"))
     app.add_handler(CallbackQueryHandler(back_groups_callback, pattern="^back_groups$"))
     app.add_handler(CallbackQueryHandler(bad_words_panel_callback, pattern="^bad_words_panel:"))
