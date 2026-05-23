@@ -3803,6 +3803,21 @@ async def guide_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             parse_mode="HTML",
             reply_markup=keyboard
         )
+    elif section == "settings":
+        keyboard = InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["back_button"],
+                    callback_data="guide:back"
+                )
+            ]
+        ])
+
+        await query.edit_message_text(
+            TEXTS[lang]["guide_settings_text"],
+            parse_mode="HTML",
+            reply_markup=keyboard
+        )
     elif section == "back":
         await query.edit_message_text(
             TEXTS[lang]["guide_choose_section"],
