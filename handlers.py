@@ -80,7 +80,10 @@ async def language_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
     keyboard = ReplyKeyboardMarkup(
-        [[keyboard_text, language_text]],
+        [
+            [keyboard_text, language_text],
+            [TEXTS[lang]["guide_button"]],
+        ],
         resize_keyboard=True
     )
 
@@ -111,10 +114,15 @@ async def language_toggle_handler(update: Update, context: ContextTypes.DEFAULT_
     save_user_language(user_id, new_lang)
 
     keyboard = ReplyKeyboardMarkup(
-        [[
-            TEXTS[new_lang]["manage_button"],
-            TEXTS[new_lang]["language_button"]
-        ]],
+        [
+            [
+                TEXTS[new_lang]["manage_button"],
+                TEXTS[new_lang]["language_button"],
+            ],
+            [
+                TEXTS[new_lang]["guide_button"],
+            ],
+        ],
         resize_keyboard=True
     )
 
