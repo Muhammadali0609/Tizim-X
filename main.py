@@ -50,6 +50,10 @@ from handlers import (start_command,
     group_plan_callback,
     mute_command,
     dmute_command,
+    warn_bad_command,
+    warn_ad_command,
+    dwarn_bad_command,
+    dwarn_ad_command,
 )
 from db import setup_database
 
@@ -89,6 +93,10 @@ def main():
     app.add_handler(CommandHandler("dmute", dmute_command))
     app.add_handler(CommandHandler("ru", set_group_language))
     app.add_handler(CommandHandler("uz", set_group_language))
+    app.add_handler(CommandHandler("warnbad", warn_bad_command))
+    app.add_handler(CommandHandler("warnad", warn_ad_command))
+    app.add_handler(CommandHandler("dwarnbad", dwarn_bad_command))
+    app.add_handler(CommandHandler("dwarnad", dwarn_ad_command))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, check_group_message))
     app.add_handler(CallbackQueryHandler(group_settings_callback, pattern="^group_settings:"))
     app.add_handler(CallbackQueryHandler(back_groups_callback, pattern="^back_groups$"))
