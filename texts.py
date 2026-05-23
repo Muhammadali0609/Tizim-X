@@ -238,6 +238,8 @@ TEXTS = {
         "transfer_item_restrictions": "• Ограничения и сроки",
         "transfer_item_delete_settings": "• Настройки удаления",
         "transfer_done": "✅ Настройки успешно перенесены.",
+
+        "btn_group_plan": "💎 План группы",
     },
     "uz": {
         "start": (
@@ -478,5 +480,7 @@ TEXTS = {
         "transfer_item_restrictions": "• Cheklovlar va muddatlar",
         "transfer_item_delete_settings": "• O‘chirish sozlamalari",
         "transfer_done": "✅ Sozlamalar muvaffaqiyatli ko‘chirildi.",
+
+        "btn_group_plan": "💎 Guruh tarif rejasi",
     }
 }
