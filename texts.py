@@ -250,6 +250,10 @@ TEXTS = {
         
         "plan_trial": "Пробный период",
         "btn_pay_plan": "💳 Оплатить",
+
+        "invalid_mute_duration": "❌ Неверный срок ограничения.",
+        "user_not_found": "❌ Не удалось найти пользователя.",
+        "user_muted": "🔒 {name} получил ограничение.\n\nСрок: {duration}",
     },
     "uz": {
         "start": (
@@ -502,5 +506,9 @@ TEXTS = {
         
         "plan_trial": "Sinov muddati",
         "btn_pay_plan": "💳 To‘lash",
+
+        "invalid_mute_duration": "❌ Cheklov muddati noto‘g‘ri.",
+        "user_not_found": "❌ Foydalanuvchini topib bo‘lmadi.",
+        "user_muted": "🔒 {name} cheklandi.\n\nMuddat: {duration}",
     }
 }
