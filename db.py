@@ -1,6 +1,7 @@
 import psycopg
 from config import DATABASE_URL
 from filters import DEFAULT_BAD_WORDS
+from datetime import datetime, timezone, timedelta
 
 def get_connection():
     return psycopg.connect(DATABASE_URL)
@@ -84,6 +85,15 @@ def setup_database():
             cur.execute("""
                 ALTER TABLE tizimx_groups
                 ADD COLUMN IF NOT EXISTS anti_usernames BOOLEAN NOT NULL DEFAULT FALSE
+            """)
+            cur.execute("""
+                ALTER TABLE tizimx_groups
+                ADD COLUMN IF NOT EXISTS plan_name TEXT NOT NULL DEFAULT 'trial'
+            """)
+            
+            cur.execute("""
+                ALTER TABLE tizimx_groups
+                ADD COLUMN IF NOT EXISTS plan_expires_at TIMESTAMPTZ
             """)
             cur.execute("""
                 CREATE TABLE IF NOT EXISTS tizimx_group_admins (
@@ -179,13 +189,39 @@ def save_group(chat_id: int, title: str):
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                INSERT INTO tizimx_groups (chat_id, title)
-                VALUES (%s, %s)
-                ON CONFLICT (chat_id)
-                DO UPDATE SET title = EXCLUDED.title
-            """, (chat_id, title))
-        conn.commit()
+                SELECT 1
+                FROM tizimx_groups
+                WHERE chat_id = %s
+            """, (chat_id,))
 
+            exists = cur.fetchone()
+
+            if exists:
+                cur.execute("""
+                    UPDATE tizimx_groups
+                    SET title = %s
+                    WHERE chat_id = %s
+                """, (title, chat_id))
+
+            else:
+                expires_at = datetime.now(timezone.utc) + timedelta(days=3)
+
+                cur.execute("""
+                    INSERT INTO tizimx_groups (
+                        chat_id,
+                        title,
+                        plan_name,
+                        plan_expires_at
+                    )
+                    VALUES (%s, %s, %s, %s)
+                """, (
+                    chat_id,
+                    title,
+                    "trial",
+                    expires_at
+                ))
+
+        conn.commit()
 
 def get_group_settings(chat_id: int) -> dict:
     with get_connection() as conn:
