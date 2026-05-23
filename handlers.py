@@ -96,6 +96,33 @@ async def language_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     except Exception as e:
         print("DELETE LANGUAGE MESSAGE ERROR:", e)
 
+async def language_toggle_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = update.message
+
+    if not message or message.chat.type != "private":
+        return
+
+    user_id = message.from_user.id
+
+    current_lang = get_user_language(user_id)
+
+    new_lang = "uz" if current_lang == "ru" else "ru"
+
+    save_user_language(user_id, new_lang)
+
+    keyboard = ReplyKeyboardMarkup(
+        [[
+            TEXTS[new_lang]["manage_button"],
+            TEXTS[new_lang]["language_button"]
+        ]],
+        resize_keyboard=True
+    )
+
+    await message.reply_text(
+        "‎",
+        reply_markup=keyboard
+    )
+
 async def settings_button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = update.message
     user_id = update.effective_user.id
