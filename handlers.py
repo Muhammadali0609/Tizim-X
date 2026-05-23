@@ -3728,32 +3728,9 @@ async def guide_button_handler(update: Update, context: ContextTypes.DEFAULT_TYP
     user_id = message.from_user.id
     lang = get_user_language(user_id)
 
-    keyboard = [
-        [
-            InlineKeyboardButton(TEXTS[lang]["btn_guide_bad_words"], callback_data="guide:bad_words"),
-            InlineKeyboardButton(TEXTS[lang]["btn_guide_ads"], callback_data="guide:ads"),
-        ],
-        [
-            InlineKeyboardButton(TEXTS[lang]["btn_guide_warnings"], callback_data="guide:warnings"),
-            InlineKeyboardButton(TEXTS[lang]["btn_guide_restrictions"], callback_data="guide:restrictions"),
-        ],
-        [
-            InlineKeyboardButton(TEXTS[lang]["btn_guide_settings"], callback_data="guide:settings"),
-        ],
-        [
-            InlineKeyboardButton(TEXTS[lang]["btn_guide_required_subs"], callback_data="guide:required_subs"),
-        ],
-        [
-            InlineKeyboardButton(TEXTS[lang]["btn_guide_transfer"], callback_data="guide:transfer"),
-        ],
-        [
-            InlineKeyboardButton(TEXTS[lang]["btn_guide_plan"], callback_data="guide:plan"),
-        ],
-    ]
-
     await message.reply_text(
         TEXTS[lang]["guide_choose_section"],
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=build_guide_menu(lang)
     )
 
 async def guide_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -3783,35 +3760,9 @@ async def guide_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         )
 
     elif section == "back":
-        keyboard = [
-            [
-                InlineKeyboardButton(TEXTS[lang]["btn_guide_bad_words"], callback_data="guide:bad_words"),
-                InlineKeyboardButton(TEXTS[lang]["btn_guide_ads"], callback_data="guide:ads"),
-            ],
-            [
-                InlineKeyboardButton(TEXTS[lang]["btn_guide_warnings"], callback_data="guide:warnings"),
-                InlineKeyboardButton(TEXTS[lang]["btn_guide_restrictions"], callback_data="guide:restrictions"),
-            ],
-            [
-                InlineKeyboardButton(TEXTS[lang]["btn_guide_settings"], callback_data="guide:settings"),
-            ],
-            [
-                InlineKeyboardButton(TEXTS[lang]["btn_guide_required_subs"], callback_data="guide:required_subs"),
-            ],
-            [
-                InlineKeyboardButton(TEXTS[lang]["btn_guide_transfer"], callback_data="guide:transfer"),
-            ],
-            [
-                InlineKeyboardButton(TEXTS[lang]["btn_guide_plan"], callback_data="guide:plan"),
-            ],
-            [
-                InlineKeyboardButton(TEXTS[lang]["back_button"], callback_data="guide:close"),
-            ],
-        ]
-
         await query.edit_message_text(
             TEXTS[lang]["guide_choose_section"],
-            reply_markup=InlineKeyboardMarkup(keyboard)
+            reply_markup=build_guide_menu(lang)
         )
 
     elif section == "close":
@@ -3819,3 +3770,51 @@ async def guide_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
             await query.message.delete()
         except Exception as e:
             print("DELETE GUIDE MESSAGE ERROR:", e)
+            
+def build_guide_menu(lang):
+    return InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_guide_bad_words"],
+                callback_data="guide:bad_words"
+            ),
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_guide_ads"],
+                callback_data="guide:ads"
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_guide_warnings"],
+                callback_data="guide:warnings"
+            ),
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_guide_restrictions"],
+                callback_data="guide:restrictions"
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_guide_settings"],
+                callback_data="guide:settings"
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_guide_required_subs"],
+                callback_data="guide:required_subs"
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_guide_transfer"],
+                callback_data="guide:transfer"
+            ),
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_guide_plan"],
+                callback_data="guide:plan"
+            ),
+        ],
+    ])
