@@ -344,9 +344,9 @@ TEXTS = {
             "Исключения — это слова, тексты или ссылки, "
             "на которые не действуют фильтры и ограничения.\n\n"
             "Отправленный текст принимается как единое значение.\n\n"
-            "Например, вы можете добавить официальную ссылку "
+            "<blockquote>Например, вы можете добавить официальную ссылку "
             "вашей группы в исключения, и на неё "
-            "не будут действовать фильтры.\n\n"
+            "не будут действовать фильтры.</blockquote>\n\n"
             "Во всех разделах доступны кнопки "
             "<b>Добавить</b> и <b>Удалить</b>.\n\n"
             "Удаление работает только по номеру из списка."
@@ -356,9 +356,9 @@ TEXTS = {
             "выдаёт предупреждения пользователю при нарушении правил.\n\n"
             "Предупреждения для рекламы и матов работают отдельно "
             "и имеют собственный счётчик.\n\n"
-            "Например:\n"
+            "<blockquote>Например:\n"
             "• 2 предупреждения за рекламу\n"
-            "• 1 предупреждение за мат\n\n"
+            "• 1 предупреждение за мат</blockquote>\n\n"
             "В этом случае бот не объединяет их между собой.\n\n"
             "<b>Включение предупреждений</b>\n"
             "Если данный переключатель включён, бот отправляет сообщение "
@@ -369,10 +369,10 @@ TEXTS = {
             "В этом разделе вы можете указать, после какого количества "
             "нарушений пользователь получит ограничение.\n\n"
             "Однако выдавать ограничение или нет решает раздел <b>Ограничения</b>.\n\n"
-            "Например:\n"
+            "<blockquote>Например:\n"
             "• если лимит установлен на 3\n"
             "• пользователь нарушил правило 3 раза\n"
-            "→ бот автоматически применит ограничение\n\n"
+            "→ бот автоматически применит ограничение</blockquote>\n\n"
             "После ограничения предупреждения пользователя автоматически "
             "сбрасываются до нуля.\n\n"
             "Лимиты для рекламы и матов работают отдельно друг от друга."
@@ -385,9 +385,9 @@ TEXTS = {
             "Ограничения для рекламы и матов работают отдельно "
             "и имеют собственные независимые настройки.\n\n"
 
-            "Например:\n"
+            "<blockquote>Например:\n"
             "• ban за рекламу\n"
-            "• mute на 1 день за мат\n\n"
+            "• mute на 1 день за мат</blockquote>\n\n"
 
             "В этом случае бот не объединяет их между собой.\n\n"
 
@@ -415,7 +415,7 @@ TEXTS = {
             "• forever — вечный mute\n"
             "• ban — исключение и блокировка пользователя\n\n"
 
-            "Например:\n"
+            "<blockquote>Например:\n"
             "• <b>1d</b> — ограничение на 1 день\n"
             "• <b>2h 30m</b> — ограничение на 2 часа 30 минут\n"
             "• <b>forever</b> — вечное ограничение\n"
@@ -427,7 +427,7 @@ TEXTS = {
             "❗️Форматы с повторяющимися значениями, например:\n"
             "• 1m 1m\n"
             "• 2h 2h 30m\n"
-            "не поддерживаются.\n\n"
+            "не поддерживаются.</blockquote>\n\n"
 
             "Если пользователь получает ограничение, бот автоматически "
             "отправляет сообщение в группу и указывает причину ограничения.\n\n"
@@ -465,9 +465,9 @@ TEXTS = {
             "Этот фильтр определяет текст в формате @username "
             "и автоматически удаляет его.\n\n"
 
-            "Например:\n"
+            "<blockquote>Например:\n"
             "• @username\n"
-            "• @название_канала\n\n"
+            "• @название_канала</blockquote>\n\n"
 
             "Однако:\n"
             "• t.me/\n"
@@ -820,8 +820,8 @@ TEXTS = {
             "Istisnolar — bu hech qanday filtr va cheklov ishlamaydigan "
             "so‘z, matn yoki havolalar.\n\n"
             "Yuborgan matningiz bir butun ma’lumot sifatida qabul qilinadi.\n\n"
-            "Masalan, guruhingizning rasmiy havolasini istisnoga "
-            "qo‘shsangiz, unga hech qanday filtr ta’sir qilmaydi.\n\n"
+            "<blockquote>Masalan, guruhingizning rasmiy havolasini istisnoga "
+            "qo‘shsangiz, unga hech qanday filtr ta’sir qilmaydi.</blockquote>\n\n"
             "Barcha bo‘limlarda <b>Qo‘shish</b> va <b>O‘chirish</b> "
             "tugmalari mavjud.\n\n"
             "O‘chirish faqat ro‘yxatdagi raqam orqali ishlaydi."
@@ -833,9 +833,9 @@ TEXTS = {
             "Ogohlantirishlar reklama va so‘kinish filtrlari uchun alohida "
             "ishlaydi va har biri o‘zining alohida hisobiga ega.\n\n"
 
-            "Masalan:\n"
+            "<blockquote>Masalan:\n"
             "• reklama uchun 2 ta ogohlantirish\n"
-            "• so‘kinish uchun 1 ta ogohlantirish\n\n"
+            "• so‘kinish uchun 1 ta ogohlantirish</blockquote>\n\n"
 
             "Bot bu holatda ularni birlashtirmaydi.\n\n"
 
@@ -852,10 +852,10 @@ TEXTS = {
 
             "Ammo cheklov berish yoki bermaslikni <b>Cheklovlar</b> bo‘limi hal qiladi.\n\n"
 
-            "Masalan:\n"
+            "<blockquote>Masalan:\n"
             "• limit 3 bo‘lsa\n"
             "• foydalanuvchi 3 marta qoida buzsa\n"
-            "→ bot avtomatik cheklov qo‘llaydi\n\n"
+            "→ bot avtomatik cheklov qo‘llaydi</blockquote>\n\n"
 
             "Cheklovdan keyin foydalanuvchining ogohlantirishlari avtomatik "
             "ravishda nolga tushiriladi.\n\n"
@@ -869,9 +869,9 @@ TEXTS = {
             "Cheklovlar reklama va so‘kinish uchun alohida ishlaydi "
             "va har biri o‘zining mustaqil sozlamalariga ega.\n\n"
 
-            "Masalan:\n"
+            "<blockquote>Masalan:\n"
             "• reklama uchun ban\n"
-            "• so‘kinish uchun 1 kun mute\n\n"
+            "• so‘kinish uchun 1 kun mute</blockquote>\n\n"
 
             "Bot bu holatda ularni birlashtirmaydi.\n\n"
 
@@ -901,7 +901,7 @@ TEXTS = {
             "• forever — doimiy mute\n"
             "• ban — haydash va bloklash\n\n"
 
-            "Masalan:\n"
+            "<blockquote>Masalan:\n"
             "• <b>1d</b> — kiritsangiz, cheklov 1 kunga beriladi\n"
             "• <b>2h 30m</b> — kiritsangiz, cheklov 2 soatu 30 daqiqaga beriladi\n"
             "• <b>forever</b> — kiritsangiz, cheklov doimiyga beriladi\n"
@@ -911,7 +911,7 @@ TEXTS = {
             "Minimal cheklov muddati — <b>1 daqiqa.</b>\n\n"
 
             "❗️<b>1m 1m</b> yoki <b>2h 2h 30m</b> kabi takrorlanuvchi "
-            "formatlar qo‘llab-quvvatlanmaydi.\n\n"
+            "formatlar qo‘llab-quvvatlanmaydi.</blockquote>\n\n"
 
             "Agar foydalanuvchi cheklansa, bot guruhga avtomatik "
             "xabar yuboradi va cheklov sababini ko‘rsatadi.\n\n"
@@ -949,9 +949,9 @@ TEXTS = {
             "Bu filtr foydalanuvchi yuborgan @username "
             "ko‘rinishidagi matnlarni aniqlaydi va avtomatik o‘chiradi.\n\n"
 
-            "Masalan:\n"
+            "<blockquote>Masalan:\n"
             "• @username\n"
-            "• @kanal_nomi\n\n"
+            "• @kanal_nomi</blockquote>\n\n"
 
             "Ammo quyidagilar:\n"
             "• t.me/\n"
