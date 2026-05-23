@@ -500,6 +500,9 @@ async def group_settings_callback(update: Update, context: ContextTypes.DEFAULT_
             InlineKeyboardButton(TEXTS[lang]["btn_transfer_settings"], callback_data=f"transfer_panel:{chat_id}"),
         ],
         [
+            InlineKeyboardButton(TEXTS[lang]["btn_group_plan"], callback_data=f"group_plan:{chat_id}")
+        ],
+        [
             InlineKeyboardButton(TEXTS[lang]["back_button"], callback_data="back_groups")
         ],
     ]
