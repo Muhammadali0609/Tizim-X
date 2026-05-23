@@ -1986,32 +1986,35 @@ async def handle_warning(
     punish_enabled: bool,
     show_warning: bool,
     punish_seconds: int,
+    target_user=None,
 ):
-    user = getattr(message, "target_user", message.from_user)
+    user = target_user or message.from_user
 
     count = add_warning(message.chat.id, user.id, reason)
 
     if count >= limit:
         reset_warnings(message.chat.id, user.id, reason)
-    
+
         if punish_enabled:
             await punish_user_for_warnings(
                 message,
                 lang,
                 reason_key,
                 punish_seconds,
-                show_message=show_warning
+                show_message=show_warning,
+                target_user=user
             )
-    
+
         return
 
     if show_warning:
-        await send_warning_message(
-            message=message,
-            lang=lang,
-            reason_key=reason_key,
-            count=count,
-            limit=limit
+        await message.chat.send_message(
+            TEXTS[lang]["warning_message"].format(
+                name=user.first_name,
+                reason=TEXTS[lang][reason_key],
+                count=count,
+                limit=limit
+            )
         )
 
 async def punish_user_for_warnings(
@@ -2020,8 +2023,9 @@ async def punish_user_for_warnings(
     reason_key: str,
     seconds: int,
     show_message: bool = True,
+    target_user=None,
 ):
-    user = getattr(message, "target_user", message.from_user)
+    user = target_user or message.from_user
 
     if seconds == -1:
         until_date = None
@@ -2030,9 +2034,7 @@ async def punish_user_for_warnings(
 
     await message.chat.restrict_member(
         user_id=user.id,
-        permissions=ChatPermissions(
-            can_send_messages=False
-        ),
+        permissions=ChatPermissions(can_send_messages=False),
         until_date=until_date
     )
 
@@ -3265,7 +3267,6 @@ async def manual_warn(update: Update, context: ContextTypes.DEFAULT_TYPE, reason
     settings = get_group_settings(message.chat.id)
 
     if reason == "bad_words":
-        message.target_user = target_user
 
         await handle_warning(
             message=message,
@@ -3276,10 +3277,10 @@ async def manual_warn(update: Update, context: ContextTypes.DEFAULT_TYPE, reason
             punish_enabled=settings["punish_bad_words"],
             show_warning=True,
             punish_seconds=settings["bad_words_punish_seconds"],
+            target_user=target_user,
         )
 
     elif reason == "ads":
-        message.target_user = target_user
 
         await handle_warning(
             message=message,
@@ -3290,6 +3291,7 @@ async def manual_warn(update: Update, context: ContextTypes.DEFAULT_TYPE, reason
             punish_enabled=settings["punish_ads"],
             show_warning=True,
             punish_seconds=settings["ads_punish_seconds"],
+            target_user=target_user,
         )
 
 async def warn_bad_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -3327,7 +3329,6 @@ async def manual_dwarn(update: Update, context: ContextTypes.DEFAULT_TYPE, reaso
         print("DELETE DWARN MESSAGE ERROR:", e)
 
     settings = get_group_settings(message.chat.id)
-    message.target_user = target_user
 
     if reason == "bad_words":
         await handle_warning(
@@ -3339,6 +3340,7 @@ async def manual_dwarn(update: Update, context: ContextTypes.DEFAULT_TYPE, reaso
             punish_enabled=settings["punish_bad_words"],
             show_warning=True,
             punish_seconds=settings["bad_words_punish_seconds"],
+            target_user=target_user,
         )
 
     elif reason == "ads":
@@ -3351,6 +3353,7 @@ async def manual_dwarn(update: Update, context: ContextTypes.DEFAULT_TYPE, reaso
             punish_enabled=settings["punish_ads"],
             show_warning=True,
             punish_seconds=settings["ads_punish_seconds"],
+            target_user=target_user,
         )
 
 async def dwarn_bad_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
