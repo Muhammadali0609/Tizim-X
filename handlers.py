@@ -119,7 +119,7 @@ async def language_toggle_handler(update: Update, context: ContextTypes.DEFAULT_
     )
 
     await message.reply_text(
-        TEXTS[new_lang]["language_changed"],
+        TEXTS[new_lang]["language_saved"],
         reply_markup=keyboard
     )
 
