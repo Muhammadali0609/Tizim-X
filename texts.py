@@ -152,7 +152,11 @@ TEXTS = {
             "12h = 12 часов\n"
             "7d = 7 дней\n"
             "2d 5h = 2 дня 5 часов\n"
-            "1mo = 1 месяц"
+            "1mo = 1 месяц\n"
+            "Макс. срок - 12 месяцев\n"
+            "Мин. срок - 1 минут\n\n"
+            "Бан = забанить\n"
+            "Навсегда = мутить навсегда"
         ),
         "invalid_duration_format": (
             "❌ Такой формат не поддерживается.\n\n"
@@ -161,7 +165,11 @@ TEXTS = {
             "12h = 12 часов\n"
             "7d = 7 дней\n"
             "2d 5h = 2 дня 5 часов\n"
-            "1mo = 1 месяц"
+            "1mo = 1 месяц\n"
+            "Макс. срок - 12 месяцев\n"
+            "Мин. срок - 1 минут\n\n"
+            "Бан = забанить\n"
+            "Навсегда = мутить навсегда"
         ),
         "duration_saved": "✅ Срок ограничения сохранён.",
         "btn_open_section": "↩️ Открыть раздел",
@@ -427,7 +435,11 @@ TEXTS = {
             "12h = 12 soat\n"
             "7d = 7 kun\n"
             "2d 5h = 2 kun 5 soat\n"
-            "1mo = 1 oy"
+            "1mo = 1 oy\n"
+            "Max. muddat - 12 oy\n"
+            "Min. muddat - 1 daqiqa\n\n"
+            "Ban = bloklash\n"
+            "Forever = doimiy muddat"
         ),
         "invalid_duration_format": (
             "❌ Bunday format qo‘llab-quvvatlanmaydi.\n\n"
@@ -436,7 +448,11 @@ TEXTS = {
             "12h = 12 soat\n"
             "7d = 7 kun\n"
             "2d 5h = 2 kun 5 soat\n"
-            "1mo = 1 oy"
+            "1mo = 1 oy\n"
+            "Max. muddat - 12 oy\n"
+            "Min. muddat - 1 daqiqa\n\n"
+            "Ban = bloklash\n"
+            "Forever = doimiy muddat"
         ),
         "duration_saved": "✅ Cheklov muddati saqlandi.",
         "btn_open_section": "↩️ Bo‘limni ochish",
