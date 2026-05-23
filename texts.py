@@ -268,6 +268,11 @@ TEXTS = {
         "user_banned": "⛔️ {name} заблокирован в группе.",
         "user_unmuted": "🔓 {name} снова может писать.",
         "user_unbanned": "✅ {name} разблокирован.",
+
+        "limit_reached_ban": (
+            "⛔️ {name} заблокирован в группе.\n\n"
+            "Причина: {reason}"
+        ),
     },
     "uz": {
         "start": (
@@ -538,5 +543,10 @@ TEXTS = {
         "user_banned": "⛔️ {name} guruhda bloklandi.",
         "user_unmuted": "🔓 {name} yana yozishi mumkin.",
         "user_unbanned": "✅ {name} blokdan chiqarildi.",
+
+        "limit_reached_ban": (
+            "⛔️ {name} guruhda bloklandi.\n\n"
+            "Sabab: {reason}"
+        ),
     }
 }
