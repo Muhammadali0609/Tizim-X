@@ -240,6 +240,16 @@ TEXTS = {
         "transfer_done": "✅ Настройки успешно перенесены.",
 
         "btn_group_plan": "💎 План группы",
+        "group_plan_text": (
+            "💎 План группы\n\n"
+            "Текущий тариф:\n"
+            "{plan}\n\n"
+            "Действует до:\n"
+            "{expires_at}"
+        ),
+        
+        "plan_trial": "Пробный период",
+        "btn_pay_plan": "💳 Оплатить",
     },
     "uz": {
         "start": (
@@ -482,5 +492,15 @@ TEXTS = {
         "transfer_done": "✅ Sozlamalar muvaffaqiyatli ko‘chirildi.",
 
         "btn_group_plan": "💎 Guruh tarif rejasi",
+        "group_plan_text": (
+            "💎 Guruh tarif rejasi\n\n"
+            "Joriy tarif:\n"
+            "{plan}\n\n"
+            "Amal qilish muddati:\n"
+            "{expires_at}"
+        ),
+        
+        "plan_trial": "Sinov muddati",
+        "btn_pay_plan": "💳 To‘lash",
     }
 }
