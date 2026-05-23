@@ -11,7 +11,7 @@ TEXTS = {
             "• ручную модерацию участников\n"
             "• и многое другое\n\n"
             "Добавьте бота в группу и выдайте права администратора для полноценной работы.\n\n"
-            "Подробная информация и инструкции доступны в разделе «Инструкция»."
+            "Подробная информация и инструкции доступны в разделе «📘 Инструкция»."
         ),
         "choose_language": "🌐 Выберите язык:",
         "language_saved": "✅ Язык сохранён: Русский",
@@ -26,6 +26,7 @@ TEXTS = {
         "private_welcome": "🛡 Добро пожаловать в TizimX",
         "manage_button": "⚙️ Управлять",
         "language_button": "🌐 Язык",
+        "guide_button": "📘 Инструкция",
         "back_button": "⬅️ Назад",
         "choose_group": "📂 Выберите группу:",
         "no_groups": "❌ У вас пока нет подключённых групп.",
@@ -294,7 +295,7 @@ TEXTS = {
             "• qo‘lda moderatsiya qilish\n"
             "• va yana k‘op narsalar\n\n"
             "Botdan to‘liq foydalanish uchun uni guruhga qo‘shib administrator huquqlarini bering.\n\n"
-            "Batafsil ma’lumot va qo‘llanmalar «Instruksiya» bo‘limida mavjud."
+            "Batafsil ma’lumot va qo‘llanmalar «📘 Qo‘llanma» bo‘limida mavjud."
         ),
         "choose_language": "🌐 Tilni tanlang:",
         "language_saved": "✅ Til saqlandi: O‘zbekcha",
@@ -309,6 +310,7 @@ TEXTS = {
         "private_welcome": "🛡 TizimX ga xush kelibsiz",
         "manage_button": "⚙️ Boshqarish",
         "language_button": "🌐 Til",
+        "guide_button": "📘 Qo‘llanma",
         "back_button": "⬅️ Orqaga",
         "choose_group": "📂 Guruhni tanlang:",
         "no_groups": "❌ Sizda hali ulangan guruhlar yo‘q.",
