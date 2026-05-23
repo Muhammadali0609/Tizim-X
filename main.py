@@ -95,7 +95,7 @@ def main():
     app.add_handler(MessageHandler(filters.StatusUpdate.PINNED_MESSAGE, clean_service_message))
     app.add_handler(CallbackQueryHandler(check_subscription_callback, pattern="^check_sub:"))
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.Regex("^(⚙️ Управлять|⚙️ Boshqarish)$"), settings_button_handler))
-    app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.Regex("^(Язык|Til)$"), language_toggle_handler))
+    app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.Regex("^(🌐 Язык|🌐 Til)$"), language_toggle_handler))
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.TEXT & ~filters.COMMAND, private_text_handler))
     app.add_handler(CommandHandler("mute", mute_command))
     app.add_handler(CommandHandler("dmute", dmute_command))
