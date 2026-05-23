@@ -3456,3 +3456,94 @@ async def dkick_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     except Exception as e:
         print("DKICK ERROR:", e)
+
+async def apply_ban(message, target_user, lang: str):
+    await message.chat.ban_member(
+        user_id=target_user.id
+    )
+
+    msg = await message.chat.send_message(
+        TEXTS[lang]["user_banned"].format(
+            name=target_user.first_name
+        )
+    )
+
+    await asyncio.sleep(3)
+
+    try:
+        await msg.delete()
+    except Exception as e:
+        print("DELETE BAN MESSAGE ERROR:", e)
+
+async def ban_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = update.message
+
+    if not message or message.chat.type not in ["group", "supergroup"]:
+        return
+
+    await delete_admin_command(message)
+
+    admin = message.from_user
+    lang = get_group_language(message.chat.id)
+
+    if not await is_admin(message.chat, admin.id):
+        return
+
+    target_user = await resolve_mute_target(message, context, context.args)
+
+    if not target_user:
+        msg = await message.chat.send_message(TEXTS[lang]["user_not_found"])
+
+        await asyncio.sleep(3)
+
+        try:
+            await msg.delete()
+        except Exception as e:
+            print("DELETE BAN ERROR MESSAGE ERROR:", e)
+
+        return
+
+    try:
+        await apply_ban(message, target_user, lang)
+
+    except Exception as e:
+        print("BAN ERROR:", e)
+
+async def dban_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = update.message
+
+    if not message or message.chat.type not in ["group", "supergroup"]:
+        return
+
+    await delete_admin_command(message)
+
+    admin = message.from_user
+    lang = get_group_language(message.chat.id)
+
+    if not await is_admin(message.chat, admin.id):
+        return
+
+    if not message.reply_to_message:
+        msg = await message.chat.send_message(TEXTS[lang]["user_not_found"])
+
+        await asyncio.sleep(3)
+
+        try:
+            await msg.delete()
+        except Exception as e:
+            print("DELETE DBAN ERROR MESSAGE ERROR:", e)
+
+        return
+
+    target_user = message.reply_to_message.from_user
+
+    try:
+        await message.reply_to_message.delete()
+    except Exception as e:
+        print("DELETE DBAN TARGET MESSAGE ERROR:", e)
+
+    try:
+        await apply_ban(message, target_user, lang)
+
+    except Exception as e:
+        print("DBAN ERROR:", e)
