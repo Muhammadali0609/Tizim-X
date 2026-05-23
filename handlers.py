@@ -2078,6 +2078,9 @@ def format_duration(seconds: int, lang: str) -> str:
     if seconds == -1:
         return "Навсегда" if lang == "ru" else "Doimiy"
 
+    if seconds == -2:
+        return "Бан" if lang == "ru" else "Ban"
+
     units = [
         ("mo", 2592000),
         ("w", 604800),
@@ -2261,6 +2264,9 @@ def parse_duration(text: str):
 
     if text in ["forever", "навсегда"]:
         return -1
+
+    if text in ["ban", "бан"]:
+        return -2
         
     units = {
         "s": 1,
