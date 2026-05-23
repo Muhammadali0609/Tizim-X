@@ -2054,6 +2054,21 @@ async def punish_user_for_warnings(
 ):
     user = target_user or message.from_user
 
+    if seconds == -2:
+        await message.chat.ban_member(
+            user_id=user.id
+        )
+
+        if show_message:
+            await message.chat.send_message(
+                TEXTS[lang]["limit_reached_ban"].format(
+                    name=user.first_name,
+                    reason=TEXTS[lang][reason_key]
+                )
+            )
+
+        return
+    
     if seconds == -1:
         until_date = None
     else:
