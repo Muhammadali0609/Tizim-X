@@ -3758,3 +3758,67 @@ async def guide_button_handler(update: Update, context: ContextTypes.DEFAULT_TYP
         TEXTS[lang]["guide_choose_section"],
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
+
+async def guide_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    await query.answer()
+
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    section = query.data.split(":")[1]
+
+    if section == "bad_words":
+        keyboard = InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["back_button"],
+                    callback_data="guide:back"
+                )
+            ]
+        ])
+
+        await query.edit_message_text(
+            TEXTS[lang]["guide_bad_words_text"],
+            parse_mode="HTML",
+            reply_markup=keyboard
+        )
+
+    elif section == "back":
+        keyboard = [
+            [
+                InlineKeyboardButton(TEXTS[lang]["btn_guide_bad_words"], callback_data="guide:bad_words"),
+                InlineKeyboardButton(TEXTS[lang]["btn_guide_ads"], callback_data="guide:ads"),
+            ],
+            [
+                InlineKeyboardButton(TEXTS[lang]["btn_guide_warnings"], callback_data="guide:warnings"),
+                InlineKeyboardButton(TEXTS[lang]["btn_guide_restrictions"], callback_data="guide:restrictions"),
+            ],
+            [
+                InlineKeyboardButton(TEXTS[lang]["btn_guide_settings"], callback_data="guide:settings"),
+            ],
+            [
+                InlineKeyboardButton(TEXTS[lang]["btn_guide_required_subs"], callback_data="guide:required_subs"),
+            ],
+            [
+                InlineKeyboardButton(TEXTS[lang]["btn_guide_transfer"], callback_data="guide:transfer"),
+            ],
+            [
+                InlineKeyboardButton(TEXTS[lang]["btn_guide_plan"], callback_data="guide:plan"),
+            ],
+            [
+                InlineKeyboardButton(TEXTS[lang]["back_button"], callback_data="guide:close"),
+            ],
+        ]
+
+        await query.edit_message_text(
+            TEXTS[lang]["guide_choose_section"],
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+
+    elif section == "close":
+        try:
+            await query.message.delete()
+        except Exception as e:
+            print("DELETE GUIDE MESSAGE ERROR:", e)
