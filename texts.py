@@ -282,6 +282,16 @@ TEXTS = {
             "⛔️ {name} заблокирован в группе.\n\n"
             "Причина: {reason}"
         ),
+
+        "guide_choose_section": "📘 Выберите раздел:",
+        "btn_guide_bad_words": "📘 Маты",
+        "btn_guide_ads": "📘 Рекламы",
+        "btn_guide_warnings": "📘 Предупреждения",
+        "btn_guide_restrictions": "📘 Ограничения",
+        "btn_guide_settings": "📘 Настройки",
+        "btn_guide_required_subs": "📘 Обязательные подписки",
+        "btn_guide_transfer": "📘 Перенос настроек",
+        "btn_guide_plan": "📘 План группы",
     },
     "uz": {
         "start": (
@@ -566,5 +576,15 @@ TEXTS = {
             "⛔️ {name} guruhda bloklandi.\n\n"
             "Sabab: {reason}"
         ),
+
+        "guide_choose_section": "📘 Bo‘limni tanlang:",
+        "btn_guide_bad_words": "📘 So‘kinishlar",
+        "btn_guide_ads": "📘 Reklamalar",
+        "btn_guide_warnings": "📘 Ogohlantirishlar",
+        "btn_guide_restrictions": "📘 Cheklovlar",
+        "btn_guide_settings": "📘 Sozlamalar",
+        "btn_guide_required_subs": "📘 Majburiy obunalar",
+        "btn_guide_transfer": "📘 Sozlamalarni ko‘chirish",
+        "btn_guide_plan": "📘 Guruh tarif rejasi",
     }
 }
