@@ -2215,6 +2215,7 @@ def parse_duration(text: str):
         "mo": 2592000,
     }
 
+    min_seconds = 60
     max_seconds = 365 * 24 * 60 * 60
     parts = text.lower().split()
 
@@ -2244,6 +2245,9 @@ def parse_duration(text: str):
 
         if total_seconds > max_seconds:
             return None
+
+    if total_seconds != -1 and total_seconds < min_seconds:
+        return None
 
     return total_seconds
 
