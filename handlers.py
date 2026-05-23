@@ -3749,9 +3749,6 @@ async def guide_button_handler(update: Update, context: ContextTypes.DEFAULT_TYP
         [
             InlineKeyboardButton(TEXTS[lang]["btn_guide_plan"], callback_data="guide:plan"),
         ],
-        [
-            InlineKeyboardButton(TEXTS[lang]["back_button"], callback_data="guide:back"),
-        ],
     ]
 
     await message.reply_text(
