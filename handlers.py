@@ -2048,37 +2048,59 @@ async def punish_user_for_warnings(
 def format_duration(seconds: int, lang: str) -> str:
     if seconds == -1:
         return "Навсегда" if lang == "ru" else "Doimiy"
-    
+
     units = [
-        (2592000, "месяц", "месяца", "месяцев", "oy"),
-        (604800, "неделя", "недели", "недель", "hafta"),
-        (86400, "день", "дня", "дней", "kun"),
-        (3600, "час", "часа", "часов", "soat"),
-        (60, "минута", "минуты", "минут", "daqiqa"),
-        (1, "секунда", "секунды", "секунд", "soniya"),
+        ("mo", 2592000),
+        ("w", 604800),
+        ("d", 86400),
+        ("h", 3600),
+        ("m", 60),
+        ("s", 1),
     ]
+
+    names = {
+        "ru": {
+            "mo": ("месяц", "месяца", "месяцев"),
+            "w": ("неделя", "недели", "недель"),
+            "d": ("день", "дня", "дней"),
+            "h": ("час", "часа", "часов"),
+            "m": ("минута", "минуты", "минут"),
+            "s": ("секунда", "секунды", "секунд"),
+        },
+        "uz": {
+            "mo": "oy",
+            "w": "hafta",
+            "d": "kun",
+            "h": "soat",
+            "m": "daqiqa",
+            "s": "soniya",
+        }
+    }
 
     parts = []
 
-    for unit_seconds, ru_one, ru_two, ru_many, uz_word in units:
+    for unit, unit_seconds in units:
         value = seconds // unit_seconds
 
-        if value:
-            seconds %= unit_seconds
+        if value <= 0:
+            continue
 
-            if lang == "ru":
-                if value % 10 == 1 and value % 100 != 11:
-                    word = ru_one
-                elif value % 10 in [2, 3, 4] and value % 100 not in [12, 13, 14]:
-                    word = ru_two
-                else:
-                    word = ru_many
+        seconds %= unit_seconds
 
-                parts.append(f"{value} {word}")
+        if lang == "ru":
+            if value % 10 == 1 and value % 100 != 11:
+                word = names["ru"][unit][0]
+            elif value % 10 in [2, 3, 4] and value % 100 not in [12, 13, 14]:
+                word = names["ru"][unit][1]
             else:
-                parts.append(f"{value} {uz_word}")
+                word = names["ru"][unit][2]
 
-    return " ".join(parts) if parts else ("0 секунд" if lang == "ru" else "0 soniya")
+            parts.append(f"{value} {word}")
+
+        else:
+            parts.append(f"{value} {names['uz'][unit]}")
+
+    return " ".join(parts)
 
 def build_restrictions_panel(lang: str, chat_id: int, settings: dict):
     bad_words_status = (
