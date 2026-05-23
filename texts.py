@@ -207,7 +207,7 @@ TEXTS = {
             "➕ Отправьте канал или группу для обязательной подписки.\n\n"
             "Можно отправить:\n"
             "@username\n"
-            "-1001234567890"
+            "https://t.me/"
         ),
         "required_sub_added": "✅ Подписка добавлена.",
         "delete_required_sub_prompt": "🗑 Введите номер подписки для удаления.",
@@ -219,7 +219,7 @@ TEXTS = {
             "Отправьте в формате:\n"
             "@username\n"
             "или\n"
-            "https://t.me/username"
+            "https://t.me/"
         ),
         "required_sub_not_accessible": (
             "❌ Не удалось найти этот канал или группу.\n\n"
@@ -687,7 +687,7 @@ TEXTS = {
             "➕ Majburiy obuna uchun kanal yoki guruhni yuboring.\n\n"
             "Yuborishingiz mumkin:\n"
             "@username\n"
-            "-1001234567890"
+            "https://t.me/"
         ),
         "required_sub_added": "✅ Obuna qo‘shildi.",
         "delete_required_sub_prompt": "🗑 O‘chirish uchun obuna raqamini kiriting.",
@@ -699,7 +699,7 @@ TEXTS = {
             "Quyidagi formatda yuboring:\n"
             "@username\n"
             "yoki\n"
-            "https://t.me/username"
+            "https://t.me/"
         ),
         "required_sub_not_accessible": (
             "❌ Bu kanal yoki guruh topilmadi.\n\n"
@@ -782,9 +782,9 @@ TEXTS = {
             "Buning uchun so‘zlar orasini oddiy probel bilan ajrating. "
             "Vergul yoki boshqa belgilar kerak emas.\n\n"
             "Shuningdek, o‘zgartirilgan belgilar bilan yozilgan so‘zlar ham aniqlanadi, masalan:\n"
-            "• so’kinish\n"
+            "<blockquote>• so’kinish\n"
             "• s@kinish\n"
-            "• s*kinish\n\n"
+            "• s*kinish</blockquote>\n\n"
             "So‘z lug‘atda mavjudligini tekshirish uchun «Qidirish» tugmasidan foydalaning. "
             "Qidiruv so‘zning o‘zi yoki uning ro‘yxatdagi raqami orqali ishlaydi.\n\n"
             "So‘zni o‘chirish uchun avval uni «Qidirish» orqali toping, "
