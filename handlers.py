@@ -3362,3 +3362,97 @@ async def dwarn_bad_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 async def dwarn_ad_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await manual_dwarn(update, context, "ads")
+
+async def apply_kick(message, target_user, lang: str):
+    await message.chat.ban_member(
+        user_id=target_user.id
+    )
+
+    await message.chat.unban_member(
+        user_id=target_user.id,
+        only_if_banned=True
+    )
+
+    msg = await message.chat.send_message(
+        TEXTS[lang]["user_kicked"].format(
+            name=target_user.first_name
+        )
+    )
+
+    await asyncio.sleep(3)
+
+    try:
+        await msg.delete()
+    except Exception as e:
+        print("DELETE KICK MESSAGE ERROR:", e)
+
+async def kick_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = update.message
+
+    if not message or message.chat.type not in ["group", "supergroup"]:
+        return
+
+    await delete_admin_command(message)
+
+    admin = message.from_user
+    lang = get_group_language(message.chat.id)
+
+    if not await is_admin(message.chat, admin.id):
+        return
+
+    target_user = await resolve_mute_target(message, context, context.args)
+
+    if not target_user:
+        msg = await message.chat.send_message(TEXTS[lang]["user_not_found"])
+        await asyncio.sleep(3)
+
+        try:
+            await msg.delete()
+        except Exception as e:
+            print("DELETE KICK ERROR MESSAGE ERROR:", e)
+
+        return
+
+    try:
+        await apply_kick(message, target_user, lang)
+
+    except Exception as e:
+        print("KICK ERROR:", e)
+
+async def dkick_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = update.message
+
+    if not message or message.chat.type not in ["group", "supergroup"]:
+        return
+
+    await delete_admin_command(message)
+
+    admin = message.from_user
+    lang = get_group_language(message.chat.id)
+
+    if not await is_admin(message.chat, admin.id):
+        return
+
+    if not message.reply_to_message:
+        msg = await message.chat.send_message(TEXTS[lang]["user_not_found"])
+        await asyncio.sleep(3)
+
+        try:
+            await msg.delete()
+        except Exception as e:
+            print("DELETE DKICK ERROR MESSAGE ERROR:", e)
+
+        return
+
+    target_user = message.reply_to_message.from_user
+
+    try:
+        await message.reply_to_message.delete()
+    except Exception as e:
+        print("DELETE DKICK TARGET MESSAGE ERROR:", e)
+
+    try:
+        await apply_kick(message, target_user, lang)
+
+    except Exception as e:
+        print("DKICK ERROR:", e)
