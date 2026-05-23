@@ -1987,7 +1987,7 @@ async def handle_warning(
     show_warning: bool,
     punish_seconds: int,
 ):
-    user = message.from_user
+    user = getattr(message, "target_user", message.from_user)
 
     count = add_warning(message.chat.id, user.id, reason)
 
@@ -2021,7 +2021,7 @@ async def punish_user_for_warnings(
     seconds: int,
     show_message: bool = True,
 ):
-    user = message.from_user
+    user = getattr(message, "target_user", message.from_user)
 
     if seconds == -1:
         until_date = None
@@ -3239,3 +3239,123 @@ async def dmute_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
         await apply_manual_mute(message, context, target_user, seconds, lang)
     except Exception as e:
         print("DMUTE ERROR:", e)
+
+async def manual_warn(update: Update, context: ContextTypes.DEFAULT_TYPE, reason: str):
+    message = update.message
+
+    if not message or message.chat.type not in ["group", "supergroup"]:
+        return
+
+    await delete_admin_command(message)
+
+    admin = message.from_user
+    lang = get_group_language(message.chat.id)
+
+    if not await is_admin(message.chat, admin.id):
+        return
+
+    target_user = await resolve_mute_target(message, context, context.args)
+
+    if not target_user:
+        msg = await message.chat.send_message(TEXTS[lang]["user_not_found"])
+        await asyncio.sleep(3)
+        await msg.delete()
+        return
+
+    settings = get_group_settings(message.chat.id)
+
+    if reason == "bad_words":
+        message.target_user = target_user
+
+        await handle_warning(
+            message=message,
+            lang=lang,
+            reason="bad_words",
+            reason_key="reason_bad_word",
+            limit=settings["bad_words_warn_limit"],
+            punish_enabled=settings["punish_bad_words"],
+            show_warning=True,
+            punish_seconds=settings["bad_words_punish_seconds"],
+        )
+
+    elif reason == "ads":
+        message.target_user = target_user
+
+        await handle_warning(
+            message=message,
+            lang=lang,
+            reason="ads",
+            reason_key="reason_ads",
+            limit=settings["ads_warn_limit"],
+            punish_enabled=settings["punish_ads"],
+            show_warning=True,
+            punish_seconds=settings["ads_punish_seconds"],
+        )
+
+async def warn_bad_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await manual_warn(update, context, "bad_words")
+
+
+async def warn_ad_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await manual_warn(update, context, "ads")
+
+async def manual_dwarn(update: Update, context: ContextTypes.DEFAULT_TYPE, reason: str):
+    message = update.message
+
+    if not message or message.chat.type not in ["group", "supergroup"]:
+        return
+
+    await delete_admin_command(message)
+
+    admin = message.from_user
+    lang = get_group_language(message.chat.id)
+
+    if not await is_admin(message.chat, admin.id):
+        return
+
+    if not message.reply_to_message:
+        msg = await message.chat.send_message(TEXTS[lang]["user_not_found"])
+        await asyncio.sleep(3)
+        await msg.delete()
+        return
+
+    target_user = message.reply_to_message.from_user
+
+    try:
+        await message.reply_to_message.delete()
+    except Exception as e:
+        print("DELETE DWARN MESSAGE ERROR:", e)
+
+    settings = get_group_settings(message.chat.id)
+    message.target_user = target_user
+
+    if reason == "bad_words":
+        await handle_warning(
+            message=message,
+            lang=lang,
+            reason="bad_words",
+            reason_key="reason_bad_word",
+            limit=settings["bad_words_warn_limit"],
+            punish_enabled=settings["punish_bad_words"],
+            show_warning=True,
+            punish_seconds=settings["bad_words_punish_seconds"],
+        )
+
+    elif reason == "ads":
+        await handle_warning(
+            message=message,
+            lang=lang,
+            reason="ads",
+            reason_key="reason_ads",
+            limit=settings["ads_warn_limit"],
+            punish_enabled=settings["punish_ads"],
+            show_warning=True,
+            punish_seconds=settings["ads_punish_seconds"],
+        )
+
+async def dwarn_bad_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await manual_dwarn(update, context, "bad_words")
+
+
+async def dwarn_ad_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    await manual_dwarn(update, context, "ads")
