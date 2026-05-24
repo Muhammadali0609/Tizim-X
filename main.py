@@ -65,6 +65,10 @@ from handlers import (start_command,
     guide_callback,
 )
 from db import setup_database
+from admins import (
+    admin_command,
+    admin_callback,
+)
 
 async def setup_commands(app):
     await app.bot.set_my_commands(
@@ -114,6 +118,7 @@ def main():
     app.add_handler(CommandHandler("dban", dban_command))
     app.add_handler(CommandHandler("unmute", unmute_command))
     app.add_handler(CommandHandler("unban", unban_command))
+    app.add_handler(CommandHandler("admin", admin_command))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, check_group_message))
     app.add_handler(CallbackQueryHandler(group_settings_callback, pattern="^group_settings:"))
     app.add_handler(CallbackQueryHandler(back_groups_callback, pattern="^back_groups$"))
@@ -157,6 +162,7 @@ def main():
     app.add_handler(CallbackQueryHandler(transfer_confirm_callback, pattern="^transfer_confirm:"))
     app.add_handler(CallbackQueryHandler(group_plan_callback, pattern="^group_plan:"))
     app.add_handler(CallbackQueryHandler(guide_callback, pattern="^guide:"))
+    app.add_handler(CallbackQueryHandler(admin_callback, pattern="^admin:"))
     
     app.run_webhook(
         listen="0.0.0.0",
