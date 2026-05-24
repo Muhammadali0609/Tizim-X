@@ -67,7 +67,8 @@ from handlers import (start_command,
 from db import setup_database
 from admins import (
     admin_command,
-    admin_callback,
+    admin_callback,,
+    admin_groups_page_callback,
 )
 
 async def setup_commands(app):
@@ -163,6 +164,7 @@ def main():
     app.add_handler(CallbackQueryHandler(group_plan_callback, pattern="^group_plan:"))
     app.add_handler(CallbackQueryHandler(guide_callback, pattern="^guide:"))
     app.add_handler(CallbackQueryHandler(admin_callback, pattern="^admin:"))
+    app.add_handler(CallbackQueryHandler(admin_groups_page_callback, pattern="^admin_groups:"))
     
     app.run_webhook(
         listen="0.0.0.0",
