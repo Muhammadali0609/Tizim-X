@@ -104,6 +104,10 @@ def setup_database():
                 ADD COLUMN IF NOT EXISTS is_disabled BOOLEAN NOT NULL DEFAULT FALSE
             """)
             cur.execute("""
+                ALTER TABLE tizimx_groups
+                ADD COLUMN IF NOT EXISTS username TEXT
+            """)
+            cur.execute("""
                 CREATE TABLE IF NOT EXISTS tizimx_group_admins (
                     chat_id BIGINT NOT NULL,
                     user_id BIGINT NOT NULL,
@@ -193,7 +197,12 @@ def save_user_language(user_id: int, language: str):
             """, (user_id, language))
         conn.commit()
 
-def save_group(chat_id: int, title: str, chat_type: str | None = None):
+def save_group(
+    chat_id: int,
+    title: str,
+    chat_type: str | None = None,
+    username: str | None = None
+):
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
@@ -208,9 +217,10 @@ def save_group(chat_id: int, title: str, chat_type: str | None = None):
                 cur.execute("""
                     UPDATE tizimx_groups
                     SET title = %s,
-                        chat_type = COALESCE(%s, chat_type)
+                        chat_type = COALESCE(%s, chat_type),
+                        username = %s
                     WHERE chat_id = %s
-                """, (title, chat_type, chat_id))
+                """, (title, chat_type, username, chat_id))
 
             else:
                 expires_at = datetime.now(timezone.utc) + timedelta(days=3)
@@ -220,14 +230,16 @@ def save_group(chat_id: int, title: str, chat_type: str | None = None):
                         chat_id,
                         title,
                         chat_type,
+                        username,
                         plan_name,
                         plan_expires_at
                     )
-                    VALUES (%s, %s, %s, %s, %s)
+                    VALUES (%s, %s, %s, %s, %s, %s)
                 """, (
                     chat_id,
                     title,
                     chat_type,
+                    username,
                     "trial",
                     expires_at
                 ))
@@ -986,6 +998,7 @@ def get_admin_group(chat_id: int):
                 SELECT
                     chat_id,
                     title,
+                    username,
                     chat_type,
                     language,
                     plan_name,
