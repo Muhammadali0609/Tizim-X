@@ -50,6 +50,52 @@ import asyncio
 import math
 import re
 
+import time
+
+PRIVATE_MESSAGE_LIMIT = {}
+CALLBACK_LIMIT = {}
+
+
+def is_private_message_limited(user_id: int) -> bool:
+    now = time.time()
+
+    last_time = PRIVATE_MESSAGE_LIMIT.get(user_id, 0)
+
+    if now - last_time < 1:
+        return True
+
+    PRIVATE_MESSAGE_LIMIT[user_id] = now
+    return False
+
+
+def is_callback_limited(user_id: int) -> bool:
+    now = time.time()
+
+    data = CALLBACK_LIMIT.get(user_id, [])
+
+    data = [
+        timestamp for timestamp in data
+        if now - timestamp <= 60
+    ]
+
+    if len(data) >= 30:
+        CALLBACK_LIMIT[user_id] = data
+        return True
+
+    data.append(now)
+    CALLBACK_LIMIT[user_id] = data
+
+    return False
+
+async def check_callback_limit(query) -> bool:
+    user_id = query.from_user.id
+
+    if is_callback_limited(user_id):
+        await query.answer()
+        return True
+
+    return False
+
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
     lang_keyboard = [
         [
@@ -507,6 +553,10 @@ async def clean_service_message(update: Update, context: ContextTypes.DEFAULT_TY
 
 async def group_settings_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+    
+    if await check_callback_limit(query):
+        return
+        
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -722,6 +772,9 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
 
     user_id = update.effective_user.id
     lang = get_user_language(user_id)
+
+    if is_private_message_limited(user_id):
+        return
 
     if context.user_data.get("state") == "adding_required_sub":
         chat_id = context.user_data.get("target_chat_id")
