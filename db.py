@@ -886,13 +886,46 @@ def get_admin_stats():
 
             cur.execute("""
                 SELECT
-                    COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '1 day') AS groups_today,
-                    COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '7 days') AS groups_week,
-                    COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '30 days') AS groups_month,
-                    COUNT(*) AS groups_total
+                    COUNT(*) FILTER (
+                        WHERE created_at >= NOW() - INTERVAL '1 day'
+                        AND chat_type IN ('group', 'supergroup')
+                    ) AS groups_today,
+
+                    COUNT(*) FILTER (
+                        WHERE created_at >= NOW() - INTERVAL '7 days'
+                        AND chat_type IN ('group', 'supergroup')
+                    ) AS groups_week,
+
+                    COUNT(*) FILTER (
+                        WHERE created_at >= NOW() - INTERVAL '30 days'
+                        AND chat_type IN ('group', 'supergroup')
+                    ) AS groups_month,
+
+                    COUNT(*) FILTER (
+                        WHERE chat_type IN ('group', 'supergroup')
+                    ) AS groups_total,
+
+                    COUNT(*) FILTER (
+                        WHERE created_at >= NOW() - INTERVAL '1 day'
+                        AND chat_type = 'channel'
+                    ) AS channels_today,
+
+                    COUNT(*) FILTER (
+                        WHERE created_at >= NOW() - INTERVAL '7 days'
+                        AND chat_type = 'channel'
+                    ) AS channels_week,
+
+                    COUNT(*) FILTER (
+                        WHERE created_at >= NOW() - INTERVAL '30 days'
+                        AND chat_type = 'channel'
+                    ) AS channels_month,
+
+                    COUNT(*) FILTER (
+                        WHERE chat_type = 'channel'
+                    ) AS channels_total
                 FROM tizimx_groups
             """)
-            groups = cur.fetchone()
+            chats = cur.fetchone()
 
     return {
         "users_today": users[0],
@@ -900,8 +933,13 @@ def get_admin_stats():
         "users_month": users[2],
         "users_total": users[3],
 
-        "groups_today": groups[0],
-        "groups_week": groups[1],
-        "groups_month": groups[2],
-        "groups_total": groups[3],
+        "groups_today": chats[0],
+        "groups_week": chats[1],
+        "groups_month": chats[2],
+        "groups_total": chats[3],
+
+        "channels_today": chats[4],
+        "channels_week": chats[5],
+        "channels_month": chats[6],
+        "channels_total": chats[7],
     }
