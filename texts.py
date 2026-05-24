@@ -102,7 +102,7 @@ TEXTS = {
 
         "warnings_panel": (
             "⚠️ Предупреждения\n\n"
-            "Предупреждение за мат:\n{bad_words_status}\n"
+            "Предупреждение за мат:\n{bad_words_status}\n\n"
             "Предупреждение за рекламу:\n{ads_status}"
         ),
         
@@ -125,10 +125,10 @@ TEXTS = {
             "Причина: {reason}\n"
             "Предупреждение: {count}/{limit}"
         ),
-        "reason_bad_word": "мат",
+        "reason_bad_word": "запрещенное слово",
         "reason_ads": "реклама",
         "limit_reached": (
-            "🔒 {name} временно ограничен.\n\n"
+            "🔒 {name} получил ограничение.\n\n"
             "Срок: {duration}\n"
             "Причина: {reason}"
         ),
@@ -177,8 +177,8 @@ TEXTS = {
 
         "settings_panel": (
             "⚙️ Настройки\n\n"
-            "Удаление матов:\n{bad_words_status}\n"
-            "Удаление рекламы:\n{ads_status}\n"
+            "Удаление матов:\n{bad_words_status}\n\n"
+            "Удаление рекламы:\n{ads_status}\n\n"
             "Удаление @username:\n{usernames_status}"
         ),
         
@@ -534,6 +534,48 @@ TEXTS = {
             "Если список станет пустым, обязательные подписки "
             "автоматически отключатся."
         ),
+        "guide_transfer_text": (
+            "<b>Перенос настроек</b> — это система быстрого "
+            "копирования фильтров и настроек из одной группы в другую.\n\n"
+        
+            "Данный раздел предназначен для администраторов, "
+            "управляющих несколькими группами.\n\n"
+        
+            "Перенос работает только между группами, "
+            "где вы являетесь администратором "
+            "и в которых присутствует данный бот.\n\n"
+        
+            "<b>Выборочный перенос</b>\n"
+            "Вы можете самостоятельно выбрать, "
+            "какие данные нужно перенести.\n\n"
+        
+            "<blockquote>Например:\n"
+            "• словарь матов — все слова из словаря\n"
+            "• настройки рекламы — список ссылок, фраз и исключений\n"
+            "• предупреждения и лимиты — состояние переключателей предупреждений и количество лимитов\n"
+            "• ограничения и сроки — состояние переключателей ограничений и текущие сроки\n"
+            "• настройки удаления — состояние переключателей удаления фильтруемых сообщений</blockquote>\n\n"
+        
+            "<b>Перенос всех настроек</b>\n"
+            "Данная кнопка переносит сразу все "
+            "перечисленные выше фильтры и настройки.\n\n"
+        
+            "<b>Дополнительная информация</b>\n"
+            "При переносе словаря матов и рекламных списков "
+            "бот не добавляет одинаковые данные повторно.\n\n"
+        
+            "Если информация уже существует в другой группе, "
+            "она будет пропущена, а добавлены будут "
+            "только новые и отличающиеся данные.\n\n"
+        
+            "<b>Что не переносится</b>\n"
+            "В целях безопасности список обязательных "
+            "подписок не переносится.\n\n"
+        
+            "Перед переносом бот показывает окно "
+            "итогового подтверждения и позволяет "
+            "проверить выбранные данные."
+        ),
     },
     "uz": {
         "start": (
@@ -571,23 +613,23 @@ TEXTS = {
         "enabled": "🟢",
         "disabled": "🔴",
 
-        "btn_bad_words": "🤬 So‘kinishlar",
+        "btn_bad_words": "🤬 Haqoratlar",
         "btn_ads": "🚫 Reklamalar",
         "btn_warnings": "⚠️ Ogohlantirishlar",
         "btn_restrictions": "🔒 Cheklovlar",
         "btn_settings": "⚙️ Sozlamalar",
         "btn_transfer_settings": "🔁 Sozlamalarni ko‘chirish",
 
-        "bad_words_title": "🤬 So‘kinishlar\n\n{words}\n\nSahifa {page}/{total_pages}",
-        "bad_words_empty": "🤬 So‘kinishlar ro‘yxati bo‘sh.",
+        "bad_words_title": "🤬 Haqoratlar\n\n{words}\n\nSahifa {page}/{total_pages}",
+        "bad_words_empty": "🤬 Haqoratlar ro‘yxati bo‘sh.",
         "btn_prev": "⬅️ Oldingi",
         "btn_next": "Keyingi ➡️",
         "btn_search": "🔍 Qidirish",
         "btn_back_panel": "⬅️ Menyuga",
 
-        "btn_add_bad_word": "➕ So‘kinish qo‘shish",
-        "add_bad_word_prompt": "✍️ Yangi so‘kinishni kiriting.\n\nBir nechta so‘z yuborishingiz mumkin, masalan:\nso‘z1 so‘z2 so‘z3",
-        "bad_words_added": "✅ So‘kinish guruhga qo‘shildi.",
+        "btn_add_bad_word": "➕ Haqorat qo‘shish",
+        "add_bad_word_prompt": "✍️ Yangi haqoratni kiriting.\n\nBir nechta so‘z yuborishingiz mumkin, masalan:\nso‘z1 so‘z2 so‘z3",
+        "bad_words_added": "✅ Haqorat guruhga qo‘shildi.",
 
         "ads_panel": "🚫 Reklamalar\n\nHavolalarni bloklash: {status}",
         "links_enabled": "🟢 Yoqilgan",
@@ -604,11 +646,11 @@ TEXTS = {
         "add_ad_link_prompt": "✍️ Havolani kiriting.",
         "ad_links_added": "✅ Havola guruhga qo‘shildi.",
 
-        "bad_word_search_prompt": "🔍 Raqam yoki so‘kinishni kiriting, masalan:\n38 yoki so‘z2",
-        "bad_word_not_found": "❌ Bunday so‘kinish mavjud emas, uni qo‘shishingiz mumkin.",
+        "bad_word_search_prompt": "🔍 Ro'yxatdagi raqam yoki haqoratni kiriting, masalan:\n38 yoki so‘z2",
+        "bad_word_not_found": "❌ Bunday haqorat mavjud emas, uni qo‘shishingiz mumkin.",
         "bad_word_found": "✅ Topildi:\n\n{index}. {word}",
         "btn_delete": "🗑 O‘chirish",
-        "bad_word_deleted": "✅ So‘kinish o‘chirildi.",
+        "bad_word_deleted": "✅ Haqorat o‘chirildi.",
 
         "ad_phrases_title": "💬 Reklama iboralari\n\n{phrases}\n\nSahifa {page}/{total_pages}",
         "ad_phrases_empty": "💬 Reklama iboralari ro‘yxati bo‘sh.",
@@ -638,20 +680,20 @@ TEXTS = {
 
         "warnings_panel": (
             "⚠️ Ogohlantirishlar\n\n"
-            "So‘kinish uchun ogohlantirish:\n{bad_words_status}\n"
+            "Haqorat uchun ogohlantirish:\n{bad_words_status}\n\n"
             "Reklama uchun ogohlantirish:\n{ads_status}"
         ),
         
         "warn_enabled": "🟢 YOQILGAN",
         "warn_disabled": "🔴 O‘CHIRILGAN",
         
-        "btn_warn_bad_words_on": "🟢 So‘kinish uchun ogohlantirishni yoqish",
-        "btn_warn_bad_words_off": "🔴 So‘kinish uchun ogohlantirishni o‘chirish",
+        "btn_warn_bad_words_on": "🟢 Haqorat uchun ogohlantirishni yoqish",
+        "btn_warn_bad_words_off": "🔴 Haqorat uchun ogohlantirishni o‘chirish",
         
         "btn_warn_ads_on": "🟢 Reklama uchun ogohlantirishni yoqish",
         "btn_warn_ads_off": "🔴 Reklama uchun ogohlantirishni o‘chirish",
         
-        "btn_bad_words_warn_limit": "🤬 So‘kinishni ogohlantirish soni: {limit}",
+        "btn_bad_words_warn_limit": "🤬 Haqoratni ogohlantirish soni: {limit}",
         "btn_ads_warn_limit": "🚫 Reklamani ogohlantirish soni: {limit}",
         "choose_warn_limit": "⚠️ Ogohlantirishlar sonini tanlang:",
         "warn_limit_saved": "✅ Ogohlantirishlar soni saqlandi.",
@@ -661,25 +703,25 @@ TEXTS = {
             "Sabab: {reason}\n"
             "Ogohlantirish: {count}/{limit}"
         ),
-        "reason_bad_word": "so‘kinish",
+        "reason_bad_word": "taqiqlangan so'z",
         "reason_ads": "reklama",
         "limit_reached": (
-            "🔒 {name} vaqtincha cheklandi.\n\n"
+            "🔒 {name} cheklov oldi.\n\n"
             "Muddat: {duration}\n"
             "Sabab: {reason}"
         ),
         "restrictions_panel": (
             "🔒 Cheklovlar\n\n"
-            "So‘kinish uchun cheklov:\n{bad_words_status}\n"
+            "Haqorat uchun cheklov:\n{bad_words_status}\n"
             "Reklama uchun cheklov:\n{ads_status}\n\n"
-            "So‘kinish uchun cheklov muddati:\n🕓 {bad_words_duration}\n"
+            "Haqorat uchun cheklov muddati:\n🕓 {bad_words_duration}\n"
             "Reklama uchun cheklov muddati:\n🕓 {ads_duration}"
         ),
-        "btn_punish_bad_words_on": "🟢 So‘kinish uchun cheklovni yoqish",
-        "btn_punish_bad_words_off": "🔴 So‘kinish uchun cheklovni o‘chirish",
+        "btn_punish_bad_words_on": "🟢 Haqorat uchun cheklovni yoqish",
+        "btn_punish_bad_words_off": "🔴 Haqorat uchun cheklovni o‘chirish",
         "btn_punish_ads_on": "🟢 Reklama uchun cheklovni yoqish",
         "btn_punish_ads_off": "🔴 Reklama uchun cheklovni o‘chirish",
-        "btn_bad_words_punish_duration": "⏳ So‘kinish uchun muddat",
+        "btn_bad_words_punish_duration": "⏳ Haqorat uchun muddat",
         "btn_ads_punish_duration": "⏳ Reklama uchun muddat",
 
         "enter_duration_prompt": (
@@ -713,13 +755,13 @@ TEXTS = {
 
         "settings_panel": (
             "⚙️ Sozlamalar\n\n"
-            "So‘kinishlarni o‘chirish:\n{bad_words_status}\n"
-            "Reklamalarni o‘chirish:\n{ads_status}\n"
+            "Haqoratlarni o‘chirish:\n{bad_words_status}\n\n"
+            "Reklamalarni o‘chirish:\n{ads_status}\n\n"
             "@username o‘chirish:\n{usernames_status}"
         ),
         
-        "btn_toggle_bad_words_on": "🟢 So‘kinishlarni tozalashni yoqish",
-        "btn_toggle_bad_words_off": "🔴 So‘kinishlarni tozalashni o‘chirish",
+        "btn_toggle_bad_words_on": "🟢 Haqoratlarni tozalashni yoqish",
+        "btn_toggle_bad_words_off": "🔴 Haqoratlarni tozalashni o‘chirish",
         
         "btn_toggle_ads_on": "🟢 Reklamalarni tozalashni yoqish",
         "btn_toggle_ads_off": "🔴 Reklamalarni tozalashni o‘chirish",
@@ -1075,6 +1117,50 @@ TEXTS = {
         
             "Agar ro‘yxat bo‘sh qolsa, majburiy "
             "obunalar avtomatik ravishda o‘chiriladi."
+        ),
+        "guide_transfer_text": (
+            "<b>Sozlamalarni ko‘chirish</b> — bir guruhdagi "
+            "filtr va sozlamalarni boshqa guruhga "
+            "tez nusxalash tizimi.\n\n"
+        
+            "Bu bo‘lim bir nechta guruhlarni "
+            "boshqaradigan administratorlar uchun mo‘ljallangan.\n\n"
+        
+            "Ko‘chirish faqat siz admin bo‘lgan "
+            "va ushbu bot mavjud guruhlar orasida ishlaydi.\n\n"
+        
+            "<b>Tanlab ko‘chirish</b>\n"
+            "Siz qaysi ma’lumotlarni ko‘chirishni "
+            "mustaqil tanlashingiz mumkin.\n\n"
+        
+            "<blockquote>Masalan:\n"
+            "• so‘kinishlar lug‘ati — lug‘atdagi barcha so‘zlar\n"
+            "• reklama sozlamalari — havolalar, iboralar va istisnolar ro‘yxati\n"
+            "• ogohlantirishlar va limitlar — ogohlantirish tugmalari holati va limitlar soni\n"
+            "• cheklovlar va muddatlar — cheklov tugmalari holati va joriy muddatlar\n"
+            "• o‘chirish sozlamalari — filtrlangan xabarlarni o‘chirish tugmalari holati</blockquote>\n\n"
+        
+            "<b>Barcha sozlamalarni ko‘chirish</b>\n"
+            "Ushbu tugma yuqorida keltirilgan barcha "
+            "filtr va sozlamalarni birdaniga ko‘chiradi.\n\n"
+        
+            "<b>Qo‘shimcha ma’lumot</b>\n"
+            "So‘kinishlar lug‘ati va reklama ro‘yxatlari "
+            "ko‘chirilayotganda bot bir xil ma’lumotlarni "
+            "qayta qo‘shmaydi.\n\n"
+        
+            "Agar ma’lumot boshqa guruhda avvaldan mavjud bo‘lsa, "
+            "u o‘tkazib yuboriladi, faqat yangi va "
+            "farqli ma’lumotlar qo‘shiladi.\n\n"
+        
+            "<b>Nimalar ko‘chirilmaydi</b>\n"
+            "Xavfsizlik yuzasidan majburiy obunalar "
+            "ro‘yxati ko‘chirilmaydi.\n\n"
+        
+            "Ko‘chirishdan oldin bot yakuniy "
+            "tasdiqlash oynasini ko‘rsatadi va "
+            "tanlangan ma’lumotlarni tekshirish "
+            "imkonini beradi."
         ),
     }
 }
