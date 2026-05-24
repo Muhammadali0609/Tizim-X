@@ -70,6 +70,8 @@ from admins import (
     admin_callback,
     admin_groups_page_callback,
     admin_group_callback,
+    admin_group_search_callback,
+    admin_text_handler,
 )
 
 async def setup_commands(app):
@@ -105,6 +107,7 @@ def main():
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.Regex("^(⚙️ Управлять|⚙️ Boshqarish)$"), settings_button_handler))
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.Regex("^(🌐 Язык|🌐 Til)$"), language_toggle_handler))
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.Regex("^(📘 Инструкция|📘 Qo‘llanma)$"), guide_button_handler))
+    app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.TEXT & ~filters.COMMAND, admin_text_handler))
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.TEXT & ~filters.COMMAND, private_text_handler))
     app.add_handler(CommandHandler("mute", mute_command))
     app.add_handler(CommandHandler("dmute", dmute_command))
@@ -167,6 +170,7 @@ def main():
     app.add_handler(CallbackQueryHandler(admin_callback, pattern="^admin:"))
     app.add_handler(CallbackQueryHandler(admin_groups_page_callback, pattern="^admin_groups:"))
     app.add_handler(CallbackQueryHandler(admin_group_callback, pattern="^admin_group:"))
+    app.add_handler(CallbackQueryHandler(admin_group_search_callback, pattern="^admin_group_search$"))
     
     app.run_webhook(
         listen="0.0.0.0",
