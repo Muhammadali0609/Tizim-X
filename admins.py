@@ -4,7 +4,8 @@ from telegram.ext import ContextTypes
 import math
 from config import OWNER_ID
 from texts import TEXTS
-from db import get_admin_stats, get_admin_groups_page, get_admin_groups_count, ADMIN_GROUPS_PER_PAGE
+from zoneinfo import ZoneInfo
+from db import get_admin_stats, get_admin_groups_page, get_admin_groups_count, ADMIN_GROUPS_PER_PAGE, get_admin_group
 
 
 async def is_admin(chat, user_id: int) -> bool:
@@ -249,3 +250,109 @@ async def admin_groups_page_callback(update: Update, context: ContextTypes.DEFAU
     page = int(query.data.split(":")[1])
 
     await show_admin_groups(query, page)
+
+def build_admin_group_keyboard(chat_id: int, is_disabled: bool):
+    toggle_text = (
+        "✅ Включить группу"
+        if is_disabled
+        else "🚫 Отключить группу"
+    )
+
+    return InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton(
+                "💎 Изменить тариф",
+                callback_data=f"admin_group_plan:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                "📢 Обязательные подписки",
+                callback_data=f"admin_group_required_subs:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                toggle_text,
+                callback_data=f"admin_group_toggle:{chat_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS["ru"]["back_button"],
+                callback_data="admin:groups"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS["ru"]["btn_admin_close"],
+                callback_data="admin:close"
+            )
+        ]
+    ])
+
+async def show_admin_group_card(query, chat_id: int):
+    group = get_admin_group(chat_id)
+
+    if not group:
+        await query.answer("Группа не найдена", show_alert=True)
+        return
+
+    (
+        group_chat_id,
+        title,
+        chat_type,
+        language,
+        plan_name,
+        expires_at,
+        is_disabled,
+        created_at
+    ) = group
+
+    status = (
+        TEXTS["ru"]["admin_group_disabled"]
+        if is_disabled
+        else TEXTS["ru"]["admin_group_active"]
+    )
+
+    if expires_at:
+        expires_at = (
+            expires_at
+            .astimezone(ZoneInfo("Asia/Tashkent"))
+            .strftime("%d.%m.%Y %H:%M")
+        )
+    else:
+        expires_at = "-"
+
+    await query.edit_message_text(
+        TEXTS["ru"]["admin_group_text"].format(
+            title=title,
+            chat_id=group_chat_id,
+            chat_type=chat_type,
+            language=language,
+            plan_name=plan_name,
+            expires_at=expires_at,
+            status=status
+        ),
+        parse_mode="HTML",
+        reply_markup=build_admin_group_keyboard(
+            group_chat_id,
+            is_disabled
+        )
+    )
+
+async def admin_group_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    user_id = query.from_user.id
+
+    if user_id != OWNER_ID:
+        await query.answer(
+            TEXTS["ru"]["admin_access_denied"],
+            show_alert=True
+        )
+        return
+
+    chat_id = int(query.data.split(":")[1])
+
+    await show_admin_group_card(query, chat_id)
