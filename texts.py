@@ -12,7 +12,7 @@ TEXTS = {
         "admin_stats_text": (
             "📊 <b>Статистика TizimX</b>\n\n"
         
-            "👥 <b>Пользователи</b>\n"
+            "👤 <b>Пользователи</b>\n"
             "Сегодня: {users_today}\n"
             "7 дней: {users_week}\n"
             "30 дней: {users_month}\n"
@@ -22,7 +22,13 @@ TEXTS = {
             "Сегодня: {groups_today}\n"
             "7 дней: {groups_week}\n"
             "30 дней: {groups_month}\n"
-            "Всего: {groups_total}"
+            "Всего: {groups_total}\n\n"
+        
+            "📢 <b>Каналы</b>\n"
+            "Сегодня: {channels_today}\n"
+            "7 дней: {channels_week}\n"
+            "30 дней: {channels_month}\n"
+            "Всего: {channels_total}"
         ),
         
         "start": (
