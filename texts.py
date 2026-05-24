@@ -8,6 +8,22 @@ TEXTS = {
         "btn_admin_disabled_groups": "🚫 Отключённые группы",
         "btn_admin_close": "❌ Закрыть",
         "admin_access_denied": "❌ Доступ запрещён.",
+
+        "admin_stats_text": (
+            "📊 <b>Статистика TizimX</b>\n\n"
+        
+            "👥 <b>Пользователи</b>\n"
+            "Сегодня: {users_today}\n"
+            "7 дней: {users_week}\n"
+            "30 дней: {users_month}\n"
+            "Всего: {users_total}\n\n"
+        
+            "👥 <b>Группы</b>\n"
+            "Сегодня: {groups_today}\n"
+            "7 дней: {groups_week}\n"
+            "30 дней: {groups_month}\n"
+            "Всего: {groups_total}"
+        ),
         
         "start": (
             "Добро пожаловать в TizimX.\n\n"
