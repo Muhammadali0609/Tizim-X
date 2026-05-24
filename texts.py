@@ -872,7 +872,7 @@ TEXTS = {
         "btn_guide_plan": "📘 Guruh tarif rejasi",
         
         "guide_bad_words_text": (
-            "<b>So‘kinishlar</b> — foydalanuvchi yuborgan xabardagi "
+            "<b>Haqoratlar</b> — foydalanuvchi yuborgan xabardagi "
             "taqiqlangan so‘zlarni aniqlovchi filtr hisoblanadi, "
             "hatto ular katta matn ichida bo‘lsa ham.\n\n"
             "So‘zlarni ushbu bo‘limdagi «Qo‘shish» tugmasi orqali qo‘shishingiz mumkin.\n\n"
@@ -880,9 +880,9 @@ TEXTS = {
             "Buning uchun so‘zlar orasini oddiy probel bilan ajrating. "
             "Vergul yoki boshqa belgilar kerak emas.\n\n"
             "Shuningdek, belgilar bilan yozilgan so‘zlar ham qabul qilinadi, masalan:\n"
-            "<blockquote>• so’kinish\n"
-            "• s@kinish\n"
-            "• s*kinish</blockquote>\n\n"
+            "<blockquote>• ha'qorat\n"
+            "• h@qorat\n"
+            "• h*qorat</blockquote>\n\n"
             "So‘z lug‘atda mavjudligini tekshirish uchun «Qidirish» tugmasidan foydalaning. "
             "Qidiruv so‘zning o‘zi yoki uning ro‘yxatdagi raqami orqali ishlaydi.\n\n"
             "So‘zni o‘chirish uchun avval uni «Qidirish» orqali toping, "
@@ -933,7 +933,7 @@ TEXTS = {
 
             "<blockquote>Masalan:\n"
             "• reklama uchun 2 ta ogohlantirish\n"
-            "• so‘kinish uchun 1 ta ogohlantirish</blockquote>\n\n"
+            "• haqorat uchun 1 ta ogohlantirish</blockquote>\n\n"
 
             "Bot bu holatda ularni birlashtirmaydi.\n\n"
 
@@ -958,18 +958,18 @@ TEXTS = {
             "Cheklovdan keyin foydalanuvchining ogohlantirishlari avtomatik "
             "ravishda nolga tushiriladi.\n\n"
 
-            "Reklama va so‘kinish uchun limitlar alohida ishlaydi."
+            "Reklama va haqorat uchun limitlar alohida ishlaydi."
         ),
         "guide_restrictions_text": (
             "<b>Cheklovlar</b> — foydalanuvchi ogohlantirish limitiga "
             "yetganidan keyin qanday jazo olishini boshqaruvchi tizim.\n\n"
 
-            "Cheklovlar reklama va so‘kinish uchun alohida ishlaydi "
+            "Cheklovlar reklama va haqorat uchun alohida ishlaydi "
             "va har biri o‘zining mustaqil sozlamalariga ega.\n\n"
 
             "<blockquote>Masalan:\n"
             "• reklama uchun ban\n"
-            "• so‘kinish uchun 1 kun mute</blockquote>\n\n"
+            "• haqorat uchun 1 kun mute</blockquote>\n\n"
 
             "Bot bu holatda ularni birlashtirmaydi.\n\n"
 
@@ -1027,9 +1027,9 @@ TEXTS = {
             "Har bir sozlama reklama va so‘kinish tizimlariga "
             "mustaqil ta’sir qiladi.\n\n"
 
-            "<b>So‘kinishlarni o‘chirish</b>\n"
+            "<b>Haqoratlarni o‘chirish</b>\n"
             "Agar ushbu tugma yoqilgan bo‘lsa, bot aniqlangan "
-            "so‘kinishli xabarlarni avtomatik o‘chiradi.\n\n"
+            "haqoratli xabarlarni avtomatik o‘chiradi.\n\n"
 
             "Agar tugma o‘chirilgan bo‘lsa:\n"
             "• xabar o‘chirilmaydi\n"
@@ -1134,7 +1134,7 @@ TEXTS = {
             "mustaqil tanlashingiz mumkin.\n\n"
         
             "<blockquote>Masalan:\n"
-            "• so‘kinishlar lug‘ati — lug‘atdagi barcha so‘zlar\n"
+            "• haqoratlar lug‘ati — lug‘atdagi barcha so‘zlar\n"
             "• reklama sozlamalari — havolalar, iboralar va istisnolar ro‘yxati\n"
             "• ogohlantirishlar va limitlar — ogohlantirish tugmalari holati va limitlar soni\n"
             "• cheklovlar va muddatlar — cheklov tugmalari holati va joriy muddatlar\n"
@@ -1145,7 +1145,7 @@ TEXTS = {
             "filtr va sozlamalarni birdaniga ko‘chiradi.\n\n"
         
             "<b>Qo‘shimcha ma’lumot</b>\n"
-            "So‘kinishlar lug‘ati va reklama ro‘yxatlari "
+            "Haqoratlar lug‘ati va reklama ro‘yxatlari "
             "ko‘chirilayotganda bot bir xil ma’lumotlarni "
             "qayta qo‘shmaydi.\n\n"
         
