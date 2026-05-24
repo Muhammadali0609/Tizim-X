@@ -301,6 +301,7 @@ async def show_admin_group_card(query, chat_id: int):
     (
         group_chat_id,
         title,
+        username,
         chat_type,
         language,
         plan_name,
@@ -328,6 +329,7 @@ async def show_admin_group_card(query, chat_id: int):
         TEXTS["ru"]["admin_group_text"].format(
             title=title,
             chat_id=group_chat_id,
+            username=f"@{username}" if username else "Приватный",
             chat_type=chat_type,
             language=language,
             plan_name=plan_name,
