@@ -974,3 +974,22 @@ def get_admin_groups_count() -> int:
             row = cur.fetchone()
 
     return row[0]
+
+def get_admin_group(chat_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT
+                    chat_id,
+                    title,
+                    chat_type,
+                    language,
+                    plan_name,
+                    plan_expires_at,
+                    is_disabled,
+                    created_at
+                FROM tizimx_groups
+                WHERE chat_id = %s
+            """, (chat_id,))
+
+            return cur.fetchone()
