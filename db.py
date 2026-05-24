@@ -1010,3 +1010,34 @@ def get_admin_group(chat_id: int):
             """, (chat_id,))
 
             return cur.fetchone()
+
+ADMIN_REQUIRED_SUBS_PER_PAGE = 10
+
+def get_admin_required_subs_count(chat_id: int) -> int:
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT COUNT(*)
+                FROM tizimx_required_subs
+                WHERE chat_id = %s
+            """, (chat_id,))
+            row = cur.fetchone()
+
+    return row[0]
+
+
+def get_admin_required_subs_page(chat_id: int, page: int):
+    offset = page * ADMIN_REQUIRED_SUBS_PER_PAGE
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT target_chat, invite_link
+                FROM tizimx_required_subs
+                WHERE chat_id = %s
+                ORDER BY id
+                LIMIT %s OFFSET %s
+            """, (chat_id, ADMIN_REQUIRED_SUBS_PER_PAGE, offset))
+            rows = cur.fetchall()
+
+    return rows
