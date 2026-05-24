@@ -72,6 +72,7 @@ from admins import (
     admin_group_callback,
     admin_group_search_callback,
     admin_text_handler,
+    admin_required_subs_callback,
 )
 
 async def setup_commands(app):
@@ -169,8 +170,9 @@ def main():
     app.add_handler(CallbackQueryHandler(guide_callback, pattern="^guide:"))
     app.add_handler(CallbackQueryHandler(admin_callback, pattern="^admin:"))
     app.add_handler(CallbackQueryHandler(admin_groups_page_callback, pattern="^admin_groups:"))
-    app.add_handler(CallbackQueryHandler(admin_group_callback, pattern="^admin_group:"))
+    app.add_handler(CallbackQueryHandler(admin_required_subs_callback, pattern="^admin_group_required_subs:"))
     app.add_handler(CallbackQueryHandler(admin_group_search_callback, pattern="^admin_group_search$"))
+    app.add_handler(CallbackQueryHandler(admin_group_callback, pattern="^admin_group:"))
     
     app.run_webhook(
         listen="0.0.0.0",
