@@ -206,8 +206,8 @@ TEXTS = {
         "add_required_sub_prompt": (
             "➕ Отправьте канал или группу для обязательной подписки.\n\n"
             "Можно отправить:\n"
-            "@username\n"
-            "https://t.me/"
+            "• @username\n"
+            "• https://t.me/"
         ),
         "required_sub_added": "✅ Подписка добавлена.",
         "delete_required_sub_prompt": "🗑 Введите номер подписки для удаления.",
@@ -217,9 +217,9 @@ TEXTS = {
         "required_sub_invalid": (
             "❌ Неверный канал или группа.\n\n"
             "Отправьте в формате:\n"
-            "@username\n"
+            "• @username\n"
             "или\n"
-            "https://t.me/"
+            "• https://t.me/"
         ),
         "required_sub_not_accessible": (
             "❌ Не удалось найти этот канал или группу.\n\n"
@@ -478,6 +478,62 @@ TEXTS = {
             "Если переключатель выключен, бот не реагирует "
             "на сообщения с @username."
         ),
+        "guide_required_subs_text": (
+            "<b>Обязательные подписки</b> — это система, которая "
+            "требует от пользователей подписаться на определённые "
+            "каналы или группы перед отправкой сообщений в группе.\n\n"
+        
+            "Бот отправляет пользователю специальные кнопки "
+            "для подписки и окно проверки.\n\n"
+        
+            "<b>Включение обязательных подписок</b>\n"
+            "Если данный переключатель включён, бот автоматически "
+            "проверяет подписку всех новых пользователей.\n\n"
+        
+            "Если переключатель выключен, система подписок не работает.\n\n"
+        
+            "Для работы обязательных подписок в списке должен "
+            "находиться хотя бы один канал или группа.\n\n"
+        
+            "<b>Добавление подписки</b>\n"
+            "В этом разделе вы можете добавить канал или группу "
+            "для обязательной подписки.\n\n"
+        
+            "Для обязательной подписки поддерживаются только "
+            "публичные каналы и группы. Приватные каналы "
+            "и группы не принимаются.\n\n"
+        
+            "Отправьте ссылку на канал или группу в виде:\n\n"
+        
+            "• @username\n"
+            "• https://t.me/\n\n"
+        
+            "<blockquote>"
+            "❗️Принимаются только существующие каналы или группы, "
+            "в которых бот является администратором.\n\n"
+        
+            "Перед добавлением обязательной подписки сначала "
+            "добавьте данного бота в нужный канал или группу "
+            "и выдайте ему права администратора.\n\n"
+        
+            "В противном случае бот не сможет проверять подписки, "
+            "и новые пользователи могут “застрять” в ограничении."
+            "</blockquote>\n\n"
+        
+            "<b>Список подписок</b>\n"
+            "Все добавленные каналы и группы сохраняются "
+            "в виде списка.\n\n"
+        
+            "Если канал или группа:\n"
+            "• будет удалён\n"
+            "• изменит username\n"
+            "• удалит бота\n\n"
+        
+            "бот автоматически удалит его из списка.\n\n"
+        
+            "Если список станет пустым, обязательные подписки "
+            "автоматически отключатся."
+        ),
     },
     "uz": {
         "start": (
@@ -686,8 +742,8 @@ TEXTS = {
         "add_required_sub_prompt": (
             "➕ Majburiy obuna uchun kanal yoki guruhni yuboring.\n\n"
             "Yuborishingiz mumkin:\n"
-            "@username\n"
-            "https://t.me/"
+            "• @username\n"
+            "• https://t.me/"
         ),
         "required_sub_added": "✅ Obuna qo‘shildi.",
         "delete_required_sub_prompt": "🗑 O‘chirish uchun obuna raqamini kiriting.",
@@ -697,9 +753,9 @@ TEXTS = {
         "required_sub_invalid": (
             "❌ Kanal yoki guruh noto‘g‘ri.\n\n"
             "Quyidagi formatda yuboring:\n"
-            "@username\n"
+            "• @username\n"
             "yoki\n"
-            "https://t.me/"
+            "• https://t.me/"
         ),
         "required_sub_not_accessible": (
             "❌ Bu kanal yoki guruh topilmadi.\n\n"
@@ -961,6 +1017,64 @@ TEXTS = {
 
             "Agar tugma o‘chirilgan bo‘lsa, bot "
             "@username matnlariga ta’sir qilmaydi."
+        ),
+        "guide_required_subs_text": (
+            "<b>Majburiy obunalar</b> — foydalanuvchilar guruhga "
+            "yozishidan oldin ma’lum kanal yoki guruhlarga "
+            "obuna bo‘lishini talab qiluvchi tizim.\n\n"
+        
+            "Bot foydalanuvchiga obuna bo‘lish uchun maxsus "
+            "tugmalar va tekshiruv oynasini yuboradi.\n\n"
+        
+            "<b>Majburiy obunalarni yoqish</b>\n"
+            "Agar ushbu tugma yoqilgan bo‘lsa, bot barcha yangi "
+            "foydalanuvchilarning obunasini avtomatik tekshiradi.\n\n"
+        
+            "Agar tugma o‘chirilgan bo‘lsa, obuna tizimi ishlamaydi.\n\n"
+        
+            "Majburiy obunalar ishlashi uchun ro‘yxatda kamida "
+            "bitta kanal yoki guruh bo‘lishi kerak.\n\n"
+        
+            "<b>Obuna qo‘shish</b>\n"
+            "Bu bo‘lim orqali majburiy obuna uchun kanal "
+            "yoki guruh qo‘shishingiz mumkin.\n\n"
+        
+            "Majburiy obuna uchun faqat ommaviy kanal "
+            "va guruhlar qo‘llab-quvvatlanadi. "
+            "Maxfiy kanal va guruhlar qabul qilinmaydi.\n\n"
+        
+            "Kanal yoki guruh havolasini shu ko'rinishda yuboring:\n\n"
+        
+            "• @username\n"
+            "• https://t.me/\n\n"
+        
+            "<blockquote>"
+            "❗️Faqat mavjud va bot admin bo‘lgan kanal "
+            "yoki guruhlar qabul qilinadi.\n\n"
+        
+            "Majburiy obuna uchun qo‘shayotgan kanal "
+            "yoki guruhingizga avval ushbu botni qo‘shib, "
+            "administrator qiling.\n\n"
+        
+            "Aks holda bot obunani tekshira olmaydi "
+            "va yangi foydalanuvchilar cheklovda "
+            "qolib ketishi mumkin."
+            "</blockquote>\n\n"
+        
+            "<b>Obuna ro‘yxati</b>\n"
+            "Barcha qo‘shilgan kanal va guruhlar "
+            "ro‘yxat ko‘rinishida saqlanadi.\n\n"
+        
+            "Agar kanal yoki guruh:\n"
+            "• o‘chirib yuborilsa\n"
+            "• username o‘zgarsa\n"
+            "• bot chiqarib yuborilsa\n\n"
+        
+            "bot uni avtomatik ravishda "
+            "ro‘yxatdan olib tashlaydi.\n\n"
+        
+            "Agar ro‘yxat bo‘sh qolsa, majburiy "
+            "obunalar avtomatik ravishda o‘chiriladi."
         ),
     }
 }
