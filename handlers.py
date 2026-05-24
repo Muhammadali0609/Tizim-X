@@ -447,10 +447,11 @@ async def check_subscription_callback(update: Update, context: ContextTypes.DEFA
         except Exception as e:
             print("CHECK REQUIRED SUB ERROR:", e)
             not_subscribed.append(target_chat)
-
+            
+    lang = get_group_language(chat_id)
     if not_subscribed:
         await query.answer(
-            "❌ Siz barcha kanallarga obuna bo‘lmadingiz",
+            TEXTS[lang]["required_sub_not_all"],
             show_alert=True
         )
         return
@@ -474,7 +475,7 @@ async def check_subscription_callback(update: Update, context: ContextTypes.DEFA
             )
         )
 
-        await query.answer("✅ Obuna tasdiqlandi", show_alert=True)
+        await query.answer(TEXTS[lang]["required_sub_success"], show_alert=True)
 
         try:
             await query.message.delete()
