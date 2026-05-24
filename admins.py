@@ -160,6 +160,13 @@ def build_admin_groups_keyboard(page: int, total_pages: int):
 
     keyboard.append([
         InlineKeyboardButton(
+            "🔎 Поиск",
+            callback_data="admin_groups_search"
+        )
+    ])
+    
+    keyboard.append([
+        InlineKeyboardButton(
             TEXTS["ru"]["back_button"],
             callback_data="admin:back"
         )
