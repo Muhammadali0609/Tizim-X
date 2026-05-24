@@ -30,6 +30,14 @@ TEXTS = {
             "30 дней: {channels_month}\n"
             "Всего: {channels_total}"
         ),
+
+        "admin_groups_text": (
+            "👥 <b>Группы</b>\n\n"
+            "Страница: {page}/{total_pages}\n\n"
+            "{groups}"
+        ),
+
+"admin_groups_empty": "👥 Групп пока нет.",
         
         "start": (
             "Добро пожаловать в TizimX.\n\n"
