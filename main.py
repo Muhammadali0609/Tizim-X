@@ -67,7 +67,7 @@ from handlers import (start_command,
 from db import setup_database
 from admins import (
     admin_command,
-    admin_callback,,
+    admin_callback,
     admin_groups_page_callback,
 )
 
