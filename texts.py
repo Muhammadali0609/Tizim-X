@@ -35,6 +35,12 @@ TEXTS = {
         "enabled": "🟢",
         "disabled": "🔴",
 
+        "required_sub_join_text": (
+            "🔒 {name}, чтобы писать в группе, "
+            "подпишитесь на следующие:"
+        ),
+        "required_sub_check_button": "✅ Проверить",
+
         "btn_bad_words": "🤬 Маты",
         "btn_ads": "🚫 Рекламы",
         "btn_warnings": "⚠️ Предупреждения",
@@ -612,6 +618,12 @@ TEXTS = {
         "access_denied": "❌ Sizda bu guruhga kirish huquqi yo‘q.",
         "enabled": "🟢",
         "disabled": "🔴",
+
+        "required_sub_join_text": (
+            "🔒 {name}, guruhga yozish uchun "
+            "quyidagilarga obuna bo‘ling:"
+        ),
+        "required_sub_check_button": "✅ Tekshirish",
 
         "btn_bad_words": "🤬 Haqoratlar",
         "btn_ads": "🚫 Reklamalar",
