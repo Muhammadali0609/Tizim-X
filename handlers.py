@@ -734,6 +734,18 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
                 await message.reply_text(TEXTS[lang]["required_sub_invalid"])
                 return
     
+            bot_member = await context.bot.get_chat_member(
+                chat_id=target_chat,
+                user_id=context.bot.id
+            )
+    
+            if bot_member.status not in [
+                ChatMemberStatus.ADMINISTRATOR,
+                ChatMemberStatus.OWNER,
+            ]:
+                await message.reply_text(TEXTS[lang]["required_sub_not_accessible"])
+                return
+    
         except Exception as e:
             print("REQUIRED SUB VALIDATION ERROR:", e)
             await message.reply_text(TEXTS[lang]["required_sub_not_accessible"])
