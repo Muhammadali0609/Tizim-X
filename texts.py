@@ -67,6 +67,19 @@ TEXTS = {
         ),
         "admin_group_active": "✅ Активна",
         "admin_group_disabled": "🚫 Отключена",
+
+        "admin_required_subs_text": (
+            "📢 <b>Обязательные подписки</b>\n\n"
+            "Группа:\n"
+            "{title}\n\n"
+            "Страница: {page}/{total_pages}\n\n"
+            "{subs}"
+        ),
+        
+        "admin_required_subs_empty": (
+            "📢 <b>Обязательные подписки</b>\n\n"
+            "В этой группе список подписок пуст."
+        ),
         
         "start": (
             "Добро пожаловать в TizimX.\n\n"
