@@ -41,6 +41,7 @@ TEXTS = {
         ),
         "required_sub_check_button": "✅ Проверить",
         "required_sub_not_all": "❌ Вы подписались не на все каналы и группы",
+        "required_sub_success": "✅ Подписка подтверждена",
 
         "btn_bad_words": "🤬 Маты",
         "btn_ads": "🚫 Рекламы",
@@ -626,6 +627,7 @@ TEXTS = {
         ),
         "required_sub_check_button": "✅ Tekshirish",
         "required_sub_not_all": "❌ Siz barcha kanal va guruhlarga obuna bo‘lmadingiz",
+        "required_sub_success": "✅ Obuna tasdiqlandi",
 
         "btn_bad_words": "🤬 Haqoratlar",
         "btn_ads": "🚫 Reklamalar",
