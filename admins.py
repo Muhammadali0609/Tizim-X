@@ -210,9 +210,8 @@ async def show_admin_groups(query, page: int):
     rows = get_admin_groups_page(page)
 
     groups_text = "\n".join(
-        f'{i + 1 + page * ADMIN_GROUPS_PER_PAGE}. '
-        f'<a href="https://t.me/c/{str(abs(chat_id))[3:]}">{title}</a>'
-        for i, (chat_id, title) in enumerate(rows)
+        f"{i + 1 + page * ADMIN_GROUPS_PER_PAGE}. {title}"
+        for i, (_, title) in enumerate(rows)
     )
 
     await query.edit_message_text(
