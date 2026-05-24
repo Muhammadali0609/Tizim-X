@@ -692,6 +692,10 @@ def build_bad_words_keyboard(lang: str, chat_id: int, page: int, total_pages: in
 
 async def bad_words_panel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -1191,6 +1195,10 @@ def build_ads_panel(lang: str, chat_id: int, anti_links: bool):
 
 async def ads_panel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -1223,6 +1231,10 @@ async def ads_panel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
 async def ads_toggle_links_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -1326,6 +1338,10 @@ def build_ad_links_keyboard(lang: str, chat_id: int, page: int, total_pages: int
 
 async def ad_links_panel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -1392,6 +1408,10 @@ async def ad_links_panel_callback(update: Update, context: ContextTypes.DEFAULT_
 
 async def add_ad_link_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -1416,6 +1436,10 @@ async def add_ad_link_callback(update: Update, context: ContextTypes.DEFAULT_TYP
 
 async def bad_words_search_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -1440,6 +1464,10 @@ async def bad_words_search_callback(update: Update, context: ContextTypes.DEFAUL
 
 async def delete_bad_word_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -1543,6 +1571,10 @@ def build_ad_phrases_keyboard(lang: str, chat_id: int, page: int, total_pages: i
 
 async def ad_phrases_panel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -1608,6 +1640,10 @@ async def ad_phrases_panel_callback(update: Update, context: ContextTypes.DEFAUL
 
 async def add_ad_phrase_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -1632,6 +1668,10 @@ async def add_ad_phrase_callback(update: Update, context: ContextTypes.DEFAULT_T
 
 async def delete_ad_link_start_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -1657,6 +1697,10 @@ async def delete_ad_link_start_callback(update: Update, context: ContextTypes.DE
 
 async def delete_ad_phrase_start_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -1751,6 +1795,10 @@ def build_ad_exceptions_keyboard(lang: str, chat_id: int, page: int, total_pages
 
 async def ad_exceptions_panel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -1813,6 +1861,10 @@ async def ad_exceptions_panel_callback(update: Update, context: ContextTypes.DEF
 
 async def add_ad_exception_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
     chat_id = int(query.data.split(":")[1])
@@ -1837,6 +1889,10 @@ async def add_ad_exception_callback(update: Update, context: ContextTypes.DEFAUL
 
 async def delete_ad_exception_start_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
     chat_id = int(query.data.split(":")[1])
@@ -1929,6 +1985,10 @@ def build_warnings_panel(lang: str, chat_id: int, settings: dict):
 
 async def warnings_panel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -1958,6 +2018,10 @@ async def warnings_panel_callback(update: Update, context: ContextTypes.DEFAULT_
 
 async def warnings_toggle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -2022,6 +2086,10 @@ def build_warn_limit_keyboard(lang: str, chat_id: int, limit_type: str):
 
 async def warnings_limit_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -2048,6 +2116,10 @@ async def warnings_limit_callback(update: Update, context: ContextTypes.DEFAULT_
 
 async def warnings_set_limit_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -2312,6 +2384,10 @@ def build_restrictions_panel(lang: str, chat_id: int, settings: dict):
 
 async def restrictions_panel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -2337,6 +2413,10 @@ async def restrictions_panel_callback(update: Update, context: ContextTypes.DEFA
 
 async def restrictions_toggle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -2424,6 +2504,10 @@ def parse_duration(text: str):
 
 async def restrictions_duration_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -2535,6 +2619,10 @@ def build_settings_panel(lang: str, chat_id: int, settings: dict):
 
 async def settings_panel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -2564,6 +2652,10 @@ async def settings_panel_callback(update: Update, context: ContextTypes.DEFAULT_
 
 async def settings_toggle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -2661,6 +2753,10 @@ def build_required_subs_panel(lang: str, chat_id: int, settings: dict, rows):
 
 async def required_subs_panel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -2691,6 +2787,10 @@ async def required_subs_panel_callback(update: Update, context: ContextTypes.DEF
 
 async def required_subs_toggle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -2739,6 +2839,10 @@ async def required_subs_toggle_callback(update: Update, context: ContextTypes.DE
 
 async def add_required_sub_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -2764,6 +2868,10 @@ async def add_required_sub_callback(update: Update, context: ContextTypes.DEFAUL
 
 async def delete_required_sub_start_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -2904,6 +3012,10 @@ def build_transfer_panel(lang: str, chat_id: int, state: dict):
 
 async def transfer_panel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -2933,6 +3045,10 @@ async def transfer_panel_callback(update: Update, context: ContextTypes.DEFAULT_
 
 async def transfer_toggle_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -2963,6 +3079,10 @@ async def transfer_toggle_callback(update: Update, context: ContextTypes.DEFAULT
 
 async def transfer_all_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -3006,6 +3126,10 @@ async def transfer_all_callback(update: Update, context: ContextTypes.DEFAULT_TY
 
 async def transfer_selected_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -3092,6 +3216,10 @@ def build_transfer_items_text(lang: str, state: dict):
 
 async def transfer_target_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -3146,6 +3274,10 @@ async def transfer_target_callback(update: Update, context: ContextTypes.DEFAULT
 
 async def transfer_confirm_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -3189,6 +3321,10 @@ async def transfer_confirm_callback(update: Update, context: ContextTypes.DEFAUL
 
 async def group_plan_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
     lang = get_user_language(user_id)
 
@@ -3824,6 +3960,9 @@ async def guide_button_handler(update: Update, context: ContextTypes.DEFAULT_TYP
 
 async def guide_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
 
     await query.answer()
 
