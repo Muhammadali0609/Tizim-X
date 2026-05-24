@@ -618,6 +618,10 @@ async def group_settings_callback(update: Update, context: ContextTypes.DEFAULT_
 
 async def back_groups_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+    
     user_id = query.from_user.id
 
     lang = get_user_language(user_id)
