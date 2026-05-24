@@ -98,7 +98,12 @@ TEXTS = {
         "back_button": "⬅️ Назад",
         "choose_group": "📂 Выберите группу:",
         "no_groups": "❌ У вас пока нет подключённых групп.",
-        "group_panel": "⚙️ Настройки группы:\n\n{title}",
+        "group_panel": (
+            "⚙️ Настройки группы:\n\n"
+            "{title}\n\n"
+            "ID группы:\n"
+            "<code>{chat_id}</code>"
+        ),
         "access_denied": "❌ У вас больше нет доступа к этой группе.",
         "enabled": "🟢",
         "disabled": "🔴",
@@ -684,7 +689,12 @@ TEXTS = {
         "back_button": "⬅️ Orqaga",
         "choose_group": "📂 Guruhni tanlang:",
         "no_groups": "❌ Sizda hali ulangan guruhlar yo‘q.",
-        "group_panel": "⚙️ Guruh sozlamalari:\n\n{title}",
+        "group_panel": (
+            "⚙️ Guruh sozlamalari:\n\n"
+            "{title}\n\n"
+            "Guruhning ID si:\n"
+            "<code>{chat_id}</code>"
+        ),
         "access_denied": "❌ Sizda bu guruhga kirish huquqi yo‘q.",
         "enabled": "🟢",
         "disabled": "🔴",
