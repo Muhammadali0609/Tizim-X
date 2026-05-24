@@ -134,7 +134,22 @@ async def admin_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.answer()
 
-def build_admin_groups_keyboard(page: int, total_pages: int):
+def build_admin_groups_keyboard(page: int, total_pages: int, rows):
+    keyboard = []
+
+    number_buttons = []
+
+    for i, (chat_id, _) in enumerate(rows, start=1):
+        number_buttons.append(
+            InlineKeyboardButton(
+                str(i),
+                callback_data=f"admin_group:{chat_id}"
+            )
+        )
+
+    for i in range(0, len(number_buttons), 5):
+        keyboard.append(number_buttons[i:i + 5])
+
     nav = []
 
     if page > 0:
@@ -153,8 +168,6 @@ def build_admin_groups_keyboard(page: int, total_pages: int):
             )
         )
 
-    keyboard = []
-
     if nav:
         keyboard.append(nav)
 
@@ -164,7 +177,7 @@ def build_admin_groups_keyboard(page: int, total_pages: int):
             callback_data="admin_groups_search"
         )
     ])
-    
+
     keyboard.append([
         InlineKeyboardButton(
             TEXTS["ru"]["back_button"],
@@ -221,7 +234,7 @@ async def show_admin_groups(query, page: int):
             groups=groups_text
         ),
         parse_mode="HTML",
-        reply_markup=build_admin_groups_keyboard(page, total_pages),
+        reply_markup=build_admin_groups_keyboard(page, total_pages, rows),
         disable_web_page_preview=True
     )
 
