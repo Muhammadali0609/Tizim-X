@@ -175,7 +175,7 @@ def build_admin_groups_keyboard(page: int, total_pages: int, rows):
     keyboard.append([
         InlineKeyboardButton(
             "🔎 Поиск",
-            callback_data="admin_groups_search"
+            callback_data="admin_group_search"
         )
     ])
 
@@ -358,3 +358,114 @@ async def admin_group_callback(update: Update, context: ContextTypes.DEFAULT_TYP
     chat_id = int(query.data.split(":")[1])
 
     await show_admin_group_card(query, chat_id)
+
+async def admin_group_search_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+
+    if user_id != OWNER_ID:
+        await query.answer(TEXTS["ru"]["admin_access_denied"], show_alert=True)
+        return
+
+    context.user_data["admin_state"] = "searching_group"
+
+    await query.edit_message_text(
+        "🔎 Отправьте ID группы.\n\nНапример:\n<code>-1002008044459</code>",
+        parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton(
+                    TEXTS["ru"]["back_button"],
+                    callback_data="admin:groups"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    TEXTS["ru"]["btn_admin_close"],
+                    callback_data="admin:close"
+                )
+            ]
+        ])
+    )
+
+async def admin_text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = update.message
+
+    if not message or message.chat.type != "private":
+        return
+
+    user_id = message.from_user.id
+
+    if user_id != OWNER_ID:
+        return
+
+    if context.user_data.get("admin_state") != "searching_group":
+        return
+
+    text = message.text.strip()
+
+    if not text.lstrip("-").isdigit():
+        await message.reply_text("❌ Неверный ID группы.")
+        return
+
+    chat_id = int(text)
+
+    group = get_admin_group(chat_id)
+
+    if not group:
+        await message.reply_text("❌ Группа не найдена.")
+        return
+
+    context.user_data.pop("admin_state", None)
+
+    await send_admin_group_card(message, chat_id)
+
+async def send_admin_group_card(message, chat_id: int):
+    group = get_admin_group(chat_id)
+
+    if not group:
+        await message.reply_text("❌ Группа не найдена.")
+        return
+
+    (
+        group_chat_id,
+        title,
+        username,
+        chat_type,
+        language,
+        plan_name,
+        expires_at,
+        is_disabled,
+        created_at
+    ) = group
+
+    status = (
+        TEXTS["ru"]["admin_group_disabled"]
+        if is_disabled
+        else TEXTS["ru"]["admin_group_active"]
+    )
+
+    if expires_at:
+        expires_at = expires_at.astimezone(
+            ZoneInfo("Asia/Tashkent")
+        ).strftime("%d.%m.%Y %H:%M")
+    else:
+        expires_at = "-"
+
+    await message.reply_text(
+        TEXTS["ru"]["admin_group_text"].format(
+            title=title,
+            chat_id=group_chat_id,
+            username=f"@{username}" if username else "Приватный",
+            chat_type=chat_type,
+            language=language,
+            plan_name=plan_name,
+            expires_at=expires_at,
+            status=status
+        ),
+        parse_mode="HTML",
+        reply_markup=build_admin_group_keyboard(
+            group_chat_id,
+            is_disabled
+        )
+    )
