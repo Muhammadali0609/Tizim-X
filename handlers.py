@@ -396,8 +396,9 @@ async def new_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
             await message.chat.send_message(
                 TEXTS[lang]["required_sub_join_text"].format(
-                    name=user.first_name
+                    name=f'<a href="tg://user?id={user.id}">{user.first_name}</a>'
                 ),
+                parse_mode="HTML",
                 reply_markup=InlineKeyboardMarkup(keyboard)
             )
 
