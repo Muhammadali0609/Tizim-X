@@ -46,6 +46,9 @@ TEXTS = {
         
             "ID:\n"
             "<code>{chat_id}</code>\n\n"
+
+            "Username:\n"
+            "{username}\n\n"
         
             "Тип:\n"
             "{chat_type}\n\n"
