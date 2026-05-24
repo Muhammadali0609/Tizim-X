@@ -863,3 +863,38 @@ def get_group_plan(chat_id: int):
         return "trial", None
 
     return row[0], row[1]
+
+def get_admin_stats():
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT
+                    COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '1 day') AS users_today,
+                    COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '7 days') AS users_week,
+                    COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '30 days') AS users_month,
+                    COUNT(*) AS users_total
+                FROM tizimx_users
+            """)
+            users = cur.fetchone()
+
+            cur.execute("""
+                SELECT
+                    COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '1 day') AS groups_today,
+                    COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '7 days') AS groups_week,
+                    COUNT(*) FILTER (WHERE created_at >= NOW() - INTERVAL '30 days') AS groups_month,
+                    COUNT(*) AS groups_total
+                FROM tizimx_groups
+            """)
+            groups = cur.fetchone()
+
+    return {
+        "users_today": users[0],
+        "users_week": users[1],
+        "users_month": users[2],
+        "users_total": users[3],
+
+        "groups_today": groups[0],
+        "groups_week": groups[1],
+        "groups_month": groups[2],
+        "groups_total": groups[3],
+    }
