@@ -246,7 +246,7 @@ async def bot_added_to_group(update: Update, context: ContextTypes.DEFAULT_TYPE)
         return
 
     chat = message.chat
-    save_group(chat.id, chat.title, chat.type)
+    save_group(chat.id, chat.title, chat.type, chat.username)
     seed_default_bad_words(chat.id)
 
     bot_member = await chat.get_member(context.bot.id)
@@ -272,7 +272,7 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
     if message.chat.type not in ["group", "supergroup"]:
         return
 
-    save_group(message.chat.id, message.chat.title, message.chat.type)
+    save_group(message.chat.id, message.chat.title, message.chat.type, message.chat.username)
 
     settings = get_group_settings(message.chat.id)
     lang = get_group_language(message.chat.id)
@@ -384,7 +384,7 @@ async def set_group_language(update: Update, context: ContextTypes.DEFAULT_TYPE)
     else:
         return
 
-    save_group(message.chat.id, message.chat.title, message.chat.type)
+    save_group(message.chat.id, message.chat.title, message.chat.type, message.chat.username)
     save_group_language(message.chat.id, lang)
 
     msg = await message.chat.send_message(
