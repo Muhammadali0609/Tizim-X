@@ -100,6 +100,10 @@ def setup_database():
                 ADD COLUMN IF NOT EXISTS chat_type TEXT
             """)
             cur.execute("""
+                ALTER TABLE tizimx_groups
+                ADD COLUMN IF NOT EXISTS is_disabled BOOLEAN NOT NULL DEFAULT FALSE
+            """)
+            cur.execute("""
                 CREATE TABLE IF NOT EXISTS tizimx_group_admins (
                     chat_id BIGINT NOT NULL,
                     user_id BIGINT NOT NULL,
