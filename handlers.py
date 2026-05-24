@@ -351,6 +351,7 @@ async def new_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
         return
 
     settings = get_group_settings(message.chat.id)
+    lang = get_group_language(message.chat.id)
     required_subs = await get_valid_required_subs(context, message.chat.id)
     
     if not settings["force_subscribe"] or not required_subs:
@@ -388,13 +389,15 @@ async def new_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
             
             keyboard.append([
                 InlineKeyboardButton(
-                    "✅ Проверить",
+                    TEXTS[lang]["required_sub_check_button"],
                     callback_data=f"check_sub:{message.chat.id}:{user.id}"
                 )
             ])
 
             await message.chat.send_message(
-                f"{user.first_name}, чтобы писать в группе, подпишитесь на канал.",
+                TEXTS[lang]["required_sub_join_text"].format(
+                    name=user.first_name
+                ),
                 reply_markup=InlineKeyboardMarkup(keyboard)
             )
 
