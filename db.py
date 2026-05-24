@@ -96,6 +96,10 @@ def setup_database():
                 ADD COLUMN IF NOT EXISTS plan_expires_at TIMESTAMPTZ
             """)
             cur.execute("""
+                ALTER TABLE tizimx_groups
+                ADD COLUMN IF NOT EXISTS chat_type TEXT
+            """)
+            cur.execute("""
                 CREATE TABLE IF NOT EXISTS tizimx_group_admins (
                     chat_id BIGINT NOT NULL,
                     user_id BIGINT NOT NULL,
@@ -185,7 +189,7 @@ def save_user_language(user_id: int, language: str):
             """, (user_id, language))
         conn.commit()
 
-def save_group(chat_id: int, title: str):
+def save_group(chat_id: int, title: str, chat_type: str | None = None):
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
@@ -199,9 +203,10 @@ def save_group(chat_id: int, title: str):
             if exists:
                 cur.execute("""
                     UPDATE tizimx_groups
-                    SET title = %s
+                    SET title = %s,
+                        chat_type = COALESCE(%s, chat_type)
                     WHERE chat_id = %s
-                """, (title, chat_id))
+                """, (title, chat_type, chat_id))
 
             else:
                 expires_at = datetime.now(timezone.utc) + timedelta(days=3)
@@ -210,13 +215,15 @@ def save_group(chat_id: int, title: str):
                     INSERT INTO tizimx_groups (
                         chat_id,
                         title,
+                        chat_type,
                         plan_name,
                         plan_expires_at
                     )
-                    VALUES (%s, %s, %s, %s)
+                    VALUES (%s, %s, %s, %s, %s)
                 """, (
                     chat_id,
                     title,
+                    chat_type,
                     "trial",
                     expires_at
                 ))
