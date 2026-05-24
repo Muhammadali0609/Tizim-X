@@ -36,8 +36,34 @@ TEXTS = {
             "Страница: {page}/{total_pages}\n\n"
             "{groups}"
         ),
+        "admin_groups_empty": "👥 Групп пока нет.",
 
-"admin_groups_empty": "👥 Групп пока нет.",
+        "admin_group_text": (
+            "👥 <b>Карточка группы</b>\n\n"
+        
+            "Название:\n"
+            "{title}\n\n"
+        
+            "ID:\n"
+            "<code>{chat_id}</code>\n\n"
+        
+            "Тип:\n"
+            "{chat_type}\n\n"
+        
+            "Язык:\n"
+            "{language}\n\n"
+        
+            "Тариф:\n"
+            "{plan_name}\n\n"
+        
+            "Действует до:\n"
+            "{expires_at}\n\n"
+        
+            "Статус:\n"
+            "{status}"
+        ),
+        "admin_group_active": "✅ Активна",
+        "admin_group_disabled": "🚫 Отключена",
         
         "start": (
             "Добро пожаловать в TizimX.\n\n"
