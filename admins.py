@@ -1,4 +1,10 @@
 from telegram import ChatMemberAdministrator, ChatMemberOwner
+from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
+from telegram.ext import ContextTypes
+
+from config import OWNER_ID
+from texts import TEXTS
+from db import get_admin_stats
 
 
 async def is_admin(chat, user_id: int) -> bool:
@@ -11,12 +17,6 @@ async def is_admin(chat, user_id: int) -> bool:
             ChatMemberOwner
         )
     )
-
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
-from telegram.ext import ContextTypes
-
-from config import OWNER_ID
-from texts import TEXTS
 
 
 def build_admin_panel():
@@ -96,6 +96,36 @@ async def admin_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         except Exception as e:
             print("DELETE ADMIN PANEL ERROR:", e)
 
+        return
+
+    if data == "stats":
+        stats = get_admin_stats()
+    
+        await query.edit_message_text(
+            TEXTS["ru"]["admin_stats_text"].format(**stats),
+            parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        TEXTS["ru"]["back_button"],
+                        callback_data="admin:back"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        TEXTS["ru"]["btn_admin_close"],
+                        callback_data="admin:close"
+                    )
+                ]
+            ])
+        )
+        return
+
+    if data == "back":
+        await query.edit_message_text(
+            TEXTS["ru"]["admin_panel"],
+            reply_markup=build_admin_panel()
+        )
         return
 
     await query.answer()
