@@ -40,6 +40,7 @@ TEXTS = {
             "подпишитесь на следующие:"
         ),
         "required_sub_check_button": "✅ Проверить",
+        "required_sub_not_all": "❌ Вы подписались не на все каналы и группы",
 
         "btn_bad_words": "🤬 Маты",
         "btn_ads": "🚫 Рекламы",
@@ -624,6 +625,7 @@ TEXTS = {
             "quyidagilarga obuna bo‘ling:"
         ),
         "required_sub_check_button": "✅ Tekshirish",
+        "required_sub_not_all": "❌ Siz barcha kanal va guruhlarga obuna bo‘lmadingiz",
 
         "btn_bad_words": "🤬 Haqoratlar",
         "btn_ads": "🚫 Reklamalar",
