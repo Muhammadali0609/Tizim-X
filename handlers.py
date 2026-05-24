@@ -97,6 +97,11 @@ async def check_callback_limit(query) -> bool:
     return False
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+    
+    if is_private_message_limited(user_id):
+        return
+    
     lang_keyboard = [
         [
             InlineKeyboardButton("🇷🇺 Русский", callback_data="lang_ru"),
@@ -154,6 +159,9 @@ async def language_toggle_handler(update: Update, context: ContextTypes.DEFAULT_
 
     user_id = message.from_user.id
 
+    if is_private_message_limited(user_id):
+        return
+
     current_lang = get_user_language(user_id)
 
     new_lang = "uz" if current_lang == "ru" else "ru"
@@ -181,6 +189,9 @@ async def language_toggle_handler(update: Update, context: ContextTypes.DEFAULT_
 async def settings_button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = update.message
     user_id = update.effective_user.id
+    
+    if is_private_message_limited(user_id):
+        return
 
     lang = get_user_language(user_id)
     groups = get_user_groups(user_id)
@@ -3796,6 +3807,10 @@ async def guide_button_handler(update: Update, context: ContextTypes.DEFAULT_TYP
         return
 
     user_id = message.from_user.id
+
+    if is_private_message_limited(user_id):
+        return
+        
     lang = get_user_language(user_id)
 
     await message.reply_text(
