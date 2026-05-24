@@ -943,3 +943,34 @@ def get_admin_stats():
         "channels_month": chats[6],
         "channels_total": chats[7],
     }
+
+ADMIN_GROUPS_PER_PAGE = 10
+
+def get_admin_groups_page(page: int):
+    offset = page * ADMIN_GROUPS_PER_PAGE
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT chat_id, title
+                FROM tizimx_groups
+                WHERE chat_type IN ('group', 'supergroup')
+                ORDER BY created_at DESC
+                LIMIT %s OFFSET %s
+            """, (ADMIN_GROUPS_PER_PAGE, offset))
+            rows = cur.fetchall()
+
+    return rows
+
+
+def get_admin_groups_count() -> int:
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT COUNT(*)
+                FROM tizimx_groups
+                WHERE chat_type IN ('group', 'supergroup')
+            """)
+            row = cur.fetchone()
+
+    return row[0]
