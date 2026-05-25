@@ -700,8 +700,8 @@ async def show_admin_users(query, page: int):
 
     users_text = "\n".join(
         f'{i + 1 + page * ADMIN_USERS_PER_PAGE}. '
-        f'<a href="tg://user?id={user_id}">Пользователь</a>'
-        for i, (user_id,) in enumerate(rows)
+        f'<a href="tg://user?id={user_id}">{first_name or user_id}</a>'
+        for i, (user_id, first_name) in enumerate(rows)
     )
 
     await query.edit_message_text(
