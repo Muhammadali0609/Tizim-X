@@ -1,4 +1,4 @@
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ChatPermissions, ReplyKeyboardMarkup
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ChatPermissions, ReplyKeyboardMarkup, ChatMemberOwner
 from telegram.constants import ChatMemberStatus
 from telegram.ext import ContextTypes
 from datetime import datetime, timedelta, timezone
@@ -373,9 +373,6 @@ async def set_group_language(update: Update, context: ContextTypes.DEFAULT_TYPE)
     if not await is_admin(message.chat, user.id):
         return
 
-    save_group_admin(message.chat.id, user.id)
-    await sync_group_owner(chat, context)
-
     command = message.text.split()[0].lower()
 
     if command.startswith("/ru"):
@@ -388,6 +385,8 @@ async def set_group_language(update: Update, context: ContextTypes.DEFAULT_TYPE)
         return
 
     save_group(message.chat.id, message.chat.title, message.chat.type, message.chat.username)
+    save_group_admin(message.chat.id, user.id)
+    await sync_group_owner(message.chat, context)
     save_group_language(message.chat.id, lang)
 
     msg = await message.chat.send_message(
@@ -4148,7 +4147,7 @@ async def sync_group_owner(chat, context):
         admins = await context.bot.get_chat_administrators(chat.id)
 
         for admin in admins:
-            if admin.status == ChatMemberStatus.OWNER:
+            if isinstance(admin, ChatMemberOwner):
                 save_group_owner(chat.id, admin.user.id)
                 return
 
