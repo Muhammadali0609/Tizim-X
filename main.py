@@ -177,7 +177,7 @@ def main():
     app.add_handler(CallbackQueryHandler(admin_groups_page_callback, pattern="^admin_groups:"))
     app.add_handler(CallbackQueryHandler(admin_required_subs_callback, pattern="^admin_group_required_subs:"))
     app.add_handler(CallbackQueryHandler(admin_group_search_callback, pattern="^admin_group_search$"))
-    app.add_handler(CallbackQueryHandler(admin_group_callback, pattern="^admin_group:"))
+    app.add_handler(CallbackQueryHandler(admin_group_callback, pattern="^admin_group"))
     app.add_handler(CallbackQueryHandler(admin_users_page_callback, pattern="^admin_users:"))
     app.add_handler(CallbackQueryHandler(broadcast_callback, pattern="^broadcast_"))
     
