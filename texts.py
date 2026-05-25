@@ -121,6 +121,10 @@ TEXTS = {
         "btn_broadcast_to_all_users": "👥 Всем",
         "btn_broadcast_to_groups": "👥 Группам",
         "broadcast_enter_user_id": "👤 Отправьте ID пользователя.",
+
+        "broadcast_user_id_invalid": "❌ Неверный ID пользователя.",
+        "broadcast_user_sent": "✅ Рассылка отправлена пользователю.",
+        "broadcast_user_send_error": "❌ Не удалось отправить рассылку пользователю.",
         
         "start": (
             "Добро пожаловать в TizimX.\n\n"
