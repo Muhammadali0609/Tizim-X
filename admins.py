@@ -950,7 +950,42 @@ async def broadcast_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
         return
 
     if data == "broadcast_send":
-        await query.answer("Отправку сделаем следующим шагом", show_alert=True)
+        broadcast = context.user_data.get("broadcast")
+    
+        if not broadcast:
+            await query.answer("Черновик не найден", show_alert=True)
+            return
+    
+        await query.message.delete()
+    
+        await query.message.chat.send_message(
+            TEXTS["ru"]["broadcast_choose_target"],
+            reply_markup=build_broadcast_target_keyboard()
+        )
+        return
+
+    if data == "broadcast_target_user":
+        context.user_data["admin_state"] = "broadcast_target_user"
+    
+        await query.message.delete()
+    
+        await query.message.chat.send_message(
+            TEXTS["ru"]["broadcast_enter_user_id"],
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        TEXTS["ru"]["back_button"],
+                        callback_data="broadcast_send"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        TEXTS["ru"]["btn_admin_close"],
+                        callback_data="admin:close"
+                    )
+                ]
+            ])
+        )
         return
 
 async def admin_broadcast_file_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -1063,3 +1098,37 @@ async def admin_input_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
     if state in ["broadcast_text", "broadcast_button"]:
         await admin_broadcast_input_handler(update, context)
         return
+
+def build_broadcast_target_keyboard():
+    return InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton(
+                TEXTS["ru"]["btn_broadcast_to_user"],
+                callback_data="broadcast_target_user"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS["ru"]["btn_broadcast_to_all_users"],
+                callback_data="broadcast_target_all_users"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS["ru"]["btn_broadcast_to_groups"],
+                callback_data="broadcast_target_groups"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS["ru"]["back_button"],
+                callback_data="broadcast_back_preview"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS["ru"]["btn_admin_close"],
+                callback_data="admin:close"
+            )
+        ]
+    ])
