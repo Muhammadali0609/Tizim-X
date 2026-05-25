@@ -823,8 +823,8 @@ async def send_broadcast_preview(target, broadcast):
         ])
 
     if buttons:
-        keyboard.inline_keyboard = (
-            buttons + keyboard.inline_keyboard
+        keyboard = InlineKeyboardMarkup(
+            buttons + list(keyboard.inline_keyboard)
         )
 
     text = broadcast.get("text") or TEXTS["ru"]["admin_broadcast_preview"]
