@@ -40,28 +40,24 @@ TEXTS = {
 
         "admin_group_text": (
             "👥 <b>Карточка группы</b>\n\n"
-        
             "Название:\n"
             "{title}\n\n"
-        
             "ID:\n"
             "<code>{chat_id}</code>\n\n"
-
             "Username:\n"
             "{username}\n\n"
-        
             "Тип:\n"
             "{chat_type}\n\n"
-        
             "Язык:\n"
             "{language}\n\n"
-        
             "Тариф:\n"
             "{plan_name}\n\n"
-        
             "Действует до:\n"
             "{expires_at}\n\n"
-        
+            "Добавлена:\n"
+            "{created_at}\n\n"
+            "Владелец:\n"
+            "{owner}\n\n"
             "Статус:\n"
             "{status}"
         ),
