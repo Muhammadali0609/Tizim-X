@@ -1041,3 +1041,16 @@ def get_admin_required_subs_page(chat_id: int, page: int):
             rows = cur.fetchall()
 
     return rows
+
+def get_group_owner(chat_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT user_id
+                FROM tizimx_group_admins
+                WHERE chat_id = %s AND role = 'creator'
+                LIMIT 1
+            """, (chat_id,))
+            row = cur.fetchone()
+
+    return row[0] if row else None
