@@ -1190,3 +1190,34 @@ def is_group_active(chat_id: int) -> bool:
         return False
 
     return True
+
+def activate_standard_plan(chat_id: int, days: int = 30):
+    now = datetime.now(timezone.utc)
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT plan_expires_at
+                FROM tizimx_groups
+                WHERE chat_id = %s
+            """, (chat_id,))
+
+            row = cur.fetchone()
+
+            current_expires_at = row[0] if row else None
+
+            if current_expires_at and current_expires_at > now:
+                new_expires_at = current_expires_at + timedelta(days=days)
+            else:
+                new_expires_at = now + timedelta(days=days)
+
+            cur.execute("""
+                UPDATE tizimx_groups
+                SET plan_name = 'standard',
+                    plan_expires_at = %s
+                WHERE chat_id = %s
+            """, (new_expires_at, chat_id))
+
+        conn.commit()
+
+    return new_expires_at
