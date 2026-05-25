@@ -845,6 +845,7 @@ async def send_broadcast_preview(target, broadcast):
         await target.reply_photo(
             photo=file_id,
             caption=text,
+            parse_mode="HTML",
             reply_markup=keyboard
         )
 
@@ -852,6 +853,7 @@ async def send_broadcast_preview(target, broadcast):
         await target.reply_video(
             video=file_id,
             caption=text,
+            parse_mode="HTML",
             reply_markup=keyboard
         )
 
@@ -859,12 +861,14 @@ async def send_broadcast_preview(target, broadcast):
         await target.reply_animation(
             animation=file_id,
             caption=text,
+            parse_mode="HTML",
             reply_markup=keyboard
         )
 
     else:
         await target.reply_text(
             text,
+            parse_mode="HTML",
             reply_markup=keyboard
         )
 
@@ -1045,7 +1049,7 @@ async def admin_broadcast_input_handler(update: Update, context: ContextTypes.DE
 
     if state == "broadcast_text":
         context.user_data["broadcast"] = {
-            "text": message.text,
+            "text": message.text_html,
             "media_type": None,
             "file_id": None,
             "buttons": []
