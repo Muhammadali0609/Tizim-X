@@ -1173,3 +1173,11 @@ def is_group_disabled(chat_id: int) -> bool:
             row = cur.fetchone()
 
     return row[0] if row else False
+
+def is_group_plan_active(chat_id: int) -> bool:
+    plan_name, expires_at = get_group_plan(chat_id)
+
+    if not expires_at:
+        return False
+
+    return expires_at > datetime.now(timezone.utc)
