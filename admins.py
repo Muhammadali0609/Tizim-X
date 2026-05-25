@@ -18,6 +18,7 @@ from db import (get_admin_stats,
     get_admin_users_count,
     get_admin_users_page,
     ADMIN_USERS_PER_PAGE,
+    get_admin_user
 )
 
 async def is_admin(chat, user_id: int) -> bool:
@@ -992,6 +993,41 @@ async def broadcast_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
         )
         return
 
+    if data == "broadcast_confirm_user":
+        broadcast = context.user_data.get("broadcast")
+        target_user_id = context.user_data.get("broadcast_target_user_id")
+    
+        if not broadcast or not target_user_id:
+            await query.answer("Черновик или пользователь не найден", show_alert=True)
+            return
+    
+        try:
+            await send_broadcast_to_chat(
+                context,
+                target_user_id,
+                broadcast
+            )
+    
+            context.user_data.pop("broadcast", None)
+            context.user_data.pop("broadcast_target_user_id", None)
+            context.user_data.pop("admin_state", None)
+    
+            await query.message.delete()
+    
+            await query.message.chat.send_message(
+                TEXTS["ru"]["broadcast_user_sent"],
+                reply_markup=build_admin_panel()
+            )
+    
+        except Exception as e:
+            print("BROADCAST USER SEND ERROR:", e)
+            await query.answer(
+                TEXTS["ru"]["broadcast_user_send_error"],
+                show_alert=True
+            )
+    
+        return
+
 async def admin_broadcast_file_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = update.message
 
@@ -1221,24 +1257,44 @@ async def admin_broadcast_send_user_handler(update: Update, context: ContextType
         await message.reply_text("❌ Черновик не найден.")
         return
 
-    try:
-        await send_broadcast_to_chat(
-            context,
-            target_user_id,
-            broadcast
-        )
+    user = get_admin_user(target_user_id)
 
-        await message.reply_text(
-            TEXTS["ru"]["broadcast_user_sent"],
-            reply_markup=build_admin_panel()
-        )
+    if not user:
+        await message.reply_text(TEXTS["ru"]["broadcast_user_not_found"])
+        return
 
-        context.user_data.pop("broadcast", None)
-        context.user_data.pop("admin_state", None)
+    context.user_data["broadcast_target_user_id"] = target_user_id
+    context.user_data["admin_state"] = "broadcast_user_confirm"
 
-    except Exception as e:
-        print("BROADCAST USER SEND ERROR:", e)
-
-        await message.reply_text(
-            TEXTS["ru"]["broadcast_user_send_error"]
-        )
+    await message.reply_text(
+        TEXTS["ru"]["broadcast_user_found"].format(
+            user_id=target_user_id
+        ),
+        parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton(
+                    TEXTS["ru"]["btn_profile"],
+                    url=f"tg://user?id={target_user_id}"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    TEXTS["ru"]["btn_confirm"],
+                    callback_data="broadcast_confirm_user"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    TEXTS["ru"]["back_button"],
+                    callback_data="broadcast_target_user"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    TEXTS["ru"]["btn_admin_close"],
+                    callback_data="admin:close"
+                )
+            ]
+        ])
+    )
