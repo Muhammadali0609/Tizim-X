@@ -111,6 +111,20 @@ def setup_database():
                 ADD COLUMN IF NOT EXISTS username TEXT
             """)
             cur.execute("""
+                ALTER TABLE tizimx_groups
+                ADD COLUMN IF NOT EXISTS plan_notify_3d BOOLEAN NOT NULL DEFAULT FALSE
+            """)
+            
+            cur.execute("""
+                ALTER TABLE tizimx_groups
+                ADD COLUMN IF NOT EXISTS plan_notify_1d BOOLEAN NOT NULL DEFAULT FALSE
+            """)
+            
+            cur.execute("""
+                ALTER TABLE tizimx_groups
+                ADD COLUMN IF NOT EXISTS plan_notify_expired BOOLEAN NOT NULL DEFAULT FALSE
+            """)
+            cur.execute("""
                 CREATE TABLE IF NOT EXISTS tizimx_group_admins (
                     chat_id BIGINT NOT NULL,
                     user_id BIGINT NOT NULL,
@@ -1214,10 +1228,112 @@ def activate_standard_plan(chat_id: int, days: int = 30):
             cur.execute("""
                 UPDATE tizimx_groups
                 SET plan_name = 'standard',
-                    plan_expires_at = %s
+                    plan_expires_at = %s,
+                    plan_notify_3d = FALSE,
+                    plan_notify_1d = FALSE,
+                    plan_notify_expired = FALSE
                 WHERE chat_id = %s
             """, (new_expires_at, chat_id))
 
         conn.commit()
 
     return new_expires_at
+
+def get_group_admin_ids(chat_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT DISTINCT user_id
+                FROM tizimx_group_admins
+                WHERE chat_id = %s
+            """, (chat_id,))
+            rows = cur.fetchall()
+
+    return [row[0] for row in rows]
+
+def get_groups_for_plan_notifications():
+    now = datetime.now(timezone.utc)
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT
+                    chat_id,
+                    title,
+                    plan_name,
+                    plan_expires_at,
+                    plan_notify_3d,
+                    plan_notify_1d,
+                    plan_notify_expired
+                FROM tizimx_groups
+                WHERE plan_expires_at IS NOT NULL
+            """)
+            rows = cur.fetchall()
+
+    result = []
+
+    for row in rows:
+        (
+            chat_id,
+            title,
+            plan_name,
+            expires_at,
+            notify_3d,
+            notify_1d,
+            notify_expired
+        ) = row
+
+        remaining = expires_at - now
+
+        if remaining <= timedelta(seconds=0):
+            if not notify_expired:
+                result.append({
+                    "chat_id": chat_id,
+                    "title": title,
+                    "plan_name": plan_name,
+                    "expires_at": expires_at,
+                    "type": "expired",
+                })
+
+        elif remaining <= timedelta(days=1):
+            if not notify_1d:
+                result.append({
+                    "chat_id": chat_id,
+                    "title": title,
+                    "plan_name": plan_name,
+                    "expires_at": expires_at,
+                    "type": "1d",
+                })
+
+        elif remaining <= timedelta(days=3):
+            if not notify_3d:
+                result.append({
+                    "chat_id": chat_id,
+                    "title": title,
+                    "plan_name": plan_name,
+                    "expires_at": expires_at,
+                    "type": "3d",
+                })
+
+    return result
+
+def mark_plan_notification_sent(chat_id: int, notification_type: str):
+    column_map = {
+        "3d": "plan_notify_3d",
+        "1d": "plan_notify_1d",
+        "expired": "plan_notify_expired",
+    }
+
+    column = column_map.get(notification_type)
+
+    if not column:
+        return
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute(f"""
+                UPDATE tizimx_groups
+                SET {column} = TRUE
+                WHERE chat_id = %s
+            """, (chat_id,))
+        conn.commit()
