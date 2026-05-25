@@ -1160,3 +1160,16 @@ def toggle_group_disabled(chat_id: int) -> bool:
         conn.commit()
 
     return row[0] if row else False
+
+def is_group_disabled(chat_id: int) -> bool:
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT is_disabled
+                FROM tizimx_groups
+                WHERE chat_id = %s
+            """, (chat_id,))
+
+            row = cur.fetchone()
+
+    return row[0] if row else False
