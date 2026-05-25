@@ -74,6 +74,7 @@ from admins import (
     admin_text_handler,
     admin_required_subs_callback,
     admin_users_page_callback,
+    admin_broadcast_text_handler,
 )
 
 async def setup_commands(app):
@@ -110,6 +111,7 @@ def main():
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.Regex("^(🌐 Язык|🌐 Til)$"), language_toggle_handler))
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.Regex("^(📘 Инструкция|📘 Qo‘llanma)$"), guide_button_handler))
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.TEXT & ~filters.COMMAND, admin_text_handler))
+    app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.TEXT & ~filters.COMMAND, admin_broadcast_text_handler))
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.TEXT & ~filters.COMMAND, private_text_handler))
     app.add_handler(CommandHandler("mute", mute_command))
     app.add_handler(CommandHandler("dmute", dmute_command))
