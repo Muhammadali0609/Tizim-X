@@ -1,5 +1,5 @@
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ChatMemberHandler, MessageHandler, filters
-from telegram import BotCommand, BotCommandScopeAllPrivateChats, BotCommandScopeAllGroupChats
+from telegram import BotCommand, BotCommandScopeAllPrivateChats, BotCommandScopeAllGroupChats, Update
 from config import BOT_TOKEN, WEBHOOK_URL, PORT
 import asyncio
 from handlers import (start_command,
