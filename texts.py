@@ -134,6 +134,13 @@ TEXTS = {
         
         "btn_profile": "👤 Профиль",
         "broadcast_user_not_found": "❌ Пользователь не найден в базе.",
+
+        "broadcast_all_done": (
+            "✅ Рассылка завершена.\n\n"
+            "Всего пользователей: {total}\n"
+            "Успешно получили: {success}\n"
+            "Не удалось отправить: {failed}"
+        ),
         
         "start": (
             "Добро пожаловать в TizimX.\n\n"
