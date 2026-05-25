@@ -1,6 +1,7 @@
 from telegram import ChatMemberAdministrator, ChatMemberOwner
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes
+from html import escape
 import math
 from config import OWNER_ID
 from texts import TEXTS
@@ -700,7 +701,7 @@ async def show_admin_users(query, page: int):
 
     users_text = "\n".join(
         f'{i + 1 + page * ADMIN_USERS_PER_PAGE}. '
-        f'<a href="tg://user?id={user_id}">{first_name or user_id}</a>'
+        f'<a href="tg://user?id={user_id}">{escape(str(first_name or user_id))}</a>'
         for i, (user_id, first_name) in enumerate(rows)
     )
 
