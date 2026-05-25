@@ -1103,6 +1103,10 @@ async def admin_input_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
         await admin_broadcast_input_handler(update, context)
         return
 
+    if state == "broadcast_target_user":
+        await admin_broadcast_send_user_handler(update, context)
+        return
+
 def build_broadcast_target_keyboard():
     return InlineKeyboardMarkup([
         [
@@ -1136,3 +1140,105 @@ def build_broadcast_target_keyboard():
             )
         ]
     ])
+
+async def send_broadcast_to_chat(context, chat_id: int, broadcast: dict):
+    keyboard = None
+
+    buttons = []
+
+    for button in broadcast.get("buttons", []):
+        buttons.append([
+            InlineKeyboardButton(
+                button["text"],
+                url=button["url"]
+            )
+        ])
+
+    if buttons:
+        keyboard = InlineKeyboardMarkup(buttons)
+
+    text = broadcast.get("text") or ""
+
+    media_type = broadcast.get("media_type")
+    file_id = broadcast.get("file_id")
+
+    if media_type == "photo":
+        await context.bot.send_photo(
+            chat_id=chat_id,
+            photo=file_id,
+            caption=text,
+            parse_mode="HTML",
+            reply_markup=keyboard
+        )
+
+    elif media_type == "video":
+        await context.bot.send_video(
+            chat_id=chat_id,
+            video=file_id,
+            caption=text,
+            parse_mode="HTML",
+            reply_markup=keyboard
+        )
+
+    elif media_type == "animation":
+        await context.bot.send_animation(
+            chat_id=chat_id,
+            animation=file_id,
+            caption=text,
+            parse_mode="HTML",
+            reply_markup=keyboard
+        )
+
+    else:
+        await context.bot.send_message(
+            chat_id=chat_id,
+            text=text,
+            parse_mode="HTML",
+            reply_markup=keyboard,
+            disable_web_page_preview=True
+        )
+
+async def admin_broadcast_send_user_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = update.message
+
+    if not message or message.chat.type != "private":
+        return
+
+    if message.from_user.id != OWNER_ID:
+        return
+
+    text = message.text.strip()
+
+    if not text.isdigit():
+        await message.reply_text(TEXTS["ru"]["broadcast_user_id_invalid"])
+        return
+
+    target_user_id = int(text)
+
+    broadcast = context.user_data.get("broadcast")
+
+    if not broadcast:
+        await message.reply_text("❌ Черновик не найден.")
+        return
+
+    try:
+        await send_broadcast_to_chat(
+            context,
+            target_user_id,
+            broadcast
+        )
+
+        await message.reply_text(
+            TEXTS["ru"]["broadcast_user_sent"],
+            reply_markup=build_admin_panel()
+        )
+
+        context.user_data.pop("broadcast", None)
+        context.user_data.pop("admin_state", None)
+
+    except Exception as e:
+        print("BROADCAST USER SEND ERROR:", e)
+
+        await message.reply_text(
+            TEXTS["ru"]["broadcast_user_send_error"]
+        )
