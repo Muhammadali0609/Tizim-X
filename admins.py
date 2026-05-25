@@ -872,7 +872,9 @@ async def broadcast_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
     if data == "broadcast_attach":
         context.user_data["admin_state"] = "broadcast_file"
 
-        await query.edit_message_text(
+        await query.message.delete()
+
+        await query.message.chat.send_message(
             TEXTS["ru"]["broadcast_attach_enter"],
             reply_markup=InlineKeyboardMarkup([
                 [
@@ -894,7 +896,9 @@ async def broadcast_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
     if data == "broadcast_add_button":
         context.user_data["admin_state"] = "broadcast_button"
 
-        await query.edit_message_text(
+        await query.message.delete()
+
+        await query.message.chat.send_message(
             TEXTS["ru"]["broadcast_button_enter"],
             reply_markup=InlineKeyboardMarkup([
                 [
