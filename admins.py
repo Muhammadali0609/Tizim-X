@@ -21,7 +21,8 @@ from db import (get_admin_stats,
     ADMIN_USERS_PER_PAGE,
     get_admin_user,
     get_all_user_ids,
-    get_all_active_group_ids
+    get_all_active_group_ids,
+    toggle_group_disabled
 )
 
 async def is_admin(chat, user_id: int) -> bool:
@@ -429,7 +430,12 @@ async def admin_group_callback(update: Update, context: ContextTypes.DEFAULT_TYP
         )
         return
 
-    chat_id = int(query.data.split(":")[1])
+    data = query.data.split(":")
+    action = data[0]
+    chat_id = int(data[1])
+
+    if action == "admin_group_toggle":
+        toggle_group_disabled(chat_id)
 
     await show_admin_group_card(query, chat_id)
 
