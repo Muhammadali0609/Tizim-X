@@ -1181,3 +1181,12 @@ def is_group_plan_active(chat_id: int) -> bool:
         return False
 
     return expires_at > datetime.now(timezone.utc)
+
+def is_group_active(chat_id: int) -> bool:
+    if is_group_disabled(chat_id):
+        return False
+
+    if not is_group_plan_active(chat_id):
+        return False
+
+    return True
