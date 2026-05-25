@@ -1144,3 +1144,19 @@ def get_all_active_group_ids():
             rows = cur.fetchall()
 
     return [row[0] for row in rows]
+
+def toggle_group_disabled(chat_id: int) -> bool:
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE tizimx_groups
+                SET is_disabled = NOT is_disabled
+                WHERE chat_id = %s
+                RETURNING is_disabled
+            """, (chat_id,))
+
+            row = cur.fetchone()
+
+        conn.commit()
+
+    return row[0] if row else False
