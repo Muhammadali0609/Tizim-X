@@ -2,6 +2,7 @@ from telegram import ChatMemberAdministrator, ChatMemberOwner
 from telegram import InlineKeyboardButton, InlineKeyboardMarkup, Update
 from telegram.ext import ContextTypes
 from html import escape
+import asyncio
 import math
 from config import OWNER_ID
 from texts import TEXTS
@@ -18,7 +19,8 @@ from db import (get_admin_stats,
     get_admin_users_count,
     get_admin_users_page,
     ADMIN_USERS_PER_PAGE,
-    get_admin_user
+    get_admin_user,
+    get_all_user_ids
 )
 
 async def is_admin(chat, user_id: int) -> bool:
@@ -1025,6 +1027,54 @@ async def broadcast_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
                 TEXTS["ru"]["broadcast_user_send_error"],
                 show_alert=True
             )
+    
+        return
+
+    if data == "broadcast_target_all_users":
+        broadcast = context.user_data.get("broadcast")
+    
+        if not broadcast:
+            await query.answer("Черновик не найден", show_alert=True)
+            return
+    
+        await query.message.delete()
+    
+        status_msg = await query.message.chat.send_message(
+            "🚀 Рассылка пользователям началась..."
+        )
+    
+        user_ids = get_all_user_ids()
+    
+        total = len(user_ids)
+        success = 0
+        failed = 0
+    
+        for user_id in user_ids:
+            try:
+                await send_broadcast_to_chat(
+                    context,
+                    user_id,
+                    broadcast
+                )
+                success += 1
+    
+            except Exception as e:
+                print("BROADCAST ALL USERS ERROR:", user_id, e)
+                failed += 1
+    
+            await asyncio.sleep(0.05)
+    
+        context.user_data.pop("broadcast", None)
+        context.user_data.pop("broadcast_target_user_id", None)
+        context.user_data.pop("admin_state", None)
+    
+        await status_msg.edit_text(
+            TEXTS["ru"]["broadcast_all_done"].format(
+                total=total,
+                success=success,
+                failed=failed
+            )
+        )
     
         return
 
