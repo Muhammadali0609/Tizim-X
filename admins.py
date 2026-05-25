@@ -27,7 +27,6 @@ async def is_admin(chat, user_id: int) -> bool:
         )
     )
 
-
 def build_admin_panel():
     return InlineKeyboardMarkup([
         [
