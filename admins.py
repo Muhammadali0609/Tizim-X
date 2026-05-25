@@ -859,34 +859,6 @@ async def send_broadcast_preview(target, broadcast):
             reply_markup=keyboard
         )
 
-async def admin_broadcast_text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    message = update.message
-
-    if not message or message.chat.type != "private":
-        return
-
-    user_id = message.from_user.id
-
-    if user_id != OWNER_ID:
-        return
-
-    if context.user_data.get("admin_state") != "broadcast_text":
-        return
-
-    context.user_data["broadcast"] = {
-        "text": message.text,
-        "media_type": None,
-        "file_id": None,
-        "buttons": []
-    }
-
-    context.user_data["admin_state"] = "broadcast_preview"
-
-    await send_broadcast_preview(
-        message,
-        context.user_data["broadcast"]
-    )
-
 async def broadcast_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
     user_id = query.from_user.id
@@ -1005,7 +977,7 @@ async def admin_broadcast_file_handler(update: Update, context: ContextTypes.DEF
 
     await send_broadcast_preview(message, broadcast)
 
-async def admin_broadcast_button_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def admin_broadcast_input_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = update.message
 
     if not message or message.chat.type != "private":
@@ -1016,32 +988,52 @@ async def admin_broadcast_button_handler(update: Update, context: ContextTypes.D
     if user_id != OWNER_ID:
         return
 
-    if context.user_data.get("admin_state") != "broadcast_button":
+    state = context.user_data.get("admin_state")
+
+    if state not in ["broadcast_text", "broadcast_button"]:
         return
 
-    broadcast = context.user_data.get("broadcast")
+    if state == "broadcast_text":
+        context.user_data["broadcast"] = {
+            "text": message.text,
+            "media_type": None,
+            "file_id": None,
+            "buttons": []
+        }
 
-    if not broadcast:
+        context.user_data["admin_state"] = "broadcast_preview"
+
+        await send_broadcast_preview(
+            message,
+            context.user_data["broadcast"]
+        )
         return
 
-    parts = message.text.strip().split("\n", 1)
+    if state == "broadcast_button":
+        broadcast = context.user_data.get("broadcast")
 
-    if len(parts) != 2:
-        await message.reply_text(TEXTS["ru"]["broadcast_invalid_button"])
+        if not broadcast:
+            return
+
+        parts = message.text.strip().split("\n", 1)
+
+        if len(parts) != 2:
+            await message.reply_text(TEXTS["ru"]["broadcast_invalid_button"])
+            return
+
+        button_text = parts[0].strip()
+        button_url = parts[1].strip()
+
+        if not button_text or not button_url.startswith(("http://", "https://")):
+            await message.reply_text(TEXTS["ru"]["broadcast_invalid_button"])
+            return
+
+        broadcast.setdefault("buttons", []).append({
+            "text": button_text,
+            "url": button_url
+        })
+
+        context.user_data["admin_state"] = "broadcast_preview"
+
+        await send_broadcast_preview(message, broadcast)
         return
-
-    button_text = parts[0].strip()
-    button_url = parts[1].strip()
-
-    if not button_text or not button_url.startswith(("http://", "https://")):
-        await message.reply_text(TEXTS["ru"]["broadcast_invalid_button"])
-        return
-
-    broadcast.setdefault("buttons", []).append({
-        "text": button_text,
-        "url": button_url
-    })
-
-    context.user_data["admin_state"] = "broadcast_preview"
-
-    await send_broadcast_preview(message, broadcast)
