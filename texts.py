@@ -71,11 +71,17 @@ TEXTS = {
             "Страница: {page}/{total_pages}\n\n"
             "{subs}"
         ),
-        
         "admin_required_subs_empty": (
             "📢 <b>Обязательные подписки</b>\n\n"
             "В этой группе список подписок пуст."
         ),
+
+        "admin_users_text": (
+            "👤 <b>Пользователи</b>\n\n"
+            "Страница: {page}/{total_pages}\n\n"
+            "{users}"
+        ),
+        "admin_users_empty": "👤 Пользователей пока нет.",
         
         "start": (
             "Добро пожаловать в TizimX.\n\n"
