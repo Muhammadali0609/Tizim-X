@@ -1052,3 +1052,14 @@ async def admin_broadcast_input_handler(update: Update, context: ContextTypes.DE
 
         await send_broadcast_preview(message, broadcast)
         return
+
+async def admin_input_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    state = context.user_data.get("admin_state")
+
+    if state == "searching_group":
+        await admin_text_handler(update, context)
+        return
+
+    if state in ["broadcast_text", "broadcast_button"]:
+        await admin_broadcast_input_handler(update, context)
+        return
