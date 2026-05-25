@@ -352,6 +352,29 @@ def save_group_admin(chat_id: int, user_id: int, role: str = "admin"):
             """, (chat_id, user_id, role))
         conn.commit()
 
+def save_group_owner(chat_id: int, owner_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO tizimx_group_admins (chat_id, user_id, role)
+                VALUES (%s, %s, 'owner')
+                ON CONFLICT (chat_id, user_id)
+                DO UPDATE SET role = 'owner'
+            """, (chat_id, owner_id))
+        conn.commit()
+
+def get_group_owner(chat_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT user_id
+                FROM tizimx_group_admins
+                WHERE chat_id = %s AND role = 'owner'
+                LIMIT 1
+            """, (chat_id,))
+            row = cur.fetchone()
+
+    return row[0] if row else None
 
 def get_user_groups(user_id: int):
     with get_connection() as conn:
