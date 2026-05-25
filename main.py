@@ -1,4 +1,5 @@
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ChatMemberHandler, MessageHandler, filters
+from telegram.ext import ContextTypes
 from telegram import BotCommand, BotCommandScopeAllPrivateChats, BotCommandScopeAllGroupChats, Update
 from config import BOT_TOKEN, WEBHOOK_URL, PORT
 import asyncio
