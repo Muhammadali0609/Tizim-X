@@ -1062,7 +1062,7 @@ async def broadcast_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
                 print("BROADCAST ALL USERS ERROR:", user_id, e)
                 failed += 1
     
-            await asyncio.sleep(0.05)
+            await asyncio.sleep(0.1)
     
         context.user_data.pop("broadcast", None)
         context.user_data.pop("broadcast_target_user_id", None)
