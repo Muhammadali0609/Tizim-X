@@ -94,6 +94,20 @@ async def setup_commands(app):
         ],
         scope=BotCommandScopeAllGroupChats()
     )
+    
+async def private_router_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    admin_state = context.user_data.get("admin_state")
+
+    if admin_state in [
+        "searching_group",
+        "broadcast_text",
+        "broadcast_button",
+        "broadcast_target_user",
+    ]:
+        await admin_input_handler(update, context)
+        return
+
+    await private_text_handler(update, context)
 
 def main():
     setup_database()
@@ -118,8 +132,7 @@ def main():
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.Regex("^(📘 Инструкция|📘 Qo‘llanma)$"), guide_button_handler))
     
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE & (filters.PHOTO | filters.VIDEO | filters.ANIMATION), admin_broadcast_file_handler))
-    app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.TEXT & ~filters.COMMAND, admin_input_handler))
-    app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.TEXT & ~filters.COMMAND, private_text_handler))
+    app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.TEXT & ~filters.COMMAND, private_router_handler))
     app.add_handler(CommandHandler("mute", mute_command))
     app.add_handler(CommandHandler("dmute", dmute_command))
     app.add_handler(CommandHandler("ru", set_group_language))
