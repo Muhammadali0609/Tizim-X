@@ -369,7 +369,8 @@ def get_group_owner(chat_id: int):
             cur.execute("""
                 SELECT user_id
                 FROM tizimx_group_admins
-                WHERE chat_id = %s AND role = 'owner'
+                WHERE chat_id = %s
+                  AND LOWER(TRIM(role)) = 'owner'
                 LIMIT 1
             """, (chat_id,))
             row = cur.fetchone()
