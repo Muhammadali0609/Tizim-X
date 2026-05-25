@@ -148,6 +148,15 @@ async def admin_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         return
 
     if data == "broadcast":
+        broadcast = context.user_data.get("broadcast")
+    
+        if broadcast:
+            context.user_data["admin_state"] = "broadcast_preview"
+    
+            await query.message.delete()
+            await send_broadcast_preview(query.message, broadcast)
+            return
+    
         context.user_data["admin_state"] = "broadcast_text"
     
         await query.edit_message_text(
@@ -932,7 +941,9 @@ async def broadcast_callback(update: Update, context: ContextTypes.DEFAULT_TYPE)
         context.user_data.pop("broadcast", None)
         context.user_data.pop("admin_state", None)
 
-        await query.edit_message_text(
+        await query.message.delete()
+
+        await query.message.chat.send_message(
             TEXTS["ru"]["broadcast_cancelled"],
             reply_markup=build_admin_panel()
         )
