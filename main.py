@@ -78,6 +78,7 @@ from admins import (
     admin_broadcast_file_handler,
     admin_input_handler,
 )
+from plans import plan_notifications_loop
 
 async def setup_commands(app):
     await app.bot.set_my_commands(
