@@ -348,7 +348,12 @@ def save_group_admin(chat_id: int, user_id: int, role: str = "admin"):
                 INSERT INTO tizimx_group_admins (chat_id, user_id, role)
                 VALUES (%s, %s, %s)
                 ON CONFLICT (chat_id, user_id)
-                DO UPDATE SET role = EXCLUDED.role
+                DO UPDATE SET role =
+                    CASE
+                        WHEN tizimx_group_admins.role = 'owner'
+                        THEN 'owner'
+                        ELSE EXCLUDED.role
+                    END
             """, (chat_id, user_id, role))
         conn.commit()
 
