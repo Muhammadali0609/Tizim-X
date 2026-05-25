@@ -42,7 +42,8 @@ from db import(save_user_language,
     delete_required_sub_by_id,
     copy_settings,
     get_group_plan,
-    save_group_owner
+    save_group_owner,
+    is_group_disabled
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username
@@ -268,6 +269,9 @@ async def bot_added_to_group(update: Update, context: ContextTypes.DEFAULT_TYPE)
 async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = update.message
 
+    if is_group_disabled(message.chat.id):
+        return
+
     if not message or not message.text:
         return
 
@@ -360,6 +364,9 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
 async def set_group_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = update.message
 
+    if is_group_disabled(message.chat.id):
+        return
+
     if not message or message.chat.type not in ["group", "supergroup"]:
         return
 
@@ -401,6 +408,9 @@ async def set_group_language(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
 async def new_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = update.message
+
+    if is_group_disabled(message.chat.id):
+        return
 
     if not message or not message.new_chat_members:
         return
@@ -470,6 +480,9 @@ async def new_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
 async def check_subscription_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if is_group_disabled(query.message.chat.id):
+        return
 
     data = query.data.split(":")
     chat_id = int(data[1])
@@ -565,6 +578,9 @@ async def clean_service_message(update: Update, context: ContextTypes.DEFAULT_TY
 
 async def group_settings_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
+
+    if is_group_disabled(query.message.chat.id):
+        return
     
     if await check_callback_limit(query):
         return
