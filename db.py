@@ -1070,3 +1070,33 @@ def get_group_owner(chat_id: int):
             row = cur.fetchone()
 
     return row[0] if row else None
+
+ADMIN_USERS_PER_PAGE = 10
+
+def get_admin_users_count() -> int:
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT COUNT(*)
+                FROM tizimx_users
+            """)
+            row = cur.fetchone()
+
+    return row[0]
+
+
+def get_admin_users_page(page: int):
+    offset = page * ADMIN_USERS_PER_PAGE
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT user_id
+                FROM tizimx_users
+                ORDER BY created_at DESC
+                LIMIT %s OFFSET %s
+            """, (ADMIN_USERS_PER_PAGE, offset))
+
+            rows = cur.fetchall()
+
+    return rows
