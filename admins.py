@@ -13,6 +13,7 @@ from db import (get_admin_stats,
     get_admin_required_subs_count,
     get_admin_required_subs_page,
     ADMIN_REQUIRED_SUBS_PER_PAGE,
+    get_group_owner
 )
 
 async def is_admin(chat, user_id: int) -> bool:
@@ -459,6 +460,20 @@ async def send_admin_group_card(message, chat_id: int):
     else:
         expires_at = "-"
 
+    if created_at:
+        created_at_text = created_at.astimezone(
+            ZoneInfo("Asia/Tashkent")
+        ).strftime("%d.%m.%Y %H:%M")
+    else:
+        created_at_text = "-"
+
+    owner_id = get_group_owner(group_chat_id)
+
+    if owner_id:
+        owner = f'<a href="tg://user?id={owner_id}">Владелец</a>'
+    else:
+        owner = "Неизвестно"
+
     await message.reply_text(
         TEXTS["ru"]["admin_group_text"].format(
             title=title,
@@ -468,6 +483,8 @@ async def send_admin_group_card(message, chat_id: int):
             language=language,
             plan_name=plan_name,
             expires_at=expires_at,
+            created_at=created_at_text,
+            owner=owner,
             status=status
         ),
         parse_mode="HTML",
