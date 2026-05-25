@@ -886,3 +886,82 @@ async def admin_broadcast_text_handler(update: Update, context: ContextTypes.DEF
         message,
         context.user_data["broadcast"]
     )
+
+async def broadcast_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = query.from_user.id
+
+    if user_id != OWNER_ID:
+        await query.answer(TEXTS["ru"]["admin_access_denied"], show_alert=True)
+        return
+
+    data = query.data
+
+    if data == "broadcast_attach":
+        context.user_data["admin_state"] = "broadcast_file"
+
+        await query.edit_message_text(
+            TEXTS["ru"]["broadcast_attach_enter"],
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        TEXTS["ru"]["back_button"],
+                        callback_data="broadcast_back_preview"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        TEXTS["ru"]["btn_admin_close"],
+                        callback_data="admin:close"
+                    )
+                ]
+            ])
+        )
+        return
+
+    if data == "broadcast_add_button":
+        context.user_data["admin_state"] = "broadcast_button"
+
+        await query.edit_message_text(
+            TEXTS["ru"]["broadcast_button_enter"],
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        TEXTS["ru"]["back_button"],
+                        callback_data="broadcast_back_preview"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        TEXTS["ru"]["btn_admin_close"],
+                        callback_data="admin:close"
+                    )
+                ]
+            ])
+        )
+        return
+
+    if data == "broadcast_back_preview":
+        broadcast = context.user_data.get("broadcast")
+
+        if not broadcast:
+            await query.answer("Черновик не найден", show_alert=True)
+            return
+
+        await query.message.delete()
+        await send_broadcast_preview(query.message, broadcast)
+        return
+
+    if data == "broadcast_cancel":
+        context.user_data.pop("broadcast", None)
+        context.user_data.pop("admin_state", None)
+
+        await query.edit_message_text(
+            TEXTS["ru"]["broadcast_cancelled"],
+            reply_markup=build_admin_panel()
+        )
+        return
+
+    if data == "broadcast_send":
+        await query.answer("Отправку сделаем следующим шагом", show_alert=True)
+        return
