@@ -112,6 +112,9 @@ TEXTS = {
         ),
         
         "broadcast_cancelled": "🗑 Рассылка отменена.",
+        "broadcast_invalid_file": "❌ Отправьте фото, видео или GIF.",
+        "broadcast_button_added": "✅ Кнопка добавлена.",
+        "broadcast_file_attached": "✅ Файл прикреплён.",
         
         "start": (
             "Добро пожаловать в TizimX.\n\n"
