@@ -1,6 +1,7 @@
 from telegram.ext import Application, CommandHandler, CallbackQueryHandler, ChatMemberHandler, MessageHandler, filters
 from telegram import BotCommand, BotCommandScopeAllPrivateChats, BotCommandScopeAllGroupChats
 from config import BOT_TOKEN, WEBHOOK_URL, PORT
+import asyncio
 from handlers import (start_command,
     language_callback,
     bot_added_to_group,
@@ -96,7 +97,10 @@ async def setup_commands(app):
 def main():
     setup_database()
     app = Application.builder().token(BOT_TOKEN).build()
-    app.post_init = setup_commands
+    async def post_init(app):
+        await setup_commands(app)
+        asyncio.create_task(plan_notifications_loop(app))
+    app.post_init = post_init
 
     app.add_handler(CommandHandler("start", start_command))
     app.add_handler(CallbackQueryHandler(language_callback, pattern="^lang_"))
