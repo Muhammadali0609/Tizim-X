@@ -368,27 +368,6 @@ def save_group_owner(chat_id: int, owner_id: int):
             """, (chat_id, owner_id))
         conn.commit()
 
-def get_group_owner(chat_id: int):
-    with get_connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                SELECT chat_id, user_id, role
-                FROM tizimx_group_admins
-                WHERE chat_id = %s
-            """, (chat_id,))
-
-            rows = cur.fetchall()
-
-    print("OWNER DEBUG ROWS:", rows)
-
-    for row in rows:
-        print("OWNER DEBUG ROW:", row)
-
-        if row[2] and row[2].strip().lower() == "owner":
-            return row[1]
-
-    return None
-
 def get_user_groups(user_id: int):
     with get_connection() as conn:
         with conn.cursor() as cur:
@@ -1084,7 +1063,8 @@ def get_group_owner(chat_id: int):
             cur.execute("""
                 SELECT user_id
                 FROM tizimx_group_admins
-                WHERE chat_id = %s AND role = 'creator'
+                WHERE chat_id = %s
+                  AND role = 'owner'
                 LIMIT 1
             """, (chat_id,))
             row = cur.fetchone()
