@@ -83,6 +83,35 @@ TEXTS = {
             "{users}"
         ),
         "admin_users_empty": "👤 Пользователей пока нет.",
+
+        "admin_broadcast_enter": "📢 Отправьте текст рассылки.",
+
+        "admin_broadcast_preview": "📢 Предпросмотр рассылки",
+        
+        "btn_broadcast_attach": "📎 Прикрепить файл",
+        "btn_broadcast_button": "🔗 Добавить кнопку",
+        "btn_broadcast_send": "🚀 Отправить",
+        "btn_broadcast_cancel": "🗑 Отменить",
+        
+        "broadcast_attach_enter": (
+            "📎 Отправьте фото, видео или GIF.\n\n"
+            "Новый файл заменит старый."
+        ),
+        
+        "broadcast_button_enter": (
+            "🔗 Отправьте кнопку в формате:\n\n"
+            "Текст кнопки\n"
+            "https://example.com"
+        ),
+        
+        "broadcast_invalid_button": (
+            "❌ Неверный формат.\n\n"
+            "Пример:\n"
+            "Сайт\n"
+            "https://example.com"
+        ),
+        
+        "broadcast_cancelled": "🗑 Рассылка отменена.",
         
         "start": (
             "Добро пожаловать в TizimX.\n\n"
