@@ -17,7 +17,10 @@ def setup_database():
                     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
                 )
             """)
-
+            cur.execute("""
+                ALTER TABLE tizimx_users
+                ADD COLUMN IF NOT EXISTS first_name TEXT
+            """)
             cur.execute("""
                 CREATE TABLE IF NOT EXISTS tizimx_groups (
                     chat_id BIGINT PRIMARY KEY,
@@ -186,15 +189,17 @@ def get_user_language(user_id: int) -> str:
     return row[0] if row else "ru"
 
 
-def save_user_language(user_id: int, language: str):
+def save_user_language(user_id: int, language: str, first_name: str | None = None):
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                INSERT INTO tizimx_users (user_id, language)
-                VALUES (%s, %s)
+                INSERT INTO tizimx_users (user_id, language, first_name)
+                VALUES (%s, %s, %s)
                 ON CONFLICT (user_id)
-                DO UPDATE SET language = EXCLUDED.language
-            """, (user_id, language))
+                DO UPDATE SET
+                    language = EXCLUDED.language,
+                    first_name = COALESCE(EXCLUDED.first_name, tizimx_users.first_name)
+            """, (user_id, language, first_name))
         conn.commit()
 
 def save_group(
