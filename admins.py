@@ -635,6 +635,19 @@ def build_admin_users_keyboard(page: int, total_pages: int):
 
     nav = []
 
+    user_buttons = []
+
+    for i, (user_id, _) in enumerate(rows, start=1):
+        user_buttons.append(
+            InlineKeyboardButton(
+                str(i),
+                url=f"tg://user?id={user_id}"
+            )
+        )
+    
+    for i in range(0, len(user_buttons), 5):
+        keyboard.append(user_buttons[i:i + 5])
+
     if page > 0:
         nav.append(
             InlineKeyboardButton(
@@ -700,8 +713,7 @@ async def show_admin_users(query, page: int):
     rows = get_admin_users_page(page)
 
     users_text = "\n".join(
-        f'{i + 1 + page * ADMIN_USERS_PER_PAGE}. '
-        f'<a href="tg://user?id={user_id}">{escape(str(first_name or user_id))}</a>'
+        f"{i + 1 + page * ADMIN_USERS_PER_PAGE}. {escape(str(first_name or user_id))}"
         for i, (user_id, first_name) in enumerate(rows)
     )
 
