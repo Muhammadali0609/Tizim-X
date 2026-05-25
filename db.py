@@ -367,19 +367,18 @@ def get_group_owner(chat_id: int):
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT chat_id, user_id, role
+                SELECT user_id
                 FROM tizimx_group_admins
                 WHERE chat_id = %s
-            """, (chat_id,))
-            rows = cur.fetchall()
+                  AND role = %s
+                LIMIT 1
+            """, (chat_id, "owner"))
 
-    print("OWNER DEBUG ROWS:", rows)
+            row = cur.fetchone()
 
-    for row in rows:
-        if row[2] and row[2].strip().lower() == "owner":
-            return row[1]
+    print("GET OWNER RESULT:", row)
 
-    return None
+    return row[0] if row else None
 
 def get_user_groups(user_id: int):
     with get_connection() as conn:
