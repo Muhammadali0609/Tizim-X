@@ -125,6 +125,15 @@ TEXTS = {
         "broadcast_user_id_invalid": "❌ Неверный ID пользователя.",
         "broadcast_user_sent": "✅ Рассылка отправлена пользователю.",
         "broadcast_user_send_error": "❌ Не удалось отправить рассылку пользователю.",
+        "broadcast_user_found": (
+            "👤 Пользователь найден.\n\n"
+            "ID:\n"
+            "<code>{user_id}</code>\n\n"
+            "Проверьте профиль и подтвердите отправку."
+        ),
+        
+        "btn_profile": "👤 Профиль",
+        "broadcast_user_not_found": "❌ Пользователь не найден в базе.",
         
         "start": (
             "Добро пожаловать в TizimX.\n\n"
