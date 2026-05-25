@@ -114,8 +114,8 @@ def main():
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.Regex("^(📘 Инструкция|📘 Qo‘llanma)$"), guide_button_handler))
     
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE & (filters.PHOTO | filters.VIDEO | filters.ANIMATION), admin_broadcast_file_handler))
-    app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.TEXT & ~filters.COMMAND, admin_broadcast_input_handler))
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.TEXT & ~filters.COMMAND, admin_text_handler))
+    app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.TEXT & ~filters.COMMAND, admin_broadcast_input_handler))
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.TEXT & ~filters.COMMAND, private_text_handler))
     app.add_handler(CommandHandler("mute", mute_command))
     app.add_handler(CommandHandler("dmute", dmute_command))
