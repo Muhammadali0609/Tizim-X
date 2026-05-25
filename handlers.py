@@ -43,7 +43,7 @@ from db import(save_user_language,
     copy_settings,
     get_group_plan,
     save_group_owner,
-    is_group_disabled
+    is_group_active
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username
@@ -269,13 +269,13 @@ async def bot_added_to_group(update: Update, context: ContextTypes.DEFAULT_TYPE)
 async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = update.message
 
-    if is_group_disabled(message.chat.id):
-        return
-
     if not message or not message.text:
         return
 
     if message.chat.type not in ["group", "supergroup"]:
+        return
+
+    if not is_group_active(message.chat.id):
         return
 
     save_group(message.chat.id, message.chat.title, message.chat.type, message.chat.username)
@@ -364,10 +364,10 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
 async def set_group_language(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = update.message
 
-    if is_group_disabled(message.chat.id):
+    if not message or message.chat.type not in ["group", "supergroup"]:
         return
 
-    if not message or message.chat.type not in ["group", "supergroup"]:
+    if not is_group_active(message.chat.id):
         return
 
     try:
@@ -409,13 +409,13 @@ async def set_group_language(update: Update, context: ContextTypes.DEFAULT_TYPE)
 async def new_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = update.message
 
-    if is_group_disabled(message.chat.id):
-        return
-
     if not message or not message.new_chat_members:
         return
 
     if message.chat.type not in ["group", "supergroup"]:
+        return
+
+    if not is_group_active(message.chat.id):
         return
 
     settings = get_group_settings(message.chat.id)
@@ -481,7 +481,7 @@ async def new_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
 async def check_subscription_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
 
-    if is_group_disabled(query.message.chat.id):
+    if not is_group_active(query.message.chat.id):
         return
 
     data = query.data.split(":")
@@ -579,7 +579,7 @@ async def clean_service_message(update: Update, context: ContextTypes.DEFAULT_TY
 async def group_settings_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
 
-    if is_group_disabled(query.message.chat.id):
+    if not is_group_active(query.message.chat.id):
         return
     
     if await check_callback_limit(query):
