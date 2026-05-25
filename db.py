@@ -1105,3 +1105,15 @@ def get_admin_users_page(page: int):
             rows = cur.fetchall()
 
     return rows
+
+def get_admin_user(user_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT user_id, first_name
+                FROM tizimx_users
+                WHERE user_id = %s
+            """, (user_id,))
+            row = cur.fetchone()
+
+    return row
