@@ -1117,3 +1117,15 @@ def get_admin_user(user_id: int):
             row = cur.fetchone()
 
     return row
+
+def get_all_user_ids():
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT user_id
+                FROM tizimx_users
+                ORDER BY created_at DESC
+            """)
+            rows = cur.fetchall()
+
+    return [row[0] for row in rows]
