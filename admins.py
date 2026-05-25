@@ -333,6 +333,20 @@ async def show_admin_group_card(query, chat_id: int):
     else:
         expires_at = "-"
 
+    if created_at:
+        created_at_text = created_at.astimezone(
+            ZoneInfo("Asia/Tashkent")
+        ).strftime("%d.%m.%Y %H:%M")
+    else:
+        created_at_text = "-"
+
+    owner_id = get_group_owner(group_chat_id)
+
+    if owner_id:
+        owner = f'<a href="tg://user?id={owner_id}">Владелец</a>'
+    else:
+        owner = "Неизвестно"
+
     await query.edit_message_text(
         TEXTS["ru"]["admin_group_text"].format(
             title=title,
@@ -342,6 +356,8 @@ async def show_admin_group_card(query, chat_id: int):
             language=language,
             plan_name=plan_name,
             expires_at=expires_at,
+            created_at=created_at_text,
+            owner=owner,
             status=status
         ),
         parse_mode="HTML",
