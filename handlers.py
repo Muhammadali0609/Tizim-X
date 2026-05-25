@@ -248,7 +248,7 @@ async def bot_added_to_group(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
     chat = message.chat
     save_group(chat.id, chat.title, chat.type, chat.username)
-    await sync_group_owner(chat, context)
+    await sync_group_admins(chat, context)
     seed_default_bad_words(chat.id)
 
     bot_member = await chat.get_member(context.bot.id)
@@ -385,8 +385,7 @@ async def set_group_language(update: Update, context: ContextTypes.DEFAULT_TYPE)
         return
 
     save_group(message.chat.id, message.chat.title, message.chat.type, message.chat.username)
-    save_group_admin(message.chat.id, user.id)
-    await sync_group_owner(message.chat, context)
+    await sync_group_admins(message.chat, context)
     save_group_language(message.chat.id, lang)
 
     msg = await message.chat.send_message(
@@ -4153,3 +4152,19 @@ async def sync_group_owner(chat, context):
 
     except Exception as e:
         print("SYNC GROUP OWNER ERROR:", e)
+
+async def sync_group_admins(chat, context):
+    try:
+        admins = await context.bot.get_chat_administrators(chat.id)
+
+        for admin in admins:
+            role = "owner" if admin.status == "creator" else "admin"
+
+            save_group_admin(
+                chat.id,
+                admin.user.id,
+                role
+            )
+
+    except Exception as e:
+        print("SYNC GROUP ADMINS ERROR:", e)
