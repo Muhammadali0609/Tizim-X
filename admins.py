@@ -146,6 +146,28 @@ async def admin_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if data == "users":
         await show_admin_users(query, 0)
         return
+
+    if data == "broadcast":
+        context.user_data["admin_state"] = "broadcast_text"
+    
+        await query.edit_message_text(
+            TEXTS["ru"]["admin_broadcast_enter"],
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        TEXTS["ru"]["back_button"],
+                        callback_data="admin:back"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        TEXTS["ru"]["btn_admin_close"],
+                        callback_data="admin:close"
+                    )
+                ]
+            ])
+        )
+        return
     
     if data == "back":
         await query.edit_message_text(
@@ -752,3 +774,115 @@ async def admin_users_page_callback(update: Update, context: ContextTypes.DEFAUL
     page = int(query.data.split(":")[1])
 
     await show_admin_users(query, page)
+
+def build_broadcast_preview_keyboard():
+    return InlineKeyboardMarkup([
+        [
+            InlineKeyboardButton(
+                TEXTS["ru"]["btn_broadcast_attach"],
+                callback_data="broadcast_attach"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS["ru"]["btn_broadcast_button"],
+                callback_data="broadcast_add_button"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS["ru"]["btn_broadcast_send"],
+                callback_data="broadcast_send"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS["ru"]["btn_broadcast_cancel"],
+                callback_data="broadcast_cancel"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS["ru"]["btn_admin_close"],
+                callback_data="admin:close"
+            )
+        ]
+    ])
+
+async def send_broadcast_preview(target, broadcast):
+    keyboard = build_broadcast_preview_keyboard()
+
+    buttons = []
+
+    for button in broadcast.get("buttons", []):
+        buttons.append([
+            InlineKeyboardButton(
+                button["text"],
+                url=button["url"]
+            )
+        ])
+
+    if buttons:
+        keyboard.inline_keyboard = (
+            buttons + keyboard.inline_keyboard
+        )
+
+    text = broadcast.get("text") or TEXTS["ru"]["admin_broadcast_preview"]
+
+    media_type = broadcast.get("media_type")
+    file_id = broadcast.get("file_id")
+
+    if media_type == "photo":
+        await target.reply_photo(
+            photo=file_id,
+            caption=text,
+            reply_markup=keyboard
+        )
+
+    elif media_type == "video":
+        await target.reply_video(
+            video=file_id,
+            caption=text,
+            reply_markup=keyboard
+        )
+
+    elif media_type == "animation":
+        await target.reply_animation(
+            animation=file_id,
+            caption=text,
+            reply_markup=keyboard
+        )
+
+    else:
+        await target.reply_text(
+            text,
+            reply_markup=keyboard
+        )
+
+async def admin_broadcast_text_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = update.message
+
+    if not message or message.chat.type != "private":
+        return
+
+    user_id = message.from_user.id
+
+    if user_id != OWNER_ID:
+        return
+
+    if context.user_data.get("admin_state") != "broadcast_text":
+        return
+
+    context.user_data["broadcast"] = {
+        "text": message.text,
+        "media_type": None,
+        "file_id": None,
+        "buttons": []
+    }
+
+    context.user_data["admin_state"] = "broadcast_preview"
+
+    await send_broadcast_preview(
+        message,
+        context.user_data["broadcast"]
+    )
