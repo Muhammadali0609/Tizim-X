@@ -579,9 +579,6 @@ async def clean_service_message(update: Update, context: ContextTypes.DEFAULT_TY
 async def group_settings_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
 
-    if not is_group_active(query.message.chat.id):
-        return
-    
     if await check_callback_limit(query):
         return
         
