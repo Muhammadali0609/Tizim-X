@@ -5,6 +5,7 @@ TEXTS = {
         "btn_admin_groups": "👥 Группы",
         "btn_admin_users": "👤 Пользователи",
         "btn_admin_plans": "💎 Планы",
+        "btn_admin_broadcast": "📢 Рассылка",
         "btn_admin_disabled_groups": "🚫 Отключённые группы",
         "btn_admin_close": "❌ Закрыть",
         "admin_access_denied": "❌ Доступ запрещён.",
