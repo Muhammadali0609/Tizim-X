@@ -13,7 +13,10 @@ from db import (get_admin_stats,
     get_admin_required_subs_count,
     get_admin_required_subs_page,
     ADMIN_REQUIRED_SUBS_PER_PAGE,
-    get_group_owner
+    get_group_owner,
+    get_admin_users_count,
+    get_admin_users_page,
+    ADMIN_USERS_PER_PAGE,
 )
 
 async def is_admin(chat, user_id: int) -> bool:
@@ -132,7 +135,11 @@ async def admin_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if data == "groups":
         await show_admin_groups(query, 0)
         return
-        
+
+    if data == "users":
+        await show_admin_users(query, 0)
+        return
+    
     if data == "back":
         await query.edit_message_text(
             TEXTS["ru"]["admin_panel"],
@@ -621,3 +628,107 @@ async def admin_required_subs_callback(update: Update, context: ContextTypes.DEF
     page = int(data[2]) if len(data) > 2 else 0
 
     await show_admin_required_subs(query, chat_id, page)
+
+def build_admin_users_keyboard(page: int, total_pages: int):
+    keyboard = []
+
+    nav = []
+
+    if page > 0:
+        nav.append(
+            InlineKeyboardButton(
+                "⬅️",
+                callback_data=f"admin_users:{page - 1}"
+            )
+        )
+
+    if page < total_pages - 1:
+        nav.append(
+            InlineKeyboardButton(
+                "➡️",
+                callback_data=f"admin_users:{page + 1}"
+            )
+        )
+
+    if nav:
+        keyboard.append(nav)
+
+    keyboard.append([
+        InlineKeyboardButton(
+            TEXTS["ru"]["back_button"],
+            callback_data="admin:back"
+        )
+    ])
+
+    keyboard.append([
+        InlineKeyboardButton(
+            TEXTS["ru"]["btn_admin_close"],
+            callback_data="admin:close"
+        )
+    ])
+
+    return InlineKeyboardMarkup(keyboard)
+
+async def show_admin_users(query, page: int):
+    total_count = get_admin_users_count()
+
+    if total_count == 0:
+        await query.edit_message_text(
+            TEXTS["ru"]["admin_users_empty"],
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        TEXTS["ru"]["back_button"],
+                        callback_data="admin:back"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        TEXTS["ru"]["btn_admin_close"],
+                        callback_data="admin:close"
+                    )
+                ]
+            ])
+        )
+        return
+
+    total_pages = math.ceil(total_count / ADMIN_USERS_PER_PAGE)
+
+    page = max(0, min(page, total_pages - 1))
+
+    rows = get_admin_users_page(page)
+
+    users_text = "\n".join(
+        f'{i + 1 + page * ADMIN_USERS_PER_PAGE}. '
+        f'<a href="tg://user?id={user_id}">Пользователь</a>'
+        for i, (user_id,) in enumerate(rows)
+    )
+
+    await query.edit_message_text(
+        TEXTS["ru"]["admin_users_text"].format(
+            page=page + 1,
+            total_pages=total_pages,
+            users=users_text
+        ),
+        parse_mode="HTML",
+        reply_markup=build_admin_users_keyboard(
+            page,
+            total_pages
+        )
+    )
+
+async def admin_users_page_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    user_id = query.from_user.id
+
+    if user_id != OWNER_ID:
+        await query.answer(
+            TEXTS["ru"]["admin_access_denied"],
+            show_alert=True
+        )
+        return
+
+    page = int(query.data.split(":")[1])
+
+    await show_admin_users(query, page)
