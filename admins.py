@@ -61,6 +61,12 @@ def build_admin_panel():
         ],
         [
             InlineKeyboardButton(
+                TEXTS["ru"]["btn_admin_broadcast"],
+                callback_data="admin:broadcast"
+            )
+        ],
+        [
+            InlineKeyboardButton(
                 TEXTS["ru"]["btn_admin_close"],
                 callback_data="admin:close"
             ),
