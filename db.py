@@ -1129,3 +1129,18 @@ def get_all_user_ids():
             rows = cur.fetchall()
 
     return [row[0] for row in rows]
+
+def get_all_active_group_ids():
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT chat_id
+                FROM tizimx_groups
+                WHERE is_disabled = FALSE
+                  AND chat_type IN ('group', 'supergroup')
+                ORDER BY created_at DESC
+            """)
+
+            rows = cur.fetchall()
+
+    return [row[0] for row in rows]
