@@ -341,6 +341,8 @@ async def show_admin_group_card(query, chat_id: int):
         created_at_text = "-"
 
     owner_id = get_group_owner(group_chat_id)
+    print("ADMIN CARD GROUP ID:", group_chat_id)
+    print("ADMIN CARD OWNER ID:", owner_id)
 
     if owner_id:
         owner = f'<a href="tg://user?id={owner_id}">Владелец</a>'
