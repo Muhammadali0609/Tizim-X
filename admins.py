@@ -630,7 +630,7 @@ async def admin_required_subs_callback(update: Update, context: ContextTypes.DEF
 
     await show_admin_required_subs(query, chat_id, page)
 
-def build_admin_users_keyboard(page: int, total_pages: int):
+def build_admin_users_keyboard(page: int, total_pages: int, rows):
     keyboard = []
 
     nav = []
@@ -726,7 +726,8 @@ async def show_admin_users(query, page: int):
         parse_mode="HTML",
         reply_markup=build_admin_users_keyboard(
             page,
-            total_pages
+            total_pages,
+            rows
         )
     )
 
