@@ -1096,7 +1096,7 @@ def get_admin_users_page(page: int):
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT user_id
+                SELECT user_id, first_name
                 FROM tizimx_users
                 ORDER BY created_at DESC
                 LIMIT %s OFFSET %s
