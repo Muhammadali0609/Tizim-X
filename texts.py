@@ -115,6 +115,12 @@ TEXTS = {
         "broadcast_invalid_file": "❌ Отправьте фото, видео или GIF.",
         "broadcast_button_added": "✅ Кнопка добавлена.",
         "broadcast_file_attached": "✅ Файл прикреплён.",
+
+        "broadcast_choose_target": "🚀 Кому отправить рассылку?",
+        "btn_broadcast_to_user": "👤 Пользователю",
+        "btn_broadcast_to_all_users": "👥 Всем",
+        "btn_broadcast_to_groups": "👥 Группам",
+        "broadcast_enter_user_id": "👤 Отправьте ID пользователя.",
         
         "start": (
             "Добро пожаловать в TizimX.\n\n"
