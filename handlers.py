@@ -41,7 +41,8 @@ from db import(save_user_language,
     delete_required_sub_by_index,
     delete_required_sub_by_id,
     copy_settings,
-    get_group_plan
+    get_group_plan,
+    save_group_owner
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username
@@ -247,6 +248,7 @@ async def bot_added_to_group(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
     chat = message.chat
     save_group(chat.id, chat.title, chat.type, chat.username)
+    await sync_group_owner(chat, context)
     seed_default_bad_words(chat.id)
 
     bot_member = await chat.get_member(context.bot.id)
@@ -372,6 +374,7 @@ async def set_group_language(update: Update, context: ContextTypes.DEFAULT_TYPE)
         return
 
     save_group_admin(message.chat.id, user.id)
+    await sync_group_owner(chat, context)
 
     command = message.text.split()[0].lower()
 
@@ -4139,3 +4142,15 @@ def build_guide_menu(lang):
             ),
         ],
     ])
+
+async def sync_group_owner(chat, context):
+    try:
+        admins = await context.bot.get_chat_administrators(chat.id)
+
+        for admin in admins:
+            if admin.status == ChatMemberStatus.OWNER:
+                save_group_owner(chat.id, admin.user.id)
+                return
+
+    except Exception as e:
+        print("SYNC GROUP OWNER ERROR:", e)
