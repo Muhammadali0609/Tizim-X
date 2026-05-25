@@ -121,7 +121,7 @@ async def language_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     lang = query.data.replace("lang_", "")
     user_id = query.from_user.id
 
-    save_user_language(user_id, lang)
+    save_user_language(user_id, lang, query.from_user.first_name)
 
     keyboard_text = (
         TEXTS[lang]["manage_button"]
