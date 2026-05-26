@@ -125,6 +125,10 @@ def setup_database():
                 ADD COLUMN IF NOT EXISTS plan_notify_expired BOOLEAN NOT NULL DEFAULT FALSE
             """)
             cur.execute("""
+                ALTER TABLE tizimx_groups
+                ADD COLUMN IF NOT EXISTS required_contacts_limit INTEGER NOT NULL DEFAULT 0
+            """)
+            cur.execute("""
                 CREATE TABLE IF NOT EXISTS tizimx_group_admins (
                     chat_id BIGINT NOT NULL,
                     user_id BIGINT NOT NULL,
@@ -1337,3 +1341,31 @@ def mark_plan_notification_sent(chat_id: int, notification_type: str):
                 WHERE chat_id = %s
             """, (chat_id,))
         conn.commit()
+
+def get_required_contacts_limit(chat_id: int) -> int:
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT required_contacts_limit
+                FROM tizimx_groups
+                WHERE chat_id = %s
+            """, (chat_id,))
+            row = cur.fetchone()
+
+    return row[0] if row else 0
+
+def set_required_contacts_limit(chat_id: int, limit: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE tizimx_groups
+                SET required_contacts_limit = %s
+                WHERE chat_id = %s
+            """, (limit, chat_id))
+        conn.commit()
+
+def get_required_contacts_total_invites(chat_id: int) -> int:
+    return 0
+
+def reset_required_contacts_invites(chat_id: int):
+    pass
