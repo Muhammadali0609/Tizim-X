@@ -486,6 +486,21 @@ TEXTS = {
         "required_contacts_limit_saved": "✅ Число обязательных контактов сохранено.",
         "required_contacts_reset_done": "✅ Добавленные контакты аннулированы.",
 
+        "required_contacts_need_invite": (
+            "👥 Чтобы продолжить писать в группу, добавьте <b>{need}</b> контактов."
+        ),
+        
+        "required_contacts_check": "✅ Проверить",
+        
+        "required_contacts_check_success": (
+            "✅ Благодарим за внесённый труд, можете продолжать писать."
+        ),
+        
+        "required_contacts_check_failed": (
+            "❌ Вы добавили: {added}\n"
+            "Осталось ещё: {left}"
+        ),
+
         "guide_choose_section": "📘 Выберите раздел:",
         "btn_guide_bad_words": "📘 Маты",
         "btn_guide_ads": "📘 Рекламы",
@@ -1096,6 +1111,21 @@ TEXTS = {
         "required_contacts_invalid_limit": "❌ 0 dan 200 gacha son kiriting.",
         "required_contacts_limit_saved": "✅ Majburiy kontaktlar soni saqlandi.",
         "required_contacts_reset_done": "✅ Qo‘shilgan kontaktlar bekor qilindi.",
+
+        "required_contacts_need_invite": (
+            "👥 Guruhga yozishni davom ettirish uchun <b>{need}</b> ta kontakt qo‘shing."
+        ),
+        
+        "required_contacts_check": "✅ Tekshirish",
+        
+        "required_contacts_check_success": (
+            "✅ Qo‘shgan hissangiz uchun rahmat, yozishda davom etishingiz mumkin."
+        ),
+        
+        "required_contacts_check_failed": (
+            "❌ Siz qo‘shdingiz: {added}\n"
+            "Yana qolgan: {left}"
+        ),
 
         "guide_choose_section": "📘 Bo‘limni tanlang:",
         "btn_guide_bad_words": "📘 So‘kinishlar",
