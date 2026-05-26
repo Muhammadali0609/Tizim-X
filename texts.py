@@ -466,6 +466,26 @@ TEXTS = {
             "Причина: {reason}"
         ),
 
+        "btn_required_contacts": "👥 Обязательные контакты",
+
+        "required_contacts_panel": (
+            "👥 <b>Обязательные контакты</b>\n\n"
+            "Число обязательных контактов, чтобы разрешить писать: <b>{limit}</b>\n\n"
+            "Сколько людей пригласили в общем: <b>{total_invites}</b>"
+        ),
+        
+        "btn_required_contacts_limit": "🔢 Число контактов",
+        "btn_required_contacts_reset": "♻️ Аннулировать добавленных",
+        
+        "required_contacts_enter_limit": (
+            "🔢 Отправьте число обязательных контактов.\n\n"
+            "Можно указать от 0 до 200."
+        ),
+        
+        "required_contacts_invalid_limit": "❌ Введите число от 0 до 200.",
+        "required_contacts_limit_saved": "✅ Число обязательных контактов сохранено.",
+        "required_contacts_reset_done": "✅ Добавленные контакты аннулированы.",
+
         "guide_choose_section": "📘 Выберите раздел:",
         "btn_guide_bad_words": "📘 Маты",
         "btn_guide_ads": "📘 Рекламы",
@@ -1056,6 +1076,26 @@ TEXTS = {
             "⛔️ {name} guruhda bloklandi.\n\n"
             "Sabab: {reason}"
         ),
+
+        "btn_required_contacts": "👥 Majburiy kontaktlar",
+
+        "required_contacts_panel": (
+            "👥 <b>Majburiy kontaktlar</b>\n\n"
+            "Yozishga ruxsat berish uchun majburiy kontaktlar soni: <b>{limit}</b>\n\n"
+            "Jami taklif qilingan odamlar soni: <b>{total_invites}</b>"
+        ),
+        
+        "btn_required_contacts_limit": "🔢 Kontaktlar soni",
+        "btn_required_contacts_reset": "♻️ Qo‘shilganlarni bekor qilish",
+        
+        "required_contacts_enter_limit": (
+            "🔢 Majburiy kontaktlar sonini yuboring.\n\n"
+            "0 dan 200 gacha son kiriting."
+        ),
+        
+        "required_contacts_invalid_limit": "❌ 0 dan 200 gacha son kiriting.",
+        "required_contacts_limit_saved": "✅ Majburiy kontaktlar soni saqlandi.",
+        "required_contacts_reset_done": "✅ Qo‘shilgan kontaktlar bekor qilindi.",
 
         "guide_choose_section": "📘 Bo‘limni tanlang:",
         "btn_guide_bad_words": "📘 So‘kinishlar",
