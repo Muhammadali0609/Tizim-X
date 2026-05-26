@@ -47,10 +47,12 @@ from db import(save_user_language,
     get_required_contacts_limit,
     set_required_contacts_limit,
     get_required_contacts_total_invites,
-    reset_required_contacts_invites,
     add_required_contact_invites,
     get_required_contacts_limit,
     get_user_required_contacts_count,
+    is_required_contacts_completed,
+    mark_required_contacts_completed,
+    reset_required_contacts_completed
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username
@@ -292,8 +294,11 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
     
         if user and not user.is_bot:
             if not await is_admin(message.chat, user.id):
+                
+                if is_required_contacts_completed(message.chat.id, user.id):
+                    return
+                
                 added = get_user_required_contacts_count(message.chat.id, user.id)
-    
                 if added < limit:
                     try:
                         await message.delete()
@@ -4368,7 +4373,7 @@ async def required_contacts_reset_callback(update: Update, context: ContextTypes
     chat_id = int(query.data.split(":")[1])
     lang = get_group_language(chat_id)
 
-    reset_required_contacts_invites(chat_id)
+    reset_required_contacts_completed(chat_id)
 
     await query.answer(TEXTS[lang]["required_contacts_reset_done"], show_alert=True)
 
@@ -4394,6 +4399,7 @@ async def check_required_contacts_callback(update: Update, context: ContextTypes
     added = get_user_required_contacts_count(chat_id, target_user_id)
 
     if added >= limit:
+        mark_required_contacts_completed(chat_id, target_user_id)
         try:
             chat = await context.bot.get_chat(chat_id)
     
