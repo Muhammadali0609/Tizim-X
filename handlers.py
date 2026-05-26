@@ -52,7 +52,8 @@ from db import(save_user_language,
     get_user_required_contacts_count,
     is_required_contacts_completed,
     mark_required_contacts_completed,
-    reset_required_contacts_completed
+    reset_required_contacts_completed,
+    reset_required_contacts_invites
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username
@@ -4372,7 +4373,7 @@ async def required_contacts_reset_callback(update: Update, context: ContextTypes
 
     chat_id = int(query.data.split(":")[1])
     lang = get_group_language(chat_id)
-
+    reset_required_contacts_invites(chat_id)
     reset_required_contacts_completed(chat_id)
 
     await query.answer(TEXTS[lang]["required_contacts_reset_done"], show_alert=True)
