@@ -68,6 +68,7 @@ from handlers import (start_command,
     required_contacts_panel_callback,
     required_contacts_limit_callback,
     required_contacts_reset_callback,
+    check_required_contacts_callback
 )
 from db import setup_database
 from admins import (
@@ -131,6 +132,7 @@ def main():
     app.add_handler(MessageHandler(filters.StatusUpdate.DELETE_CHAT_PHOTO, clean_service_message))
     app.add_handler(MessageHandler(filters.StatusUpdate.PINNED_MESSAGE, clean_service_message))
     app.add_handler(CallbackQueryHandler(check_subscription_callback, pattern="^check_sub:"))
+    app.add_handler(CallbackQueryHandler(check_required_contacts_callback, pattern="^check_required_contacts:"))
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.Regex("^(⚙️ Управлять|⚙️ Boshqarish)$"), settings_button_handler))
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.Regex("^(🌐 Язык|🌐 Til)$"), language_toggle_handler))
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.Regex("^(📘 Инструкция|📘 Qo‘llanma)$"), guide_button_handler))
