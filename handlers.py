@@ -43,7 +43,11 @@ from db import(save_user_language,
     copy_settings,
     get_group_plan,
     save_group_owner,
-    is_group_active
+    is_group_active,
+    get_required_contacts_limit,
+    set_required_contacts_limit,
+    get_required_contacts_total_invites,
+    reset_required_contacts_invites,
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username
@@ -615,6 +619,9 @@ async def group_settings_callback(update: Update, context: ContextTypes.DEFAULT_
             InlineKeyboardButton(TEXTS[lang]["btn_required_subs"], callback_data=f"required_subs_panel:{chat_id}")
         ],
         [
+            InlineKeyboardButton(TEXTS[lang]["btn_required_contacts"], callback_data=f"required_contacts_panel:{chat_id}")
+        ],
+        [
             InlineKeyboardButton(TEXTS[lang]["btn_transfer_settings"], callback_data=f"transfer_panel:{chat_id}"),
         ],
         [
@@ -1158,6 +1165,34 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
             lang,
             "ad_phrase_added",
             f"ad_phrases_panel:{chat_id}:0"
+        )
+        return
+
+    if context.user_data.get("state") == "setting_required_contacts_limit":
+        chat_id = context.user_data.get("target_chat_id")
+        lang = get_group_language(chat_id)
+    
+        text = message.text.strip()
+    
+        if not text.isdigit():
+            await message.reply_text(TEXTS[lang]["required_contacts_invalid_limit"])
+            return
+    
+        limit = int(text)
+    
+        if limit < 0 or limit > 200:
+            await message.reply_text(TEXTS[lang]["required_contacts_invalid_limit"])
+            return
+    
+        set_required_contacts_limit(chat_id, limit)
+    
+        context.user_data.clear()
+    
+        await reply_success_with_back(
+            message,
+            lang,
+            "required_contacts_limit_saved",
+            f"required_contacts_panel:{chat_id}"
         )
         return
 
@@ -4181,3 +4216,84 @@ async def sync_group_admins(chat, context):
 
     except Exception as e:
         print("SYNC GROUP ADMINS ERROR:", e)
+
+async def required_contacts_panel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    data = query.data.split(":")
+    chat_id = int(data[1])
+
+    lang = get_group_language(chat_id)
+
+    limit = get_required_contacts_limit(chat_id)
+    total_invites = get_required_contacts_total_invites(chat_id)
+
+    await query.edit_message_text(
+        TEXTS[lang]["required_contacts_panel"].format(
+            limit=limit,
+            total_invites=total_invites
+        ),
+        parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["btn_required_contacts_limit"],
+                    callback_data=f"required_contacts_limit:{chat_id}"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["btn_required_contacts_reset"],
+                    callback_data=f"required_contacts_reset:{chat_id}"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["back_button"],
+                    callback_data=f"group_settings:{chat_id}"
+                )
+            ]
+        ])
+    )
+
+async def required_contacts_limit_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    chat_id = int(query.data.split(":")[1])
+    lang = get_group_language(chat_id)
+
+    context.user_data["state"] = "setting_required_contacts_limit"
+    context.user_data["target_chat_id"] = chat_id
+
+    await query.edit_message_text(
+        TEXTS[lang]["required_contacts_enter_limit"],
+        reply_markup=InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["back_button"],
+                    callback_data=f"required_contacts_panel:{chat_id}"
+                )
+            ]
+        ])
+    )
+
+async def required_contacts_reset_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    chat_id = int(query.data.split(":")[1])
+    lang = get_group_language(chat_id)
+
+    reset_required_contacts_invites(chat_id)
+
+    await query.answer(TEXTS[lang]["required_contacts_reset_done"], show_alert=True)
+
+    await required_contacts_panel_callback(update, context)
