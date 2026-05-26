@@ -193,6 +193,15 @@ def setup_database():
                     UNIQUE(chat_id, target_chat)
                 )
             """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS tizimx_required_contact_invites (
+                    chat_id BIGINT NOT NULL,
+                    inviter_id BIGINT NOT NULL,
+                    invited_user_id BIGINT NOT NULL,
+                    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                    PRIMARY KEY (chat_id, inviter_id, invited_user_id)
+                )
+            """)
         conn.commit()
 
 def get_user_language(user_id: int) -> str:
@@ -1369,3 +1378,37 @@ def get_required_contacts_total_invites(chat_id: int) -> int:
 
 def reset_required_contacts_invites(chat_id: int):
     pass
+
+def add_required_contact_invites(chat_id: int, inviter_id: int, invited_user_ids: list[int]):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            for invited_user_id in invited_user_ids:
+                if invited_user_id == inviter_id:
+                    continue
+
+                cur.execute("""
+                    INSERT INTO tizimx_required_contact_invites (
+                        chat_id,
+                        inviter_id,
+                        invited_user_id
+                    )
+                    VALUES (%s, %s, %s)
+                    ON CONFLICT DO NOTHING
+                """, (chat_id, inviter_id, invited_user_id))
+
+        conn.commit()
+
+
+def get_user_required_contacts_count(chat_id: int, user_id: int) -> int:
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT COUNT(*)
+                FROM tizimx_required_contact_invites
+                WHERE chat_id = %s
+                  AND inviter_id = %s
+            """, (chat_id, user_id))
+
+            row = cur.fetchone()
+
+    return row[0] if row else 0
