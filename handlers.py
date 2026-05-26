@@ -308,7 +308,8 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
                         await message.chat.restrict_member(
                             user_id=user.id,
                             permissions=ChatPermissions(
-                                can_send_messages=False
+                                can_send_messages=False,
+                                can_invite_users=True
                             ),
                             until_date=until_date
                         )
