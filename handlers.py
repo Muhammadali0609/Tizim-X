@@ -302,7 +302,20 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
     
                     lang = get_group_language(message.chat.id)
     
-                    await message.chat.send_message(
+                    until_date = datetime.now(timezone.utc) + timedelta(minutes=5)
+
+                    try:
+                        await message.chat.restrict_member(
+                            user_id=user.id,
+                            permissions=ChatPermissions(
+                                can_send_messages=False
+                            ),
+                            until_date=until_date
+                        )
+                    except Exception as e:
+                        print("REQUIRED CONTACTS MUTE ERROR:", e)
+                    
+                    notice = await message.chat.send_message(
                         TEXTS[lang]["required_contacts_need_invite"].format(
                             need=limit
                         ),
@@ -316,6 +329,17 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
                             ]
                         ])
                     )
+                    
+                    async def delete_required_contacts_notice():
+                        await asyncio.sleep(300)
+                    
+                        try:
+                            await notice.delete()
+                        except Exception as e:
+                            print("DELETE REQUIRED CONTACTS NOTICE ERROR:", e)
+                    
+                    context.application.create_task(delete_required_contacts_notice())
+                    
                     return
 
     save_group(message.chat.id, message.chat.title, message.chat.type, message.chat.username)
@@ -4369,10 +4393,39 @@ async def check_required_contacts_callback(update: Update, context: ContextTypes
     added = get_user_required_contacts_count(chat_id, target_user_id)
 
     if added >= limit:
+        try:
+            chat = await context.bot.get_chat(chat_id)
+    
+            await chat.restrict_member(
+                user_id=target_user_id,
+                permissions=ChatPermissions(
+                    can_send_messages=True,
+                    can_send_audios=True,
+                    can_send_documents=True,
+                    can_send_photos=True,
+                    can_send_videos=True,
+                    can_send_video_notes=True,
+                    can_send_voice_notes=True,
+                    can_send_polls=True,
+                    can_send_other_messages=True,
+                    can_add_web_page_previews=True,
+                    can_invite_users=True
+                )
+            )
+    
+        except Exception as e:
+            print("REQUIRED CONTACTS UNMUTE ERROR:", e)
+    
         await query.answer(
             TEXTS[lang]["required_contacts_check_success"],
             show_alert=True
         )
+    
+        try:
+            await query.message.delete()
+        except Exception as e:
+            print("DELETE REQUIRED CONTACTS CHECK MESSAGE ERROR:", e)
+    
         return
 
     left = limit - added
