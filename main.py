@@ -65,6 +65,9 @@ from handlers import (start_command,
     language_toggle_handler,
     guide_button_handler,
     guide_callback,
+    required_contacts_panel_callback,
+    required_contacts_limit_callback,
+    required_contacts_reset_callback,
 )
 from db import setup_database
 from admins import (
@@ -199,6 +202,9 @@ def main():
     app.add_handler(CallbackQueryHandler(admin_group_callback, pattern="^admin_group"))
     app.add_handler(CallbackQueryHandler(admin_users_page_callback, pattern="^admin_users:"))
     app.add_handler(CallbackQueryHandler(broadcast_callback, pattern="^broadcast_"))
+    app.add_handler(CallbackQueryHandler(required_contacts_panel_callback, pattern="^required_contacts_panel:"))
+    app.add_handler(CallbackQueryHandler(required_contacts_limit_callback, pattern="^required_contacts_limit:"))
+    app.add_handler(CallbackQueryHandler(required_contacts_reset_callback, pattern="^required_contacts_reset:"))
     
     app.run_webhook(
         listen="0.0.0.0",
