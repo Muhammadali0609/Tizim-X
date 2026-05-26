@@ -202,6 +202,14 @@ def setup_database():
                     PRIMARY KEY (chat_id, inviter_id, invited_user_id)
                 )
             """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS tizimx_required_contacts_completed (
+                    chat_id BIGINT NOT NULL,
+                    user_id BIGINT NOT NULL,
+                    completed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                    PRIMARY KEY (chat_id, user_id)
+                )
+            """)
         conn.commit()
 
 def get_user_language(user_id: int) -> str:
@@ -1376,9 +1384,6 @@ def set_required_contacts_limit(chat_id: int, limit: int):
 def get_required_contacts_total_invites(chat_id: int) -> int:
     return 0
 
-def reset_required_contacts_invites(chat_id: int):
-    pass
-
 def add_required_contact_invites(chat_id: int, inviter_id: int, invited_user_ids: list[int]):
     with get_connection() as conn:
         with conn.cursor() as cur:
@@ -1412,3 +1417,40 @@ def get_user_required_contacts_count(chat_id: int, user_id: int) -> int:
             row = cur.fetchone()
 
     return row[0] if row else 0
+
+def is_required_contacts_completed(chat_id: int, user_id: int) -> bool:
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT 1
+                FROM tizimx_required_contacts_completed
+                WHERE chat_id = %s
+                  AND user_id = %s
+            """, (chat_id, user_id))
+            row = cur.fetchone()
+
+    return row is not None
+
+
+def mark_required_contacts_completed(chat_id: int, user_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO tizimx_required_contacts_completed (
+                    chat_id,
+                    user_id
+                )
+                VALUES (%s, %s)
+                ON CONFLICT DO NOTHING
+            """, (chat_id, user_id))
+        conn.commit()
+
+
+def reset_required_contacts_completed(chat_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                DELETE FROM tizimx_required_contacts_completed
+                WHERE chat_id = %s
+            """, (chat_id,))
+        conn.commit()
