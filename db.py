@@ -1454,3 +1454,12 @@ def reset_required_contacts_completed(chat_id: int):
                 WHERE chat_id = %s
             """, (chat_id,))
         conn.commit()
+
+def reset_required_contacts_invites(chat_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                DELETE FROM tizimx_required_contact_invites
+                WHERE chat_id = %s
+            """, (chat_id,))
+        conn.commit()
