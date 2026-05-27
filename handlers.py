@@ -5457,4 +5457,14 @@ async def auto_material_delete_callback(update: Update, context: ContextTypes.DE
 
     await query.answer(TEXTS[lang]["auto_material_deleted"], show_alert=True)
 
-    await auto_delivery_panel_callback(update, context)
+    await query.edit_message_text(
+        TEXTS[lang]["auto_material_deleted"],
+        reply_markup=InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["btn_open_section"],
+                    callback_data=f"auto_delivery_panel:{chat_id}:0"
+                )
+            ]
+        ])
+    )
