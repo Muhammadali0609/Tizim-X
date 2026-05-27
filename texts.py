@@ -501,6 +501,14 @@ TEXTS = {
             "Осталось ещё: {left}"
         ),
 
+        "required_contacts_reset_confirm": (
+            "⚠️ <b>Подтверждение</b>\n\n"
+            "Вы уверены, что хотите аннулировать всех добавленных контактов?\n\n"
+            "После этого все участники должны будут выполнить условие заново."
+        ),
+        
+        "btn_confirm_reset": "✅ Подтвердить",
+
         "guide_choose_section": "📘 Выберите раздел:",
         "btn_guide_bad_words": "📘 Маты",
         "btn_guide_ads": "📘 Рекламы",
@@ -1126,6 +1134,14 @@ TEXTS = {
             "❌ Siz qo‘shdingiz: {added}\n"
             "Yana qolgan: {left}"
         ),
+
+        "required_contacts_reset_confirm": (
+            "⚠️ <b>Tasdiqlash</b>\n\n"
+            "Haqiqatan ham barcha qo‘shilgan kontaktlarni bekor qilmoqchimisiz?\n\n"
+            "Shundan keyin barcha ishtirokchilar shartni qaytadan bajarishi kerak bo‘ladi."
+        ),
+        
+        "btn_confirm_reset": "✅ Tasdiqlash",
 
         "guide_choose_section": "📘 Bo‘limni tanlang:",
         "btn_guide_bad_words": "📘 So‘kinishlar",
