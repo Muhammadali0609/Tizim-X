@@ -1660,3 +1660,16 @@ def is_group_admin_saved(chat_id: int, user_id: int) -> bool:
             row = cur.fetchone()
 
     return row is not None
+
+def get_auto_replies_for_check(chat_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT keyword, reply_text, button_text, button_url
+                FROM tizimx_auto_replies
+                WHERE chat_id = %s
+                ORDER BY created_at DESC
+            """, (chat_id,))
+            rows = cur.fetchall()
+
+    return rows
