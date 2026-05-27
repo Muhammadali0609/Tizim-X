@@ -509,6 +509,16 @@ TEXTS = {
         
         "btn_confirm_reset": "✅ Подтвердить",
 
+        "btn_auto_responder": "🤖 Автоответчик",
+
+        "auto_responder_panel": (
+            "🤖 <b>Автоответчик</b>\n\n"
+            "Настройте автоматические ответы и выдачу материалов для участников группы."
+        ),
+        
+        "btn_custom_replies": "💬 Авто-ответы",
+        "btn_auto_delivery": "🔗 Авто-материалы",
+
         "guide_choose_section": "📘 Выберите раздел:",
         "btn_guide_bad_words": "📘 Маты",
         "btn_guide_ads": "📘 Рекламы",
@@ -1142,6 +1152,16 @@ TEXTS = {
         ),
         
         "btn_confirm_reset": "✅ Tasdiqlash",
+
+        "btn_auto_responder": "🤖 Avtojavobchi",
+
+        "auto_responder_panel": (
+            "🤖 <b>Avtojavobchi</b>\n\n"
+            "Guruh a’zolari uchun avtomatik javoblar va material yuborishni sozlang."
+        ),
+        
+        "btn_custom_replies": "💬 Avto-javoblar",
+        "btn_auto_delivery": "🔗 Avto-materiallar",
 
         "guide_choose_section": "📘 Bo‘limni tanlang:",
         "btn_guide_bad_words": "📘 So‘kinishlar",
