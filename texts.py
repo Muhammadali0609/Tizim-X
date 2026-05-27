@@ -593,7 +593,7 @@ TEXTS = {
         "auto_material_add_prompt": (
             "➕ Отправьте авто-материал разделяя тремя звездочками в формате:\n\n"
             "ключевая фраза\n***\nссылка на пост\n\n"
-            "Принимаются только ссылки внутри Telegram."
+            "<blockquote>Принимаются только ссылки внутри Telegram.</blockquote>"
         ),
         
         "auto_material_invalid_format": (
@@ -1335,7 +1335,7 @@ TEXTS = {
         "auto_material_add_prompt": (
             "➕ Avto-materialni uch yulduz bilan ajratgan holda quyidagi formatda yuboring:\n\n"
             "kalit ibora\n***\npostning havolasi\n\n"
-            "Faqat Telegram ichki havolalari qabul qilinadi."
+            "<blockquote>Faqat Telegram ichki havolalari qabul qilinadi.</blockquote>"
         ),
         
         "auto_material_invalid_format": (
