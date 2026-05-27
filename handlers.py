@@ -479,6 +479,10 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
                 if await is_admin(message.chat, user.id):
                     if message.reply_to_message:
                         reply_target = message.reply_to_message
+                        try:
+                            await message.delete()
+                        except Exception as e:
+                            print("DELETE ADMIN AUTO REPLY TRIGGER ERROR:", e)
                 
                 await reply_target.reply_text(
                     reply_text,
