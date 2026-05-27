@@ -4308,7 +4308,7 @@ async def required_contacts_panel_callback(update: Update, context: ContextTypes
     data = query.data.split(":")
     chat_id = int(data[1])
 
-    lang = get_group_language(chat_id)
+    lang = get_user_language(user_id)
 
     limit = get_required_contacts_limit(chat_id)
     total_invites = get_required_contacts_total_invites(chat_id)
@@ -4348,7 +4348,7 @@ async def required_contacts_limit_callback(update: Update, context: ContextTypes
         return
 
     chat_id = int(query.data.split(":")[1])
-    lang = get_group_language(chat_id)
+    lang = get_user_language(user_id)
 
     context.user_data["state"] = "setting_required_contacts_limit"
     context.user_data["target_chat_id"] = chat_id
@@ -4372,7 +4372,7 @@ async def required_contacts_reset_callback(update: Update, context: ContextTypes
         return
 
     chat_id = int(query.data.split(":")[1])
-    lang = get_group_language(chat_id)
+    lang = get_user_language(user_id)
     reset_required_contacts_invites(chat_id)
     reset_required_contacts_completed(chat_id)
 
