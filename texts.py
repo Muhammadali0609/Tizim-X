@@ -1137,8 +1137,8 @@ TEXTS = {
 
         "required_contacts_reset_confirm": (
             "⚠️ <b>Tasdiqlash</b>\n\n"
-            "Haqiqatan ham barcha qo‘shilgan kontaktlarni bekor qilmoqchimisiz?\n\n"
-            "Shundan keyin barcha ishtirokchilar shartni qaytadan bajarishi kerak bo‘ladi."
+            "Haqiqatdan ham barcha qo‘shilgan kontaktlarni bekor qilmoqchimisiz?\n\n"
+            "Shundan keyin barcha a'zolar shartni qaytadan bajarishi kerak bo‘ladi."
         ),
         
         "btn_confirm_reset": "✅ Tasdiqlash",
