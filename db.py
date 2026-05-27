@@ -1583,3 +1583,29 @@ def get_auto_reply(reply_id: int):
             row = cur.fetchone()
 
     return row
+
+def add_auto_reply(chat_id: int, keyword: str, reply_text: str, button_text=None, button_url=None):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO tizimx_auto_replies (
+                    chat_id,
+                    keyword,
+                    reply_text,
+                    button_text,
+                    button_url
+                )
+                VALUES (%s, %s, %s, %s, %s)
+                ON CONFLICT (chat_id, keyword)
+                DO UPDATE SET
+                    reply_text = EXCLUDED.reply_text,
+                    button_text = EXCLUDED.button_text,
+                    button_url = EXCLUDED.button_url
+                RETURNING id
+            """, (chat_id, keyword, reply_text, button_text, button_url))
+
+            row = cur.fetchone()
+
+        conn.commit()
+
+    return row[0]
