@@ -216,6 +216,14 @@ def setup_database():
                     total_invites BIGINT NOT NULL DEFAULT 0
                 )
             """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS tizimx_required_subs_completed (
+                    chat_id BIGINT NOT NULL,
+                    user_id BIGINT NOT NULL,
+                    completed_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                    PRIMARY KEY (chat_id, user_id)
+                )
+            """)
         conn.commit()
 
 def get_user_language(user_id: int) -> str:
@@ -1494,4 +1502,30 @@ def reset_required_contacts_invites(chat_id: int):
                 DELETE FROM tizimx_required_contact_invites
                 WHERE chat_id = %s
             """, (chat_id,))
+        conn.commit()
+
+def is_required_subs_completed(chat_id: int, user_id: int) -> bool:
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT 1
+                FROM tizimx_required_subs_completed
+                WHERE chat_id = %s
+                  AND user_id = %s
+            """, (chat_id, user_id))
+            row = cur.fetchone()
+
+    return row is not None
+    
+def mark_required_subs_completed(chat_id: int, user_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO tizimx_required_subs_completed (
+                    chat_id,
+                    user_id
+                )
+                VALUES (%s, %s)
+                ON CONFLICT DO NOTHING
+            """, (chat_id, user_id))
         conn.commit()
