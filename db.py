@@ -1647,3 +1647,16 @@ def delete_auto_reply(reply_id: int):
             """, (reply_id,))
 
         conn.commit()
+
+def is_group_admin_saved(chat_id: int, user_id: int) -> bool:
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT 1
+                FROM tizimx_group_admins
+                WHERE chat_id = %s
+                  AND user_id = %s
+            """, (chat_id, user_id))
+            row = cur.fetchone()
+
+    return row is not None
