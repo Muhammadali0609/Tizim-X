@@ -210,6 +210,12 @@ def setup_database():
                     PRIMARY KEY (chat_id, user_id)
                 )
             """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS tizimx_required_contacts_total (
+                    chat_id BIGINT PRIMARY KEY,
+                    total_invites BIGINT NOT NULL DEFAULT 0
+                )
+            """)
         conn.commit()
 
 def get_user_language(user_id: int) -> str:
