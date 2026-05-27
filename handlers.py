@@ -72,6 +72,7 @@ from db import(save_user_language,
     update_auto_material,
     delete_auto_material,
     AUTO_MATERIALS_PER_PAGE,
+    get_auto_materials_for_check
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username
@@ -497,6 +498,32 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
                     reply_markup=reply_markup,
                     disable_web_page_preview=True
                 )
+    
+                return
+
+    auto_materials = get_auto_materials_for_check(message.chat.id)
+
+    if auto_materials:
+        text_lower = message.text.lower()
+    
+        for keyword, material_url in auto_materials:
+            if keyword.lower() in text_lower:
+                parsed = parse_telegram_message_link(material_url)
+    
+                if not parsed:
+                    return
+    
+                from_chat_id, message_id = parsed
+    
+                try:
+                    await context.bot.copy_message(
+                        chat_id=message.chat.id,
+                        from_chat_id=from_chat_id,
+                        message_id=message_id
+                    )
+    
+                except Exception as e:
+                    print("AUTO MATERIAL SEND ERROR:", e)
     
                 return
 
@@ -5468,3 +5495,30 @@ async def auto_material_delete_callback(update: Update, context: ContextTypes.DE
             ]
         ])
     )
+
+def parse_telegram_message_link(url: str):
+    url = url.strip().split("?")[0]
+
+    if "t.me/" not in url:
+        return None
+
+    part = url.split("t.me/", 1)[1].strip("/")
+
+    pieces = part.split("/")
+
+    if len(pieces) < 2:
+        return None
+
+    if pieces[0] == "c":
+        if len(pieces) < 3:
+            return None
+
+        chat_id = int(f"-100{pieces[1]}")
+        message_id = int(pieces[2])
+
+        return chat_id, message_id
+
+    username = pieces[0]
+    message_id = int(pieces[1])
+
+    return f"@{username}", message_id
