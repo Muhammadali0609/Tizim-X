@@ -15,7 +15,6 @@ def format_plan_date(dt):
         ZoneInfo("Asia/Tashkent")
     ).strftime("%d.%m.%Y %H:%M")
 
-
 async def notify_group_admins_about_plan(context, group):
     chat_id = group["chat_id"]
     title = escape(group["title"] or str(chat_id))
