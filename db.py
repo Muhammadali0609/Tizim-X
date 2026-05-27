@@ -1388,9 +1388,20 @@ def set_required_contacts_limit(chat_id: int, limit: int):
         conn.commit()
 
 def get_required_contacts_total_invites(chat_id: int) -> int:
-    return 0
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT total_invites
+                FROM tizimx_required_contacts_total
+                WHERE chat_id = %s
+            """, (chat_id,))
+            row = cur.fetchone()
+
+    return row[0] if row else 0
 
 def add_required_contact_invites(chat_id: int, inviter_id: int, invited_user_ids: list[int]):
+    added_count = 0
+
     with get_connection() as conn:
         with conn.cursor() as cur:
             for invited_user_id in invited_user_ids:
@@ -1405,10 +1416,25 @@ def add_required_contact_invites(chat_id: int, inviter_id: int, invited_user_ids
                     )
                     VALUES (%s, %s, %s)
                     ON CONFLICT DO NOTHING
+                    RETURNING invited_user_id
                 """, (chat_id, inviter_id, invited_user_id))
 
-        conn.commit()
+                if cur.fetchone():
+                    added_count += 1
 
+            if added_count > 0:
+                cur.execute("""
+                    INSERT INTO tizimx_required_contacts_total (
+                        chat_id,
+                        total_invites
+                    )
+                    VALUES (%s, %s)
+                    ON CONFLICT (chat_id)
+                    DO UPDATE SET
+                        total_invites = tizimx_required_contacts_total.total_invites + EXCLUDED.total_invites
+                """, (chat_id, added_count))
+
+        conn.commit()
 
 def get_user_required_contacts_count(chat_id: int, user_id: int) -> int:
     with get_connection() as conn:
