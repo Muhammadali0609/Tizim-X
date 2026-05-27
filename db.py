@@ -224,6 +224,18 @@ def setup_database():
                     PRIMARY KEY (chat_id, user_id)
                 )
             """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS tizimx_auto_replies (
+                    id BIGSERIAL PRIMARY KEY,
+                    chat_id BIGINT NOT NULL,
+                    keyword TEXT NOT NULL,
+                    reply_text TEXT NOT NULL,
+                    button_text TEXT,
+                    button_url TEXT,
+                    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                    UNIQUE(chat_id, keyword)
+                )
+            """)
         conn.commit()
 
 def get_user_language(user_id: int) -> str:
@@ -1529,3 +1541,45 @@ def mark_required_subs_completed(chat_id: int, user_id: int):
                 ON CONFLICT DO NOTHING
             """, (chat_id, user_id))
         conn.commit()
+
+AUTO_REPLIES_PER_PAGE = 10
+
+def get_auto_replies_count(chat_id: int) -> int:
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT COUNT(*)
+                FROM tizimx_auto_replies
+                WHERE chat_id = %s
+            """, (chat_id,))
+            row = cur.fetchone()
+
+    return row[0]
+
+def get_auto_replies_page(chat_id: int, page: int):
+    offset = page * AUTO_REPLIES_PER_PAGE
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, keyword
+                FROM tizimx_auto_replies
+                WHERE chat_id = %s
+                ORDER BY created_at DESC
+                LIMIT %s OFFSET %s
+            """, (chat_id, AUTO_REPLIES_PER_PAGE, offset))
+            rows = cur.fetchall()
+
+    return rows
+
+def get_auto_reply(reply_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, chat_id, keyword, reply_text, button_text, button_url
+                FROM tizimx_auto_replies
+                WHERE id = %s
+            """, (reply_id,))
+            row = cur.fetchone()
+
+    return row
