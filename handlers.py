@@ -474,7 +474,13 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
                         ]
                     ])
     
-                await message.reply_text(
+                reply_target = message
+
+                if await is_admin(message.chat, user.id):
+                    if message.reply_to_message:
+                        reply_target = message.reply_to_message
+                
+                await reply_target.reply_text(
                     reply_text,
                     parse_mode="HTML",
                     reply_markup=reply_markup,
