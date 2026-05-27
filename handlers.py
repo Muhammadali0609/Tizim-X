@@ -61,6 +61,8 @@ from db import(save_user_language,
     get_auto_reply,
     AUTO_REPLIES_PER_PAGE,
     add_auto_reply,
+    update_auto_reply,
+    delete_auto_reply,
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username
@@ -1329,7 +1331,7 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
         )
         return
 
-    if context.user_data.get("state") == "adding_auto_reply":
+    if context.user_data.get("state") in ["adding_auto_reply", "editing_auto_reply"]:
         chat_id = context.user_data.get("target_chat_id")
         lang = get_user_language(message.from_user.id)
     
@@ -1354,13 +1356,16 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
             )
             return
     
+        old_draft = context.user_data.get("auto_reply_draft", {})
+
         context.user_data["auto_reply_draft"] = {
-            "mode": "add",
+            "mode": old_draft.get("mode", "add"),
+            "reply_id": old_draft.get("reply_id"),
             "chat_id": chat_id,
             "keyword": keyword,
             "reply_text": reply_text,
-            "button_text": None,
-            "button_url": None,
+            "button_text": old_draft.get("button_text"),
+            "button_url": old_draft.get("button_url"),
         }
     
         context.user_data["state"] = "auto_reply_preview"
@@ -5004,13 +5009,23 @@ async def auto_reply_draft_callback(update: Update, context: ContextTypes.DEFAUL
     if data == "auto_reply_draft_save":
         chat_id = draft["chat_id"]
 
-        add_auto_reply(
-            chat_id=chat_id,
-            keyword=draft["keyword"],
-            reply_text=draft["reply_text"],
-            button_text=draft.get("button_text"),
-            button_url=draft.get("button_url")
-        )
+        if draft["mode"] == "edit":
+            update_auto_reply(
+                reply_id=draft["reply_id"],
+                keyword=draft["keyword"],
+                reply_text=draft["reply_text"],
+                button_text=draft.get("button_text"),
+                button_url=draft.get("button_url")
+            )
+        
+        else:
+            add_auto_reply(
+                chat_id=chat_id,
+                keyword=draft["keyword"],
+                reply_text=draft["reply_text"],
+                button_text=draft.get("button_text"),
+                button_url=draft.get("button_url")
+            )
 
         context.user_data.pop("auto_reply_draft", None)
         context.user_data.pop("state", None)
@@ -5029,3 +5044,88 @@ async def auto_reply_draft_callback(update: Update, context: ContextTypes.DEFAUL
             ])
         )
         return
+
+async def auto_reply_edit_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    lang = get_user_language(query.from_user.id)
+
+    reply_id = int(query.data.split(":")[1])
+
+    row = get_auto_reply(reply_id)
+
+    if not row:
+        await query.answer("Авто-ответ не найден", show_alert=True)
+        return
+
+    _, chat_id, keyword, reply_text, button_text, button_url = row
+
+    context.user_data["state"] = "editing_auto_reply"
+
+    context.user_data["auto_reply_draft"] = {
+        "mode": "edit",
+        "reply_id": reply_id,
+        "chat_id": chat_id,
+        "keyword": keyword,
+        "reply_text": reply_text,
+        "button_text": button_text,
+        "button_url": button_url,
+    }
+
+    await query.message.reply_text(
+        TEXTS[lang]["auto_reply_add_prompt"],
+        parse_mode="HTML"
+    )
+
+async def auto_reply_delete_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    lang = get_user_language(query.from_user.id)
+
+    reply_id = int(query.data.split(":")[1])
+
+    row = get_auto_reply(reply_id)
+
+    if not row:
+        await query.answer("Авто-ответ не найден", show_alert=True)
+        return
+
+    _, chat_id, _, _, _, _ = row
+
+    delete_auto_reply(reply_id)
+
+    await query.answer(
+        TEXTS[lang]["btn_delete"],
+        show_alert=False
+    )
+
+    total_count = get_auto_replies_count(chat_id)
+
+    if total_count == 0:
+        await query.edit_message_text(
+            TEXTS[lang]["auto_replies_empty"],
+            parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        TEXTS[lang]["btn_add_auto_reply"],
+                        callback_data=f"auto_reply_add:{chat_id}"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        TEXTS[lang]["back_button"],
+                        callback_data=f"auto_responder_panel:{chat_id}"
+                    )
+                ]
+            ])
+        )
+        return
+
+    await custom_replies_panel_callback(update, context)
