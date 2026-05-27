@@ -69,7 +69,8 @@ from handlers import (start_command,
     required_contacts_limit_callback,
     required_contacts_reset_callback,
     check_required_contacts_callback,
-    required_contacts_reset_confirm_callback
+    required_contacts_reset_confirm_callback,
+    auto_responder_panel_callback
 )
 from db import setup_database
 from admins import (
@@ -209,6 +210,7 @@ def main():
     app.add_handler(CallbackQueryHandler(required_contacts_limit_callback, pattern="^required_contacts_limit:"))
     app.add_handler(CallbackQueryHandler(required_contacts_reset_confirm_callback, pattern="^required_contacts_reset_confirm:"))
     app.add_handler(CallbackQueryHandler(required_contacts_reset_callback, pattern="^required_contacts_reset:"))
+    app.add_handler(CallbackQueryHandler(auto_responder_panel_callback, pattern="^auto_responder_panel:"))
     
     app.run_webhook(
         listen="0.0.0.0",
