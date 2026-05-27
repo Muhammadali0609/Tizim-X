@@ -73,6 +73,8 @@ from handlers import (start_command,
     auto_responder_panel_callback,
     custom_replies_panel_callback,
     auto_reply_card_callback,
+    auto_reply_add_callback,
+    auto_reply_draft_callback,
 )
 from db import setup_database
 from admins import (
@@ -215,6 +217,8 @@ def main():
     app.add_handler(CallbackQueryHandler(auto_responder_panel_callback, pattern="^auto_responder_panel:"))
     app.add_handler(CallbackQueryHandler(custom_replies_panel_callback, pattern="^custom_replies_panel:"))
     app.add_handler(CallbackQueryHandler(auto_reply_card_callback, pattern="^auto_reply_card:"))
+    app.add_handler(CallbackQueryHandler(auto_reply_add_callback, pattern="^auto_reply_add:"))
+    app.add_handler(CallbackQueryHandler(auto_reply_draft_callback, pattern="^auto_reply_draft_"))
     
     app.run_webhook(
         listen="0.0.0.0",
