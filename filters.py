@@ -16,9 +16,9 @@ def has_link(text: str) -> bool:
     return bool(URL_PATTERN.search(text))
 
 DEFAULT_BAD_WORDS = [
-    "am",
-    "qoto",
-    "yiban",
+    "taqiqsoz1",
+    "taqiqsoz2",
+    "taqiqsoz3",
 ]
 
 
