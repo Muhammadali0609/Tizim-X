@@ -223,6 +223,11 @@ def main():
     app.add_handler(CallbackQueryHandler(auto_reply_draft_callback, pattern="^auto_reply_draft_"))
     app.add_handler(CallbackQueryHandler(auto_reply_edit_callback, pattern="^auto_reply_edit:"))
     app.add_handler(CallbackQueryHandler(auto_reply_delete_callback, pattern="^auto_reply_delete:"))
+    app.add_handler(CallbackQueryHandler(auto_delivery_panel_callback, pattern="^auto_delivery_panel:"))
+    app.add_handler(CallbackQueryHandler(auto_material_card_callback, pattern="^auto_material_card:"))
+    app.add_handler(CallbackQueryHandler(auto_material_add_callback, pattern="^auto_material_add:"))
+    app.add_handler(CallbackQueryHandler(auto_material_edit_callback, pattern="^auto_material_edit:"))
+    app.add_handler(CallbackQueryHandler(auto_material_delete_callback, pattern="^auto_material_delete:"))
     
     app.run_webhook(
         listen="0.0.0.0",
