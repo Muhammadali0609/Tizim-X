@@ -519,6 +519,30 @@ TEXTS = {
         "btn_custom_replies": "💬 Авто-ответы",
         "btn_auto_delivery": "🔗 Авто-материалы",
 
+        "auto_replies_empty": (
+            "💬 <b>Авто-ответы</b>\n\n"
+            "Пока авто-ответов нет."
+        ),
+        
+        "auto_replies_list": (
+            "💬 <b>Авто-ответы</b>\n\n"
+            "Страница {page}/{total_pages}\n\n"
+            "{items}"
+        ),
+        
+        "btn_add_auto_reply": "➕ Добавить авто-ответ",
+        
+        "auto_reply_card": (
+            "💬 <b>Авто-ответ</b>\n\n"
+            "Ключевая фраза:\n"
+            "<code>{keyword}</code>\n\n"
+            "Ответ:\n"
+            "{reply_text}"
+        ),
+        
+        "btn_edit": "✏️ Изменить",
+        "btn_delete": "🗑 Удалить",
+
         "guide_choose_section": "📘 Выберите раздел:",
         "btn_guide_bad_words": "📘 Маты",
         "btn_guide_ads": "📘 Рекламы",
@@ -1162,6 +1186,30 @@ TEXTS = {
         
         "btn_custom_replies": "💬 Avto-javoblar",
         "btn_auto_delivery": "🔗 Avto-materiallar",
+
+        "auto_replies_empty": (
+            "💬 <b>Avto-javoblar</b>\n\n"
+            "Hozircha avto-javoblar yo‘q."
+        ),
+        
+        "auto_replies_list": (
+            "💬 <b>Avto-javoblar</b>\n\n"
+            "Sahifa {page}/{total_pages}\n\n"
+            "{items}"
+        ),
+        
+        "btn_add_auto_reply": "➕ Avto-javob qo‘shish",
+        
+        "auto_reply_card": (
+            "💬 <b>Avto-javob</b>\n\n"
+            "Kalit ibora:\n"
+            "<code>{keyword}</code>\n\n"
+            "Javob:\n"
+            "{reply_text}"
+        ),
+        
+        "btn_edit": "✏️ O‘zgartirish",
+        "btn_delete": "🗑 O‘chirish",
 
         "guide_choose_section": "📘 Bo‘limni tanlang:",
         "btn_guide_bad_words": "📘 So‘kinishlar",
