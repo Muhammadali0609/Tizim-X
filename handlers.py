@@ -747,6 +747,9 @@ async def group_settings_callback(update: Update, context: ContextTypes.DEFAULT_
             InlineKeyboardButton(TEXTS[lang]["btn_required_contacts"], callback_data=f"required_contacts_panel:{chat_id}")
         ],
         [
+            InlineKeyboardButton(TEXTS[lang]["btn_auto_responder"], callback_data=f"auto_responder_panel:{chat_id}")
+        ],
+        [
             InlineKeyboardButton(TEXTS[lang]["btn_transfer_settings"], callback_data=f"transfer_panel:{chat_id}"),
         ],
         [
@@ -4512,6 +4515,53 @@ async def required_contacts_reset_confirm_callback(update: Update, context: Cont
                 InlineKeyboardButton(
                     TEXTS[lang]["back_button"],
                     callback_data=f"required_contacts_panel:{chat_id}"
+                )
+            ]
+        ])
+    )
+
+async def auto_responder_panel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    user_id = query.from_user.id
+    chat_id = int(query.data.split(":")[1])
+    lang = get_user_language(user_id)
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("AUTO RESPONDER PANEL ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    await query.edit_message_text(
+        TEXTS[lang]["auto_responder_panel"],
+        parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["btn_custom_replies"],
+                    callback_data=f"custom_replies_panel:{chat_id}"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["btn_auto_delivery"],
+                    callback_data=f"auto_delivery_panel:{chat_id}"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["back_button"],
+                    callback_data=f"group_settings:{chat_id}"
                 )
             ]
         ])
