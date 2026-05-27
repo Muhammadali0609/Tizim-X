@@ -5366,6 +5366,7 @@ async def auto_material_card_callback(update: Update, context: ContextTypes.DEFA
             material_url=material_url
         ),
         parse_mode="HTML",
+        disable_web_page_preview=True,
         reply_markup=InlineKeyboardMarkup([
             [
                 InlineKeyboardButton(
