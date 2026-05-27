@@ -60,6 +60,7 @@ from db import(save_user_language,
     get_auto_replies_page,
     get_auto_reply,
     AUTO_REPLIES_PER_PAGE,
+    add_auto_reply,
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username
@@ -1326,6 +1327,74 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
             "required_contacts_limit_saved",
             f"required_contacts_panel:{chat_id}"
         )
+        return
+
+    if context.user_data.get("state") == "adding_auto_reply":
+        chat_id = context.user_data.get("target_chat_id")
+        lang = get_user_language(message.from_user.id)
+    
+        text = message.text_html.strip()
+    
+        if "***" not in text:
+            await message.reply_text(
+                TEXTS[lang]["auto_reply_invalid_format"],
+                parse_mode="HTML"
+            )
+            return
+    
+        keyword, reply_text = text.split("***", 1)
+    
+        keyword = keyword.strip()
+        reply_text = reply_text.strip()
+    
+        if not keyword or not reply_text:
+            await message.reply_text(
+                TEXTS[lang]["auto_reply_invalid_format"],
+                parse_mode="HTML"
+            )
+            return
+    
+        context.user_data["auto_reply_draft"] = {
+            "mode": "add",
+            "chat_id": chat_id,
+            "keyword": keyword,
+            "reply_text": reply_text,
+            "button_text": None,
+            "button_url": None,
+        }
+    
+        context.user_data["state"] = "auto_reply_preview"
+    
+        await send_auto_reply_preview(message, context, lang)
+        return
+
+    if context.user_data.get("state") == "auto_reply_button":
+        lang = get_user_language(message.from_user.id)
+        draft = context.user_data.get("auto_reply_draft")
+    
+        if not draft:
+            context.user_data.pop("state", None)
+            return
+    
+        parts = message.text.strip().split("\n", 1)
+    
+        if len(parts) != 2:
+            await message.reply_text(TEXTS[lang]["auto_reply_button_invalid"])
+            return
+    
+        button_text = parts[0].strip()
+        button_url = parts[1].strip()
+    
+        if not button_text or not button_url.startswith(("http://", "https://")):
+            await message.reply_text(TEXTS[lang]["auto_reply_button_invalid"])
+            return
+    
+        draft["button_text"] = button_text
+        draft["button_url"] = button_url
+    
+        context.user_data["state"] = "auto_reply_preview"
+    
+        await send_auto_reply_preview(message, context, lang)
         return
 
 def build_ads_panel(lang: str, chat_id: int, anti_links: bool):
@@ -4758,3 +4827,196 @@ async def auto_reply_card_callback(update: Update, context: ContextTypes.DEFAULT
         parse_mode="HTML",
         reply_markup=InlineKeyboardMarkup(keyboard)
     )
+
+def build_auto_reply_preview_keyboard(lang: str, has_button: bool):
+    button_action = (
+        InlineKeyboardButton(
+            TEXTS[lang]["btn_remove_button"],
+            callback_data="auto_reply_draft_remove_button"
+        )
+        if has_button
+        else InlineKeyboardButton(
+            TEXTS[lang]["btn_add_button"],
+            callback_data="auto_reply_draft_add_button"
+        )
+    )
+
+    return InlineKeyboardMarkup([
+        [button_action],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_save"],
+                callback_data="auto_reply_draft_save"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_cancel"],
+                callback_data="auto_reply_draft_cancel"
+            )
+        ]
+    ])
+
+async def send_auto_reply_preview(target, context, lang: str):
+    draft = context.user_data.get("auto_reply_draft")
+
+    if not draft:
+        return
+
+    keyboard = build_auto_reply_preview_keyboard(
+        lang,
+        bool(draft.get("button_text") and draft.get("button_url"))
+    )
+
+    if draft.get("button_text") and draft.get("button_url"):
+        preview_keyboard = InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton(
+                    draft["button_text"],
+                    url=draft["button_url"]
+                )
+            ],
+            *keyboard.inline_keyboard
+        ])
+    else:
+        preview_keyboard = keyboard
+
+    msg = await target.reply_text(
+        TEXTS[lang]["auto_reply_preview"].format(
+            keyword=draft["keyword"],
+            reply_text=draft["reply_text"]
+        ),
+        parse_mode="HTML",
+        reply_markup=preview_keyboard,
+        disable_web_page_preview=True
+    )
+
+    context.user_data["auto_reply_preview_message_id"] = msg.message_id
+
+    async def expire_draft():
+        await asyncio.sleep(300)
+
+        if context.user_data.get("auto_reply_draft"):
+            context.user_data.pop("auto_reply_draft", None)
+            context.user_data.pop("state", None)
+
+            try:
+                await msg.delete()
+            except Exception as e:
+                print("DELETE AUTO REPLY DRAFT PREVIEW ERROR:", e)
+
+    context.application.create_task(expire_draft())
+
+async def auto_reply_add_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+    chat_id = int(query.data.split(":")[1])
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("AUTO REPLY ADD ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    context.user_data["state"] = "adding_auto_reply"
+    context.user_data["target_chat_id"] = chat_id
+
+    await query.message.reply_text(
+        TEXTS[lang]["auto_reply_add_prompt"],
+        parse_mode="HTML"
+    )
+
+async def auto_reply_draft_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    draft = context.user_data.get("auto_reply_draft")
+
+    if not draft:
+        await query.answer("Черновик не найден", show_alert=True)
+        return
+
+    data = query.data
+
+    if data == "auto_reply_draft_add_button":
+        context.user_data["state"] = "auto_reply_button"
+
+        await query.message.reply_text(
+            TEXTS[lang]["auto_reply_button_prompt"],
+            parse_mode="HTML"
+        )
+        return
+
+    if data == "auto_reply_draft_remove_button":
+        draft["button_text"] = None
+        draft["button_url"] = None
+
+        await query.message.delete()
+        await send_auto_reply_preview(query.message, context, lang)
+        return
+
+    if data == "auto_reply_draft_cancel":
+        chat_id = draft["chat_id"]
+
+        context.user_data.pop("auto_reply_draft", None)
+        context.user_data.pop("state", None)
+
+        await query.message.delete()
+
+        await query.message.chat.send_message(
+            TEXTS[lang]["auto_reply_cancelled"],
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        TEXTS[lang]["btn_open_section"],
+                        callback_data=f"custom_replies_panel:{chat_id}:0"
+                    )
+                ]
+            ])
+        )
+        return
+
+    if data == "auto_reply_draft_save":
+        chat_id = draft["chat_id"]
+
+        add_auto_reply(
+            chat_id=chat_id,
+            keyword=draft["keyword"],
+            reply_text=draft["reply_text"],
+            button_text=draft.get("button_text"),
+            button_url=draft.get("button_url")
+        )
+
+        context.user_data.pop("auto_reply_draft", None)
+        context.user_data.pop("state", None)
+
+        await query.message.delete()
+
+        await query.message.chat.send_message(
+            TEXTS[lang]["auto_reply_saved"],
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        TEXTS[lang]["btn_open_section"],
+                        callback_data=f"custom_replies_panel:{chat_id}:0"
+                    )
+                ]
+            ])
+        )
+        return
