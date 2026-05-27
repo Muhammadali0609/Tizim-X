@@ -577,6 +577,46 @@ TEXTS = {
         "auto_reply_saved": "✅ Авто-ответ сохранён.",
         "auto_reply_cancelled": "🗑 Черновик авто-ответа отменён.",
 
+        "auto_materials_empty": (
+            "📌 <b>Авто-материалы</b>\n\n"
+            "Пока авто-материалов нет."
+        ),
+        
+        "auto_materials_list": (
+            "📌 <b>Авто-материалы</b>\n\n"
+            "Страница {page}/{total_pages}\n\n"
+            "{items}"
+        ),
+        
+        "btn_add_auto_material": "➕ Добавить авто-материал",
+        
+        "auto_material_add_prompt": (
+            "➕ Отправьте авто-материал разделяя тремя звездочками в формате:\n\n"
+            "ключевая фраза\n***\nссылка на пост\n\n"
+            "Принимаются только ссылки внутри Telegram."
+        ),
+        
+        "auto_material_invalid_format": (
+            "❌ Неверный формат.\n\n"
+            "Пример:\n"
+            "новинки\n***\nhttps://t.me/channel/123"
+        ),
+        
+        "auto_material_invalid_url": (
+            "❌ Принимается ссылка только на посты и данные внутри Telegram."
+        ),
+        
+        "auto_material_saved": "✅ Авто-материал сохранён.",
+        "auto_material_deleted": "✅ Авто-материал удалён.",
+        
+        "auto_material_card": (
+            "📌 <b>Авто-материал</b>\n\n"
+            "Ключевая фраза:\n\n"
+            "{keyword}\n\n"
+            "Материал:\n\n"
+            "{material_url}"
+        ),
+
         "guide_choose_section": "📘 Выберите раздел:",
         "btn_guide_bad_words": "📘 Маты",
         "btn_guide_ads": "📘 Рекламы",
@@ -1278,6 +1318,46 @@ TEXTS = {
         "auto_reply_button_invalid": "❌ Tugma formati noto‘g‘ri.",
         "auto_reply_saved": "✅ Avto-javob saqlandi.",
         "auto_reply_cancelled": "🗑 Avto-javob cho'rnavoyi bekor qilindi.",
+
+        "auto_materials_empty": (
+            "📌 <b>Avto-materiallar</b>\n\n"
+            "Hozircha avto-materiallar yo‘q."
+        ),
+        
+        "auto_materials_list": (
+            "📌 <b>Avto-materiallar</b>\n\n"
+            "Sahifa {page}/{total_pages}\n\n"
+            "{items}"
+        ),
+        
+        "btn_add_auto_material": "➕ Avto-material qo‘shish",
+        
+        "auto_material_add_prompt": (
+            "➕ Avto-materialni uch yulduz bilan ajratgan holda quyidagi formatda yuboring:\n\n"
+            "kalit ibora\n***\npostning havolasi\n\n"
+            "Faqat Telegram ichki havolalari qabul qilinadi."
+        ),
+        
+        "auto_material_invalid_format": (
+            "❌ Format noto‘g‘ri.\n\n"
+            "Misol:\n"
+            "yangiliklar\n***\nhttps://t.me/channel/123"
+        ),
+        
+        "auto_material_invalid_url": (
+            "❌ Faqat Telegram ichidagi post va material havolalari qabul qilinadi."
+        ),
+        
+        "auto_material_saved": "✅ Avto-material saqlandi.",
+        "auto_material_deleted": "✅ Avto-material o‘chirildi.",
+        
+        "auto_material_card": (
+            "📌 <b>Avto-material</b>\n\n"
+            "Kalit ibora:\n"
+            "{keyword}\n\n"
+            "Material:\n"
+            "{material_url}"
+        ),
 
         "guide_choose_section": "📘 Bo‘limni tanlang:",
         "btn_guide_bad_words": "📘 So‘kinishlar",
