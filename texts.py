@@ -535,7 +535,7 @@ TEXTS = {
         "auto_reply_card": (
             "💬 <b>Авто-ответ</b>\n\n"
             "Ключевая фраза:\n"
-            "<code>{keyword}</code>\n\n"
+            "{keyword}\n\n"
             "Ответ:\n"
             "{reply_text}"
         ),
@@ -1237,7 +1237,7 @@ TEXTS = {
         "auto_reply_card": (
             "💬 <b>Avto-javob</b>\n\n"
             "Kalit ibora:\n"
-            "<code>{keyword}</code>\n\n"
+            "{keyword}\n\n"
             "Javob:\n"
             "{reply_text}"
         ),
