@@ -578,6 +578,15 @@ async def new_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
     if message.chat.type not in ["group", "supergroup"]:
         return
 
+    try:
+        settings = get_group_settings(message.chat.id)
+
+        if settings["clean_service_messages"]:
+            await message.delete()
+
+    except Exception as e:
+        print("DELETE JOIN MESSAGE ERROR:", e)
+
     if not is_group_active(message.chat.id):
         return
 
@@ -595,13 +604,6 @@ async def new_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
             inviter.id,
             invited_user_ids
         )
-
-    lang = get_group_language(message.chat.id)
-
-    try:
-        await message.delete()
-    except Exception as e:
-        print("DELETE JOIN MESSAGE ERROR:", e)
 
 async def check_subscription_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
