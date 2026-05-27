@@ -4825,7 +4825,8 @@ async def auto_reply_card_callback(update: Update, context: ContextTypes.DEFAULT
             reply_text=reply_text
         ),
         parse_mode="HTML",
-        reply_markup=InlineKeyboardMarkup(keyboard)
+        reply_markup=InlineKeyboardMarkup(keyboard),
+        disable_web_page_preview=True
     )
 
 def build_auto_reply_preview_keyboard(lang: str, has_button: bool):
