@@ -288,6 +288,97 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
     if not is_group_active(message.chat.id):
         return
 
+    lang = get_group_language(message.chat.id)
+    required_subs = await get_valid_required_subs(context, message.chat.id)
+    settings = get_group_settings(message.chat.id)
+    
+    if settings["force_subscribe"] and required_subs:
+        user = message.from_user
+    
+        if user and not user.is_bot:
+            if not await is_admin(message.chat, user.id):
+    
+                is_subscribed = True
+    
+                for _, target_chat, _ in required_subs:
+                    try:
+                        member = await context.bot.get_chat_member(
+                            target_chat,
+                            user.id
+                        )
+    
+                        if member.status in ["left", "kicked"]:
+                            is_subscribed = False
+                            break
+    
+                    except Exception as e:
+                        print("FORCE SUB CHECK ERROR:", e)
+                        is_subscribed = False
+                        break
+    
+                if not is_subscribed:
+                    try:
+                        await message.delete()
+                    except Exception as e:
+                        print("DELETE FORCE SUB MESSAGE ERROR:", e)
+    
+                    until_date = datetime.now(timezone.utc) + timedelta(minutes=5)
+    
+                    try:
+                        await message.chat.restrict_member(
+                            user_id=user.id,
+                            permissions=ChatPermissions(
+                                can_send_messages=False
+                            ),
+                            until_date=until_date
+                        )
+                    except Exception as e:
+                        print("FORCE SUB MUTE ERROR:", e)
+    
+                    keyboard = []
+    
+                    for _, target_chat, _ in required_subs:
+                        try:
+                            target = await context.bot.get_chat(target_chat)
+                            username = target_chat.replace("@", "")
+    
+                            keyboard.append([
+                                InlineKeyboardButton(
+                                    f"📢 {target.title}",
+                                    url=f"https://t.me/{username}"
+                                )
+                            ])
+    
+                        except Exception as e:
+                            print("GET REQUIRED SUB TITLE ERROR:", e)
+    
+                    keyboard.append([
+                        InlineKeyboardButton(
+                            TEXTS[get_group_language(message.chat.id)]["required_contacts_check"],
+                            callback_data=f"check_sub:{message.chat.id}:{user.id}"
+                        )
+                    ])
+    
+                    notice = await message.chat.send_message(
+                        TEXTS[get_group_language(message.chat.id)]["required_sub_join_text"].format(
+                            name=f'<a href="tg://user?id={user.id}">{user.first_name}</a>'
+                        ),
+                        parse_mode="HTML",
+                        reply_markup=InlineKeyboardMarkup(keyboard)
+                    )
+    
+                    async def delete_force_sub_notice():
+                        await asyncio.sleep(300)
+    
+                        try:
+                            await notice.delete()
+                        except Exception as e:
+                            print("DELETE FORCE SUB NOTICE ERROR:", e)
+    
+                    context.application.create_task(delete_force_sub_notice())
+    
+                    return
+
     limit = get_required_contacts_limit(message.chat.id)
 
     if limit > 0:
@@ -305,8 +396,6 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
                         await message.delete()
                     except Exception as e:
                         print("DELETE REQUIRED CONTACT MESSAGE ERROR:", e)
-    
-                    lang = get_group_language(message.chat.id)
     
                     until_date = datetime.now(timezone.utc) + timedelta(minutes=5)
 
@@ -504,60 +593,7 @@ async def new_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
             invited_user_ids
         )
 
-    settings = get_group_settings(message.chat.id)
     lang = get_group_language(message.chat.id)
-    required_subs = await get_valid_required_subs(context, message.chat.id)
-    
-    if not settings["force_subscribe"] or not required_subs:
-        return
-
-    for user in message.new_chat_members:
-        if user.is_bot:
-            continue
-
-        try:
-            await message.chat.restrict_member(
-                user_id=user.id,
-                permissions=ChatPermissions(
-                    can_send_messages=False
-                )
-            )
-
-            keyboard = []
-
-            for _, target_chat, _ in required_subs:
-                try:
-                    target = await context.bot.get_chat(target_chat)
-            
-                    username = target_chat.replace("@", "")
-            
-                    keyboard.append([
-                        InlineKeyboardButton(
-                            f"📢 {target.title}",
-                            url=f"https://t.me/{username}"
-                        )
-                    ])
-            
-                except Exception as e:
-                    print("GET REQUIRED SUB TITLE ERROR:", e)
-            
-            keyboard.append([
-                InlineKeyboardButton(
-                    TEXTS[lang]["required_sub_check_button"],
-                    callback_data=f"check_sub:{message.chat.id}:{user.id}"
-                )
-            ])
-
-            await message.chat.send_message(
-                TEXTS[lang]["required_sub_join_text"].format(
-                    name=f'<a href="tg://user?id={user.id}">{user.first_name}</a>'
-                ),
-                parse_mode="HTML",
-                reply_markup=InlineKeyboardMarkup(keyboard)
-            )
-
-        except Exception as e:
-            print("FORCE SUBSCRIBE ERROR:", e)
 
     try:
         await message.delete()
