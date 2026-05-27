@@ -4329,7 +4329,7 @@ async def required_contacts_panel_callback(update: Update, context: ContextTypes
             [
                 InlineKeyboardButton(
                     TEXTS[lang]["btn_required_contacts_reset"],
-                    callback_data=f"required_contacts_reset:{chat_id}"
+                    callback_data=f"required_contacts_reset_confirm:{chat_id}"
                 )
             ],
             [
@@ -4444,4 +4444,32 @@ async def check_required_contacts_callback(update: Update, context: ContextTypes
             left=left
         ),
         show_alert=True
+    )
+
+async def required_contacts_reset_confirm_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+    user_id = update.effective_user.id
+    if await check_callback_limit(query):
+        return
+
+    chat_id = int(query.data.split(":")[1])
+    lang = get_user_language(user_id)
+
+    await query.edit_message_text(
+        TEXTS[lang]["required_contacts_reset_confirm"],
+        parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["btn_confirm_reset"],
+                    callback_data=f"required_contacts_reset:{chat_id}"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["back_button"],
+                    callback_data=f"required_contacts_panel:{chat_id}"
+                )
+            ]
+        ])
     )
