@@ -63,6 +63,7 @@ from db import(save_user_language,
     add_auto_reply,
     update_auto_reply,
     delete_auto_reply,
+    is_group_admin_saved
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username
@@ -4661,7 +4662,7 @@ async def custom_replies_panel_callback(update: Update, context: ContextTypes.DE
     try:
         chat = await context.bot.get_chat(chat_id)
 
-        if not await is_admin(chat, user_id):
+        if not is_group_admin_saved(chat_id, user_id):
             await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
             return
 
@@ -4784,7 +4785,7 @@ async def auto_reply_card_callback(update: Update, context: ContextTypes.DEFAULT
     try:
         chat = await context.bot.get_chat(chat_id)
 
-        if not await is_admin(chat, user_id):
+        if not is_group_admin_saved(chat_id, user_id):
             await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
             return
 
@@ -4934,7 +4935,7 @@ async def auto_reply_add_callback(update: Update, context: ContextTypes.DEFAULT_
     try:
         chat = await context.bot.get_chat(chat_id)
 
-        if not await is_admin(chat, user_id):
+        if not is_group_admin_saved(chat_id, user_id):
             await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
             return
 
