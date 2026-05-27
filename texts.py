@@ -543,6 +543,40 @@ TEXTS = {
         "btn_edit": "✏️ Изменить",
         "btn_delete": "🗑 Удалить",
 
+        "auto_reply_add_prompt": (
+            "➕ Отправьте авто-ответ разделяя тремя звездочками в формате:\n\n"
+            "ключевая фраза\n***\nтекст ответа"
+        ),
+        
+        "auto_reply_invalid_format": (
+            "❌ Неверный формат.\n\n"
+            "Пример:\n"
+            "цена\n***\nУ нас цены такие-то..."
+        ),
+        
+        "auto_reply_preview": (
+            "💬 <b>Предпросмотр авто-ответа</b>\n\n"
+            "Ключевая фраза:\n"
+            "{keyword}\n\n"
+            "Ответ:\n"
+            "{reply_text}"
+        ),
+        
+        "btn_add_button": "🔗 Добавить кнопку",
+        "btn_remove_button": "❌ Удалить кнопку",
+        "btn_save": "✅ Сохранить",
+        "btn_cancel": "🗑 Отменить",
+        
+        "auto_reply_button_prompt": (
+            "🔗 Отправьте кнопку разделяя новым абзацом в формате:\n\n"
+            "Название кнопки\n"
+            "https://example.com"
+        ),
+        
+        "auto_reply_button_invalid": "❌ Неверный формат кнопки.",
+        "auto_reply_saved": "✅ Авто-ответ сохранён.",
+        "auto_reply_cancelled": "🗑 Черновик авто-ответа отменён.",
+
         "guide_choose_section": "📘 Выберите раздел:",
         "btn_guide_bad_words": "📘 Маты",
         "btn_guide_ads": "📘 Рекламы",
@@ -1210,6 +1244,40 @@ TEXTS = {
         
         "btn_edit": "✏️ O‘zgartirish",
         "btn_delete": "🗑 O‘chirish",
+
+        "auto_reply_add_prompt": (
+            "➕ Avto-javobni uch yulduz bilan ajratgan holda quyidagi formatda yuboring:\n\n"
+            "kalit ibora\n***\njavob matni"
+        ),
+        
+        "auto_reply_invalid_format": (
+            "❌ Format noto‘g‘ri.\n\n"
+            "Misol:\n"
+            "narx\n***\nNarxlarimiz quyidagicha..."
+        ),
+        
+        "auto_reply_preview": (
+            "💬 <b>Avto-javob ko‘rinishi</b>\n\n"
+            "Kalit ibora:\n"
+            "{keyword}\n\n"
+            "Javob:\n"
+            "{reply_text}"
+        ),
+        
+        "btn_add_button": "🔗 Tugma qo‘shish",
+        "btn_remove_button": "❌ Tugmani olib tashlash",
+        "btn_save": "✅ Saqlash",
+        "btn_cancel": "🗑 Bekor qilish",
+        
+        "auto_reply_button_prompt": (
+            "🔗 Tugmani yangi qator bilan ajratgan holda quyidagi formatda yuboring:\n\n"
+            "Tugma nomi\n"
+            "https://example.com"
+        ),
+        
+        "auto_reply_button_invalid": "❌ Tugma formati noto‘g‘ri.",
+        "auto_reply_saved": "✅ Avto-javob saqlandi.",
+        "auto_reply_cancelled": "🗑 Avto-javob cho'rnavoyi bekor qilindi.",
 
         "guide_choose_section": "📘 Bo‘limni tanlang:",
         "btn_guide_bad_words": "📘 So‘kinishlar",
