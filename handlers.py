@@ -808,6 +808,32 @@ async def group_settings_callback(update: Update, context: ContextTypes.DEFAULT_
         await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
         return
 
+    if chat.type == "channel":
+        keyboard = [
+            [
+                InlineKeyboardButton(
+                    "📝 Создать пост",
+                    callback_data=f"channel_create_post:{chat_id}"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["back_button"],
+                    callback_data="back_groups"
+                )
+            ],
+        ]
+    
+        await query.edit_message_text(
+            TEXTS[lang]["group_panel"].format(
+                title=chat.title,
+                chat_id=chat_id
+            ),
+            parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup(keyboard)
+        )
+        return
+
     keyboard = [
         [
             InlineKeyboardButton(TEXTS[lang]["btn_bad_words"], callback_data=f"bad_words_panel:{chat_id}:0"),
