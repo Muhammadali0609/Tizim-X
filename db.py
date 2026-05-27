@@ -1765,3 +1765,16 @@ def delete_auto_material(material_id: int):
                 WHERE id = %s
             """, (material_id,))
         conn.commit()
+
+def get_auto_materials_for_check(chat_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT keyword, material_url
+                FROM tizimx_auto_materials
+                WHERE chat_id = %s
+                ORDER BY created_at DESC
+            """, (chat_id,))
+            rows = cur.fetchall()
+
+    return rows
