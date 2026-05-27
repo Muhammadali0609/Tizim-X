@@ -76,7 +76,12 @@ from handlers import (start_command,
     auto_reply_add_callback,
     auto_reply_draft_callback,
     auto_reply_edit_callback,
-    auto_reply_delete_callback
+    auto_reply_delete_callback,
+    auto_delivery_panel_callback,
+    auto_material_card_callback,
+    auto_material_add_callback,
+    auto_material_edit_callback,
+    auto_material_delete_callback
 )
 from db import setup_database
 from admins import (
