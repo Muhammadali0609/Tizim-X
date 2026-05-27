@@ -1609,3 +1609,41 @@ def add_auto_reply(chat_id: int, keyword: str, reply_text: str, button_text=None
         conn.commit()
 
     return row[0]
+
+def update_auto_reply(
+    reply_id: int,
+    keyword: str,
+    reply_text: str,
+    button_text=None,
+    button_url=None
+):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE tizimx_auto_replies
+                SET
+                    keyword = %s,
+                    reply_text = %s,
+                    button_text = %s,
+                    button_url = %s
+                WHERE id = %s
+            """, (
+                keyword,
+                reply_text,
+                button_text,
+                button_url,
+                reply_id
+            ))
+
+        conn.commit()
+
+
+def delete_auto_reply(reply_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                DELETE FROM tizimx_auto_replies
+                WHERE id = %s
+            """, (reply_id,))
+
+        conn.commit()
