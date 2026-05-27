@@ -4301,7 +4301,7 @@ async def sync_group_admins(chat, context):
 
 async def required_contacts_panel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-
+    user_id = update.effective_user.id
     if await check_callback_limit(query):
         return
 
@@ -4343,7 +4343,7 @@ async def required_contacts_panel_callback(update: Update, context: ContextTypes
 
 async def required_contacts_limit_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-
+    user_id = update.effective_user.id
     if await check_callback_limit(query):
         return
 
@@ -4367,7 +4367,7 @@ async def required_contacts_limit_callback(update: Update, context: ContextTypes
 
 async def required_contacts_reset_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
-
+    user_id = update.effective_user.id
     if await check_callback_limit(query):
         return
 
