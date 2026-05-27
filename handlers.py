@@ -53,7 +53,9 @@ from db import(save_user_language,
     is_required_contacts_completed,
     mark_required_contacts_completed,
     reset_required_contacts_completed,
-    reset_required_contacts_invites
+    reset_required_contacts_invites,
+    is_required_subs_completed,
+    mark_required_subs_completed,
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username
@@ -297,6 +299,7 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
     
         if user and not user.is_bot:
             if not await is_admin(message.chat, user.id):
+                if not is_required_subs_completed(message.chat.id, user.id):
     
                 is_subscribed = True
     
@@ -648,6 +651,8 @@ async def check_subscription_callback(update: Update, context: ContextTypes.DEFA
             show_alert=True
         )
         return
+
+    mark_required_subs_completed(chat_id, target_user_id)
 
     try:
         await context.bot.restrict_chat_member(
