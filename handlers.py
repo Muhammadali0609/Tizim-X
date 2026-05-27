@@ -63,7 +63,8 @@ from db import(save_user_language,
     add_auto_reply,
     update_auto_reply,
     delete_auto_reply,
-    is_group_admin_saved
+    is_group_admin_saved,
+    get_auto_replies_for_check
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username
@@ -298,6 +299,9 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
     if not is_group_active(message.chat.id):
         return
 
+    save_group(message.chat.id, message.chat.title, message.chat.type, message.chat.username)
+    user = message.from_user
+
     lang = get_group_language(message.chat.id)
     required_subs = await get_valid_required_subs(context, message.chat.id)
     settings = get_group_settings(message.chat.id)
@@ -449,11 +453,35 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
                     
                     return
 
-    save_group(message.chat.id, message.chat.title, message.chat.type, message.chat.username)
+    auto_replies = get_auto_replies_for_check(message.chat.id)
 
-    settings = get_group_settings(message.chat.id)
-    lang = get_group_language(message.chat.id)
-    user = message.from_user
+    if auto_replies:
+        text_lower = message.text.lower()
+    
+        for keyword, reply_text, button_text, button_url in auto_replies:
+            keyword_lower = keyword.lower()
+    
+            if keyword_lower in text_lower:
+                reply_markup = None
+    
+                if button_text and button_url:
+                    reply_markup = InlineKeyboardMarkup([
+                        [
+                            InlineKeyboardButton(
+                                button_text,
+                                url=button_url
+                            )
+                        ]
+                    ])
+    
+                await message.reply_text(
+                    reply_text,
+                    parse_mode="HTML",
+                    reply_markup=reply_markup,
+                    disable_web_page_preview=True
+                )
+    
+                return
 
     if await is_admin(message.chat, user.id):
         return
