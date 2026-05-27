@@ -236,6 +236,16 @@ def setup_database():
                     UNIQUE(chat_id, keyword)
                 )
             """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS tizimx_auto_materials (
+                    id BIGSERIAL PRIMARY KEY,
+                    chat_id BIGINT NOT NULL,
+                    keyword TEXT NOT NULL,
+                    material_url TEXT NOT NULL,
+                    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                    UNIQUE(chat_id, keyword)
+                )
+            """)
         conn.commit()
 
 def get_user_language(user_id: int) -> str:
@@ -1673,3 +1683,85 @@ def get_auto_replies_for_check(chat_id: int):
             rows = cur.fetchall()
 
     return rows
+
+AUTO_MATERIALS_PER_PAGE = 10
+
+def get_auto_materials_count(chat_id: int) -> int:
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT COUNT(*)
+                FROM tizimx_auto_materials
+                WHERE chat_id = %s
+            """, (chat_id,))
+            row = cur.fetchone()
+
+    return row[0]
+
+
+def get_auto_materials_page(chat_id: int, page: int):
+    offset = page * AUTO_MATERIALS_PER_PAGE
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, keyword
+                FROM tizimx_auto_materials
+                WHERE chat_id = %s
+                ORDER BY created_at DESC
+                LIMIT %s OFFSET %s
+            """, (chat_id, AUTO_MATERIALS_PER_PAGE, offset))
+            rows = cur.fetchall()
+
+    return rows
+
+
+def get_auto_material(material_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, chat_id, keyword, material_url
+                FROM tizimx_auto_materials
+                WHERE id = %s
+            """, (material_id,))
+            row = cur.fetchone()
+
+    return row
+
+
+def add_auto_material(chat_id: int, keyword: str, material_url: str):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO tizimx_auto_materials (
+                    chat_id,
+                    keyword,
+                    material_url
+                )
+                VALUES (%s, %s, %s)
+                ON CONFLICT (chat_id, keyword)
+                DO UPDATE SET material_url = EXCLUDED.material_url
+            """, (chat_id, keyword, material_url))
+        conn.commit()
+
+
+def update_auto_material(material_id: int, keyword: str, material_url: str):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE tizimx_auto_materials
+                SET keyword = %s,
+                    material_url = %s
+                WHERE id = %s
+            """, (keyword, material_url, material_id))
+        conn.commit()
+
+
+def delete_auto_material(material_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                DELETE FROM tizimx_auto_materials
+                WHERE id = %s
+            """, (material_id,))
+        conn.commit()
