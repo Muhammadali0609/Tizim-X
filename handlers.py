@@ -64,7 +64,14 @@ from db import(save_user_language,
     update_auto_reply,
     delete_auto_reply,
     is_group_admin_saved,
-    get_auto_replies_for_check
+    get_auto_replies_for_check,
+    get_auto_materials_count,
+    get_auto_materials_page,
+    get_auto_material,
+    add_auto_material,
+    update_auto_material,
+    delete_auto_material,
+    AUTO_MATERIALS_PER_PAGE,
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username
@@ -1367,6 +1374,50 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
             lang,
             "required_contacts_limit_saved",
             f"required_contacts_panel:{chat_id}"
+        )
+        return
+
+    if context.user_data.get("state") in ["adding_auto_material", "editing_auto_material"]:
+        lang = get_user_language(message.from_user.id)
+        state = context.user_data.get("state")
+        chat_id = context.user_data.get("target_chat_id")
+    
+        result = parse_auto_material_input(message.text.strip())
+    
+        if result is None:
+            await message.reply_text(
+                TEXTS[lang]["auto_material_invalid_format"],
+                parse_mode="HTML"
+            )
+            return
+    
+        if result == "invalid_url":
+            await message.reply_text(TEXTS[lang]["auto_material_invalid_url"])
+            return
+    
+        keyword, material_url = result
+    
+        if state == "adding_auto_material":
+            add_auto_material(chat_id, keyword, material_url)
+    
+        else:
+            material_id = context.user_data.get("auto_material_id")
+            update_auto_material(material_id, keyword, material_url)
+    
+        context.user_data.pop("state", None)
+        context.user_data.pop("target_chat_id", None)
+        context.user_data.pop("auto_material_id", None)
+    
+        await message.reply_text(
+            TEXTS[lang]["auto_material_saved"],
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        TEXTS[lang]["btn_open_section"],
+                        callback_data=f"auto_delivery_panel:{chat_id}:0"
+                    )
+                ]
+            ])
         )
         return
 
@@ -5168,3 +5219,241 @@ async def auto_reply_delete_callback(update: Update, context: ContextTypes.DEFAU
         return
 
     await custom_replies_panel_callback(update, context)
+
+def parse_auto_material_input(text: str):
+    if "***" not in text:
+        return None
+
+    keyword, material_url = text.split("***", 1)
+
+    keyword = keyword.strip()
+    material_url = material_url.strip()
+
+    if not keyword or not material_url:
+        return None
+
+    if "t.me" not in material_url and "telegram.me" not in material_url:
+        return "invalid_url"
+
+    return keyword, material_url
+
+async def auto_delivery_panel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    data = query.data.split(":")
+    chat_id = int(data[1])
+    page = int(data[2]) if len(data) > 2 else 0
+
+    total_count = get_auto_materials_count(chat_id)
+
+    if total_count == 0:
+        await query.edit_message_text(
+            TEXTS[lang]["auto_materials_empty"],
+            parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        TEXTS[lang]["btn_add_auto_material"],
+                        callback_data=f"auto_material_add:{chat_id}"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        TEXTS[lang]["back_button"],
+                        callback_data=f"auto_responder_panel:{chat_id}"
+                    )
+                ]
+            ])
+        )
+        return
+
+    total_pages = math.ceil(total_count / AUTO_MATERIALS_PER_PAGE)
+    page = max(0, min(page, total_pages - 1))
+
+    rows = get_auto_materials_page(chat_id, page)
+
+    items = "\n".join(
+        f"{i + 1 + page * AUTO_MATERIALS_PER_PAGE}. {keyword}"
+        for i, (_, keyword) in enumerate(rows)
+    )
+
+    keyboard = []
+    number_buttons = []
+
+    for i, (material_id, _) in enumerate(rows, start=1):
+        number_buttons.append(
+            InlineKeyboardButton(
+                str(i),
+                callback_data=f"auto_material_card:{material_id}"
+            )
+        )
+
+    for i in range(0, len(number_buttons), 5):
+        keyboard.append(number_buttons[i:i + 5])
+
+    nav = []
+
+    if page > 0:
+        nav.append(
+            InlineKeyboardButton(
+                "⬅️",
+                callback_data=f"auto_delivery_panel:{chat_id}:{page - 1}"
+            )
+        )
+
+    if page < total_pages - 1:
+        nav.append(
+            InlineKeyboardButton(
+                "➡️",
+                callback_data=f"auto_delivery_panel:{chat_id}:{page + 1}"
+            )
+        )
+
+    if nav:
+        keyboard.append(nav)
+
+    keyboard.append([
+        InlineKeyboardButton(
+            TEXTS[lang]["btn_add_auto_material"],
+            callback_data=f"auto_material_add:{chat_id}"
+        )
+    ])
+
+    keyboard.append([
+        InlineKeyboardButton(
+            TEXTS[lang]["back_button"],
+            callback_data=f"auto_responder_panel:{chat_id}"
+        )
+    ])
+
+    await query.edit_message_text(
+        TEXTS[lang]["auto_materials_list"].format(
+            page=page + 1,
+            total_pages=total_pages,
+            items=items
+        ),
+        parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+async def auto_material_card_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    material_id = int(query.data.split(":")[1])
+    row = get_auto_material(material_id)
+
+    if not row:
+        await query.answer("Авто-материал не найден", show_alert=True)
+        return
+
+    material_id, chat_id, keyword, material_url = row
+
+    await query.edit_message_text(
+        TEXTS[lang]["auto_material_card"].format(
+            keyword=keyword,
+            material_url=material_url
+        ),
+        parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["btn_edit"],
+                    callback_data=f"auto_material_edit:{material_id}"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["btn_delete"],
+                    callback_data=f"auto_material_delete:{material_id}"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["back_button"],
+                    callback_data=f"auto_delivery_panel:{chat_id}:0"
+                )
+            ]
+        ])
+    )
+
+async def auto_material_add_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+    chat_id = int(query.data.split(":")[1])
+
+    context.user_data["state"] = "adding_auto_material"
+    context.user_data["target_chat_id"] = chat_id
+
+    await query.message.reply_text(
+        TEXTS[lang]["auto_material_add_prompt"],
+        parse_mode="HTML"
+    )
+
+
+async def auto_material_edit_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    material_id = int(query.data.split(":")[1])
+    row = get_auto_material(material_id)
+
+    if not row:
+        await query.answer("Авто-материал не найден", show_alert=True)
+        return
+
+    _, chat_id, _, _ = row
+
+    context.user_data["state"] = "editing_auto_material"
+    context.user_data["target_chat_id"] = chat_id
+    context.user_data["auto_material_id"] = material_id
+
+    await query.message.reply_text(
+        TEXTS[lang]["auto_material_add_prompt"],
+        parse_mode="HTML"
+    )
+
+async def auto_material_delete_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    material_id = int(query.data.split(":")[1])
+    row = get_auto_material(material_id)
+
+    if not row:
+        await query.answer("Авто-материал не найден", show_alert=True)
+        return
+
+    _, chat_id, _, _ = row
+
+    delete_auto_material(material_id)
+
+    await query.answer(TEXTS[lang]["auto_material_deleted"], show_alert=True)
+
+    await auto_delivery_panel_callback(update, context)
