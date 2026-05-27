@@ -56,6 +56,10 @@ from db import(save_user_language,
     reset_required_contacts_invites,
     is_required_subs_completed,
     mark_required_subs_completed,
+    get_auto_replies_count,
+    get_auto_replies_page,
+    get_auto_reply,
+    AUTO_REPLIES_PER_PAGE,
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username
@@ -4565,4 +4569,192 @@ async def auto_responder_panel_callback(update: Update, context: ContextTypes.DE
                 )
             ]
         ])
+    )
+
+async def custom_replies_panel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    data = query.data.split(":")
+    chat_id = int(data[1])
+    page = int(data[2]) if len(data) > 2 else 0
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("CUSTOM REPLIES ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    total_count = get_auto_replies_count(chat_id)
+
+    if total_count == 0:
+        await query.edit_message_text(
+            TEXTS[lang]["auto_replies_empty"],
+            parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        TEXTS[lang]["btn_add_auto_reply"],
+                        callback_data=f"auto_reply_add:{chat_id}"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        TEXTS[lang]["back_button"],
+                        callback_data=f"auto_responder_panel:{chat_id}"
+                    )
+                ]
+            ])
+        )
+        return
+
+    total_pages = math.ceil(total_count / AUTO_REPLIES_PER_PAGE)
+    page = max(0, min(page, total_pages - 1))
+
+    rows = get_auto_replies_page(chat_id, page)
+
+    items = "\n".join(
+        f"{i + 1 + page * AUTO_REPLIES_PER_PAGE}. {keyword}"
+        for i, (_, keyword) in enumerate(rows)
+    )
+
+    keyboard = []
+
+    number_buttons = []
+
+    for i, (reply_id, _) in enumerate(rows, start=1):
+        number_buttons.append(
+            InlineKeyboardButton(
+                str(i),
+                callback_data=f"auto_reply_card:{reply_id}"
+            )
+        )
+
+    for i in range(0, len(number_buttons), 5):
+        keyboard.append(number_buttons[i:i + 5])
+
+    nav = []
+
+    if page > 0:
+        nav.append(
+            InlineKeyboardButton(
+                "⬅️",
+                callback_data=f"custom_replies_panel:{chat_id}:{page - 1}"
+            )
+        )
+
+    if page < total_pages - 1:
+        nav.append(
+            InlineKeyboardButton(
+                "➡️",
+                callback_data=f"custom_replies_panel:{chat_id}:{page + 1}"
+            )
+        )
+
+    if nav:
+        keyboard.append(nav)
+
+    keyboard.append([
+        InlineKeyboardButton(
+            TEXTS[lang]["btn_add_auto_reply"],
+            callback_data=f"auto_reply_add:{chat_id}"
+        )
+    ])
+
+    keyboard.append([
+        InlineKeyboardButton(
+            TEXTS[lang]["back_button"],
+            callback_data=f"auto_responder_panel:{chat_id}"
+        )
+    ])
+
+    await query.edit_message_text(
+        TEXTS[lang]["auto_replies_list"].format(
+            page=page + 1,
+            total_pages=total_pages,
+            items=items
+        ),
+        parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+
+async def auto_reply_card_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    reply_id = int(query.data.split(":")[1])
+    row = get_auto_reply(reply_id)
+
+    if not row:
+        await query.answer("Авто-ответ не найден", show_alert=True)
+        return
+
+    reply_id, chat_id, keyword, reply_text, button_text, button_url = row
+
+    try:
+        chat = await context.bot.get_chat(chat_id)
+
+        if not await is_admin(chat, user_id):
+            await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+            return
+
+    except Exception as e:
+        print("AUTO REPLY CARD ACCESS ERROR:", e)
+        await query.answer(TEXTS[lang]["access_denied"], show_alert=True)
+        return
+
+    keyboard = []
+
+    if button_text and button_url:
+        keyboard.append([
+            InlineKeyboardButton(
+                button_text,
+                url=button_url
+            )
+        ])
+
+    keyboard.extend([
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_edit"],
+                callback_data=f"auto_reply_edit:{reply_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["btn_delete"],
+                callback_data=f"auto_reply_delete:{reply_id}"
+            )
+        ],
+        [
+            InlineKeyboardButton(
+                TEXTS[lang]["back_button"],
+                callback_data=f"custom_replies_panel:{chat_id}:0"
+            )
+        ]
+    ])
+
+    await query.edit_message_text(
+        TEXTS[lang]["auto_reply_card"].format(
+            keyword=keyword,
+            reply_text=reply_text
+        ),
+        parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup(keyboard)
     )
