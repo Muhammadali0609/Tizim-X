@@ -4858,6 +4858,14 @@ def build_auto_reply_preview_keyboard(lang: str, has_button: bool):
     ])
 
 async def send_auto_reply_preview(target, context, lang: str):
+    old_preview_id = context.user_data.get("auto_reply_preview_message_id")
+
+    if old_preview_id:
+        try:
+            await target.chat.delete_message(old_preview_id)
+        except Exception as e:
+            print("DELETE OLD AUTO REPLY PREVIEW ERROR:", e)
+    
     draft = context.user_data.get("auto_reply_draft")
 
     if not draft:
