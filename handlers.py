@@ -5812,7 +5812,8 @@ async def channel_post_draft_callback(update: Update, context: ContextTypes.DEFA
         return
 
     if data == "channel_post_send":
-        await query.edit_message_reply_markup(
+        await query.message.reply_text(
+            TEXTS[lang]["channel_post_confirm"],
             reply_markup=InlineKeyboardMarkup([
                 [
                     InlineKeyboardButton(
@@ -5828,7 +5829,6 @@ async def channel_post_draft_callback(update: Update, context: ContextTypes.DEFA
                 ]
             ])
         )
-        await query.answer(TEXTS[lang]["channel_post_confirm"], show_alert=True)
         return
 
     if data == "channel_post_schedule":
@@ -5876,5 +5876,95 @@ async def channel_post_media_handler(update: Update, context: ContextTypes.DEFAU
     context.user_data["state"] = "channel_post_preview"
 
     await send_channel_post_preview(message, context, lang)
-    
-    
+
+async def send_channel_post_to_channel(context, draft: dict):
+    channel_id = draft["channel_id"]
+    text = draft.get("text") or ""
+    media = draft.get("media", [])
+    buttons = draft.get("buttons", [])
+
+    reply_markup = None
+
+    if buttons:
+        reply_markup = InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton(
+                    button["text"],
+                    url=button["url"]
+                )
+            ]
+            for button in buttons
+        ])
+
+    if media:
+        item = media[0]
+
+        if item["type"] == "photo":
+            await context.bot.send_photo(
+                chat_id=channel_id,
+                photo=item["file_id"],
+                caption=text,
+                parse_mode="HTML",
+                reply_markup=reply_markup
+            )
+
+        elif item["type"] == "video":
+            await context.bot.send_video(
+                chat_id=channel_id,
+                video=item["file_id"],
+                caption=text,
+                parse_mode="HTML",
+                reply_markup=reply_markup
+            )
+
+        else:
+            await context.bot.send_animation(
+                chat_id=channel_id,
+                animation=item["file_id"],
+                caption=text,
+                parse_mode="HTML",
+                reply_markup=reply_markup
+            )
+
+    else:
+        await context.bot.send_message(
+            chat_id=channel_id,
+            text=text,
+            parse_mode="HTML",
+            reply_markup=reply_markup,
+            disable_web_page_preview=True
+        )
+
+async def channel_post_confirm_send_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    lang = get_user_language(query.from_user.id)
+    draft = context.user_data.get("channel_post_draft")
+
+    if not draft:
+        await query.answer("Черновик не найден", show_alert=True)
+        return
+
+    try:
+        await send_channel_post_to_channel(context, draft)
+
+    except Exception as e:
+        print("SEND CHANNEL POST ERROR:", e)
+        await query.answer("❌ Ошибка отправки", show_alert=True)
+        return
+
+    try:
+        await delete_old_channel_post_preview(query.message, context)
+    except Exception as e:
+        print("DELETE CHANNEL POST PREVIEW AFTER SEND ERROR:", e)
+
+    context.user_data.pop("channel_post_draft", None)
+    context.user_data.pop("state", None)
+    context.user_data.pop("channel_post_preview_message_id", None)
+
+    await query.message.chat.send_message(
+        TEXTS[lang]["channel_post_sent"]
+    )
