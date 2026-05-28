@@ -637,7 +637,7 @@ TEXTS = {
             "Название кнопки\n"
             "https://example.com"
         ),
-        
+        "channel_post_media_prompt": "📎 Отправьте фото, видео или GIF.",
         "channel_post_button_invalid": "❌ Неверный формат кнопки.",
         "channel_post_cancelled": "🗑 Черновик поста отменён.",
         "channel_post_confirm": "🚀 Отправить пост в канал?",
@@ -1406,7 +1406,7 @@ TEXTS = {
             "Tugma nomi\n"
             "https://example.com"
         ),
-        
+        "channel_post_media_prompt": "📎 Foto, video yoki GIF yuboring.",
         "channel_post_button_invalid": "❌ Tugma formati noto‘g‘ri.",
         "channel_post_cancelled": "🗑 Post cho'rnavoyi bekor qilindi.",
         "channel_post_confirm": "🚀 Post kanalga yuborilsinmi?",
