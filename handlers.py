@@ -5691,16 +5691,17 @@ async def send_channel_post_preview(target, context, lang: str):
         return
 
     buttons = draft.get("buttons", [])
-
+    is_album = len(draft.get("media", [])) > 1
     post_buttons = []
 
-    for button in buttons:
-        post_buttons.append([
-            InlineKeyboardButton(
-                button["text"],
-                url=button["url"]
-            )
-        ])
+    if not is_album:
+        for button in buttons:
+            post_buttons.append([
+                InlineKeyboardButton(
+                    button["text"],
+                    url=button["url"]
+                )
+            ])
 
     control_keyboard = build_channel_post_preview_keyboard(lang, draft)
 
@@ -5773,7 +5774,7 @@ async def send_channel_post_preview(target, context, lang: str):
             ]
     
             control_msg = await target.reply_text(
-                "⚙️",
+                "",
                 reply_markup=build_channel_post_preview_keyboard(lang, draft)
             )
     
