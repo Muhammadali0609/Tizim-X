@@ -1,4 +1,5 @@
 import psycopg
+import json
 from config import DATABASE_URL
 from filters import DEFAULT_BAD_WORDS
 from datetime import datetime, timezone, timedelta
@@ -244,6 +245,18 @@ def setup_database():
                     material_url TEXT NOT NULL,
                     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
                     UNIQUE(chat_id, keyword)
+                )
+            """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS tizimx_scheduled_channel_posts (
+                    id BIGSERIAL PRIMARY KEY,
+                    channel_id BIGINT NOT NULL,
+                    post_data JSONB NOT NULL,
+                    send_at TIMESTAMPTZ NOT NULL,
+                    status TEXT NOT NULL DEFAULT 'pending',
+                    created_by BIGINT NOT NULL,
+                    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                    sent_at TIMESTAMPTZ
                 )
             """)
         conn.commit()
@@ -1778,3 +1791,59 @@ def get_auto_materials_for_check(chat_id: int):
             rows = cur.fetchall()
 
     return rows
+
+def add_scheduled_channel_post(channel_id: int, post_data: dict, send_at, created_by: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO tizimx_scheduled_channel_posts (
+                    channel_id,
+                    post_data,
+                    send_at,
+                    created_by
+                )
+                VALUES (%s, %s, %s, %s)
+            """, (
+                channel_id,
+                json.dumps(post_data),
+                send_at,
+                created_by
+            ))
+        conn.commit()
+
+
+def get_due_scheduled_channel_posts():
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, channel_id, post_data
+                FROM tizimx_scheduled_channel_posts
+                WHERE status = 'pending'
+                  AND send_at <= NOW()
+                ORDER BY send_at ASC
+                LIMIT 20
+            """)
+            return cur.fetchall()
+
+
+def mark_scheduled_channel_post_sent(post_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE tizimx_scheduled_channel_posts
+                SET status = 'sent',
+                    sent_at = NOW()
+                WHERE id = %s
+            """, (post_id,))
+        conn.commit()
+
+
+def mark_scheduled_channel_post_failed(post_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE tizimx_scheduled_channel_posts
+                SET status = 'failed'
+                WHERE id = %s
+            """, (post_id,))
+        conn.commit()
