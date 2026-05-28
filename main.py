@@ -85,7 +85,8 @@ from handlers import (start_command,
     channel_create_post_callback,
     channel_post_draft_callback,
     channel_post_media_handler,
-    channel_post_confirm_send_callback
+    channel_post_confirm_send_callback,
+    scheduled_channel_posts_loop
 )
 from db import setup_database
 from admins import (
@@ -137,6 +138,7 @@ def main():
     async def post_init(app):
         await setup_commands(app)
         asyncio.create_task(plan_notifications_loop(app))
+        asyncio.create_task(scheduled_channel_posts_loop(app))
     app.post_init = post_init
 
     app.add_handler(CommandHandler("start", start_command))
