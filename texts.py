@@ -643,6 +643,7 @@ TEXTS = {
         "channel_post_confirm": "🚀 Отправить пост в канал?",
         "channel_post_confirm_send": "✅ Подтвердить отправку",
         "channel_post_sent": "✅ Пост отправлен.",
+        "channel_post_control": "Управление постом:",
         
         "guide_choose_section": "📘 Выберите раздел:",
         "btn_guide_bad_words": "📘 Маты",
@@ -1412,6 +1413,7 @@ TEXTS = {
         "channel_post_confirm": "🚀 Post kanalga yuborilsinmi?",
         "channel_post_confirm_send": "✅ Yuborishni tasdiqlash",
         "channel_post_sent": "✅ Post yuborildi.",
+        "channel_post_control": "Postni boshqarish:",
 
         "guide_choose_section": "📘 Bo‘limni tanlang:",
         "btn_guide_bad_words": "📘 So‘kinishlar",
