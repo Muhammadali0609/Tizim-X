@@ -81,7 +81,10 @@ from handlers import (start_command,
     auto_material_card_callback,
     auto_material_add_callback,
     auto_material_edit_callback,
-    auto_material_delete_callback
+    auto_material_delete_callback,
+    channel_create_post_callback,
+    channel_post_draft_callback,
+    channel_post_media_handler
 )
 from db import setup_database
 from admins import (
@@ -150,6 +153,7 @@ def main():
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.Regex("^(🌐 Язык|🌐 Til)$"), language_toggle_handler))
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.Regex("^(📘 Инструкция|📘 Qo‘llanma)$"), guide_button_handler))
     
+    app.add_handler(MessageHandler(filters.ChatType.PRIVATE & (filters.PHOTO | filters.VIDEO | filters.ANIMATION), channel_post_media_handler))
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE & (filters.PHOTO | filters.VIDEO | filters.ANIMATION), admin_broadcast_file_handler))
     app.add_handler(MessageHandler(filters.ChatType.PRIVATE & filters.TEXT & ~filters.COMMAND, private_router_handler))
     app.add_handler(CommandHandler("mute", mute_command))
@@ -233,6 +237,8 @@ def main():
     app.add_handler(CallbackQueryHandler(auto_material_add_callback, pattern="^auto_material_add:"))
     app.add_handler(CallbackQueryHandler(auto_material_edit_callback, pattern="^auto_material_edit:"))
     app.add_handler(CallbackQueryHandler(auto_material_delete_callback, pattern="^auto_material_delete:"))
+    app.add_handler(CallbackQueryHandler(channel_create_post_callback, pattern="^channel_create_post:"))
+    app.add_handler(CallbackQueryHandler(channel_post_draft_callback, pattern="^channel_post_"))
     
     app.run_webhook(
         listen="0.0.0.0",
