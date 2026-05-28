@@ -616,6 +616,13 @@ TEXTS = {
             "Материал:\n\n"
             "{material_url}"
         ),
+        
+        "channel_panel": (
+            "⚙️ Настройки канала:\n\n"
+            "{title}\n\n"
+            "ID канала:\n"
+            "<code>{chat_id}</code>"
+        ),
 
         "guide_choose_section": "📘 Выберите раздел:",
         "btn_guide_bad_words": "📘 Маты",
@@ -1357,6 +1364,13 @@ TEXTS = {
             "{keyword}\n\n"
             "Material:\n"
             "{material_url}"
+        ),
+        
+        "channel_panel": (
+            "⚙️ Kanal sozlamalari:\n\n"
+            "{title}\n\n"
+            "Kanalning ID si:\n"
+            "<code>{chat_id}</code>"
         ),
 
         "guide_choose_section": "📘 Bo‘limni tanlang:",
