@@ -5704,7 +5704,7 @@ async def send_channel_post_preview(target, context, lang: str):
             ])
 
     control_keyboard = build_channel_post_preview_keyboard(lang, draft)
-    lang = get_user_language(message.from_user.id)
+
     final_keyboard = InlineKeyboardMarkup(
         post_buttons + list(control_keyboard.inline_keyboard)
     )
