@@ -644,6 +644,19 @@ TEXTS = {
         "channel_post_confirm_send": "✅ Подтвердить отправку",
         "channel_post_sent": "✅ Пост отправлен.",
         "channel_post_control": "Управление постом:",
+
+        "channel_post_schedule_prompt": (
+            "⏰ Отправьте дату и время публикации.\n\n"
+            "Формат:\n"
+            "<code>30.05.2026 18:30</code>\n\n"
+            "<i>Время указывается по Ташкенту. (GMT+5)\n"
+            "Можно отложить минимум на 5 минут и максимум на 72 часа.</i>"
+        ),
+        
+        "channel_post_schedule_invalid": "❌ Неверный формат даты.",
+        "channel_post_schedule_too_early": "❌ Время должно быть минимум через 5 минут.",
+        "channel_post_schedule_too_late": "❌ Можно отложить максимум на 72 часа.",
+        "channel_post_scheduled": "✅ Пост отложен и будет отправлен в указанное время.",
         
         "guide_choose_section": "📘 Выберите раздел:",
         "btn_guide_bad_words": "📘 Маты",
@@ -1414,6 +1427,19 @@ TEXTS = {
         "channel_post_confirm_send": "✅ Yuborishni tasdiqlash",
         "channel_post_sent": "✅ Post yuborildi.",
         "channel_post_control": "Postni boshqarish:",
+
+        "channel_post_schedule_prompt": (
+            "⏰ Yuborish sanasi va vaqtini kiriting.\n\n"
+            "Format:\n"
+            "<code>30.05.2026 18:30</code>\n\n"
+            "Vaqt Toshkent vaqti bilan. (GMT+5)\n"
+            "Kamida 5 daqiqadan keyin, ko‘pi bilan 72 soatgacha kechiktirish mumkin."
+        ),
+        
+        "channel_post_schedule_invalid": "❌ Sana formati noto‘g‘ri.",
+        "channel_post_schedule_too_early": "❌ Vaqt kamida 5 daqiqadan keyin bo‘lishi kerak.",
+        "channel_post_schedule_too_late": "❌ Ko‘pi bilan 72 soatgacha kechiktirish mumkin.",
+        "channel_post_scheduled": "✅ Post kechiktirildi va belgilangan vaqtda yuboriladi.",
 
         "guide_choose_section": "📘 Bo‘limni tanlang:",
         "btn_guide_bad_words": "📘 So‘kinishlar",
