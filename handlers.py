@@ -72,7 +72,11 @@ from db import(save_user_language,
     update_auto_material,
     delete_auto_material,
     AUTO_MATERIALS_PER_PAGE,
-    get_auto_materials_for_check
+    get_auto_materials_for_check,
+    add_scheduled_channel_post,
+    get_due_scheduled_channel_posts,
+    mark_scheduled_channel_post_sent,
+    mark_scheduled_channel_post_failed
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username
@@ -1590,6 +1594,69 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
         context.user_data["state"] = "channel_post_preview"
     
         await send_channel_post_preview(message, context, lang)
+        return
+
+    if context.user_data.get("state") == "channel_post_schedule_time":
+        lang = get_user_language(message.from_user.id)
+        draft = context.user_data.get("channel_post_draft")
+    
+        if not draft:
+            context.user_data.pop("state", None)
+            return
+    
+        try:
+            send_at = datetime.strptime(
+                message.text.strip(),
+                "%d.%m.%Y %H:%M"
+            ).replace(tzinfo=ZoneInfo("Asia/Tashkent"))
+    
+        except Exception:
+            await message.reply_text(TEXTS[lang]["channel_post_schedule_invalid"])
+            return
+    
+        now = datetime.now(ZoneInfo("Asia/Tashkent"))
+    
+        if send_at < now + timedelta(minutes=5):
+            await message.reply_text(TEXTS[lang]["channel_post_schedule_too_early"])
+            return
+    
+        if send_at > now + timedelta(hours=72):
+            await message.reply_text(TEXTS[lang]["channel_post_schedule_too_late"])
+            return
+    
+        add_scheduled_channel_post(
+            channel_id=draft["channel_id"],
+            post_data=draft,
+            send_at=send_at,
+            created_by=message.from_user.id
+        )
+    
+        await delete_old_channel_post_preview(message, context)
+    
+        confirm_id = context.user_data.pop("channel_post_confirm_message_id", None)
+    
+        if confirm_id:
+            try:
+                await message.chat.delete_message(confirm_id)
+            except Exception as e:
+                print("DELETE CHANNEL POST SCHEDULE PROMPT ERROR:", e)
+    
+        context.user_data.pop("channel_post_draft", None)
+        context.user_data.pop("state", None)
+        context.user_data.pop("channel_post_preview_message_id", None)
+        context.user_data.pop("channel_post_preview_message_ids", None)
+    
+        await message.reply_text(
+            TEXTS[lang]["channel_post_scheduled"],
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        TEXTS[lang]["back_button"],
+                        callback_data=f"group_settings:{draft['channel_id']}"
+                    )
+                ]
+            ])
+        )
         return
 
 def build_ads_panel(lang: str, chat_id: int, anti_links: bool):
@@ -5891,7 +5958,24 @@ async def channel_post_draft_callback(update: Update, context: ContextTypes.DEFA
         return
 
     if data == "channel_post_schedule":
-        await query.answer("Скоро добавим", show_alert=True)
+        await delete_old_channel_post_preview(query.message, context)
+    
+        context.user_data["state"] = "channel_post_schedule_time"
+    
+        msg = await query.message.chat.send_message(
+            TEXTS[lang]["channel_post_schedule_prompt"],
+            parse_mode="HTML",
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        TEXTS[lang]["back_button"],
+                        callback_data="channel_post_back_preview"
+                    )
+                ]
+            ])
+        )
+    
+        context.user_data["channel_post_confirm_message_id"] = msg.message_id
         return
 
     if data == "channel_post_back_preview":
@@ -6095,3 +6179,84 @@ async def channel_post_confirm_send_callback(update: Update, context: ContextTyp
     await query.message.chat.send_message(
         TEXTS[lang]["channel_post_sent"]
     )
+
+async def send_channel_post_to_channel_by_bot(bot, draft: dict):
+    channel_id = draft["channel_id"]
+    text = draft.get("text") or ""
+    media = draft.get("media", [])
+    buttons = draft.get("buttons", [])
+
+    reply_markup = None
+
+    if buttons and len(media) <= 1:
+        reply_markup = InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton(
+                    button["text"],
+                    url=button["url"]
+                )
+            ]
+            for button in buttons
+        ])
+
+    if media:
+        item = media[0]
+
+        if item["type"] == "photo":
+            await bot.send_photo(
+                chat_id=channel_id,
+                photo=item["file_id"],
+                caption=text,
+                parse_mode="HTML",
+                reply_markup=reply_markup
+            )
+
+        elif item["type"] == "video":
+            await bot.send_video(
+                chat_id=channel_id,
+                video=item["file_id"],
+                caption=text,
+                parse_mode="HTML",
+                reply_markup=reply_markup
+            )
+
+        else:
+            await bot.send_animation(
+                chat_id=channel_id,
+                animation=item["file_id"],
+                caption=text,
+                parse_mode="HTML",
+                reply_markup=reply_markup
+            )
+
+    else:
+        await bot.send_message(
+            chat_id=channel_id,
+            text=text,
+            parse_mode="HTML",
+            reply_markup=reply_markup,
+            disable_web_page_preview=True
+        )
+
+async def scheduled_channel_posts_loop(app):
+    while True:
+        try:
+            posts = get_due_scheduled_channel_posts()
+
+            for post_id, channel_id, post_data in posts:
+                try:
+                    await send_channel_post_to_channel_by_bot(
+                        app.bot,
+                        post_data
+                    )
+
+                    mark_scheduled_channel_post_sent(post_id)
+
+                except Exception as e:
+                    print("SCHEDULED CHANNEL POST SEND ERROR:", e)
+                    mark_scheduled_channel_post_failed(post_id)
+
+        except Exception as e:
+            print("SCHEDULED CHANNEL POSTS LOOP ERROR:", e)
+
+        await asyncio.sleep(30)
