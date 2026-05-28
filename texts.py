@@ -623,7 +623,27 @@ TEXTS = {
             "ID канала:\n"
             "<code>{chat_id}</code>"
         ),
-
+        
+        "channel_post_enter_text": "📝 Отправьте текст поста.",
+        "channel_post_attach_media": "📎 Прикрепить медиа",
+        "channel_post_add_button": "🔗 Добавить кнопку",
+        "channel_post_remove_button": "❌ Удалить кнопку",
+        "channel_post_send": "🚀 Отправить",
+        "channel_post_schedule": "⏰ Отложить",
+        "channel_post_cancel": "🗑 Отменить",
+        
+        "channel_post_button_prompt": (
+            "🔗 Отправьте кнопку разделяя новым абзацом в формате:\n\n"
+            "Название кнопки\n"
+            "https://example.com"
+        ),
+        
+        "channel_post_button_invalid": "❌ Неверный формат кнопки.",
+        "channel_post_cancelled": "🗑 Черновик поста отменён.",
+        "channel_post_confirm": "🚀 Отправить пост в канал?",
+        "channel_post_confirm_send": "✅ Подтвердить отправку",
+        "channel_post_sent": "✅ Пост отправлен.",
+        
         "guide_choose_section": "📘 Выберите раздел:",
         "btn_guide_bad_words": "📘 Маты",
         "btn_guide_ads": "📘 Рекламы",
@@ -1372,6 +1392,26 @@ TEXTS = {
             "Kanalning ID si:\n"
             "<code>{chat_id}</code>"
         ),
+        
+        "channel_post_enter_text": "📝 Post matnini yuboring.",
+        "channel_post_attach_media": "📎 Media biriktirish",
+        "channel_post_add_button": "🔗 Tugma qo‘shish",
+        "channel_post_remove_button": "❌ Tugmani o‘chirish",
+        "channel_post_send": "🚀 Yuborish",
+        "channel_post_schedule": "⏰ Kechiktirish",
+        "channel_post_cancel": "🗑 Bekor qilish",
+        
+        "channel_post_button_prompt": (
+            "🔗 Tugmani yangi qator bilan ajratgan holda quyidagi formatda yuboring:\n\n"
+            "Tugma nomi\n"
+            "https://example.com"
+        ),
+        
+        "channel_post_button_invalid": "❌ Tugma formati noto‘g‘ri.",
+        "channel_post_cancelled": "🗑 Post cho'rnavoyi bekor qilindi.",
+        "channel_post_confirm": "🚀 Post kanalga yuborilsinmi?",
+        "channel_post_confirm_send": "✅ Yuborishni tasdiqlash",
+        "channel_post_sent": "✅ Post yuborildi.",
 
         "guide_choose_section": "📘 Bo‘limni tanlang:",
         "btn_guide_bad_words": "📘 So‘kinishlar",
