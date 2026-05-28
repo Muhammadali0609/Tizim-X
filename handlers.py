@@ -1544,6 +1544,53 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
     
         await send_auto_reply_preview(message, context, lang)
         return
+        
+    if context.user_data.get("state") == "channel_post_text":
+        lang = get_user_language(message.from_user.id)
+    
+        draft = context.user_data.get("channel_post_draft")
+    
+        if not draft:
+            context.user_data.pop("state", None)
+            return
+    
+        draft["text"] = message.text_html
+    
+        context.user_data["state"] = "channel_post_preview"
+    
+        await send_channel_post_preview(message, context, lang)
+        return
+        
+    if context.user_data.get("state") == "channel_post_button":
+        lang = get_user_language(message.from_user.id)
+        draft = context.user_data.get("channel_post_draft")
+    
+        if not draft:
+            context.user_data.pop("state", None)
+            return
+    
+        parts = message.text.strip().split("\n", 1)
+    
+        if len(parts) != 2:
+            await message.reply_text(TEXTS[lang]["channel_post_button_invalid"])
+            return
+    
+        button_text = parts[0].strip()
+        button_url = parts[1].strip()
+    
+        if not button_text or not button_url.startswith(("http://", "https://")):
+            await message.reply_text(TEXTS[lang]["channel_post_button_invalid"])
+            return
+    
+        draft["buttons"].append({
+            "text": button_text,
+            "url": button_url,
+        })
+    
+        context.user_data["state"] = "channel_post_preview"
+    
+        await send_channel_post_preview(message, context, lang)
+        return
 
 def build_ads_panel(lang: str, chat_id: int, anti_links: bool):
     status = (
@@ -5548,3 +5595,286 @@ def parse_telegram_message_link(url: str):
     message_id = int(pieces[1])
 
     return f"@{username}", message_id
+
+async def channel_create_post_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+    channel_id = int(query.data.split(":")[1])
+
+    context.user_data["state"] = "channel_post_text"
+    context.user_data["channel_post_draft"] = {
+        "channel_id": channel_id,
+        "text": None,
+        "media": [],
+        "buttons": [],
+    }
+
+    await query.message.reply_text(TEXTS[lang]["channel_post_enter_text"])
+    
+def build_channel_post_preview_keyboard(lang: str, draft: dict):
+    keyboard = []
+
+    keyboard.append([
+        InlineKeyboardButton(
+            TEXTS[lang]["channel_post_attach_media"],
+            callback_data="channel_post_attach_media"
+        )
+    ])
+
+    if len(draft.get("buttons", [])) < 3:
+        keyboard.append([
+            InlineKeyboardButton(
+                TEXTS[lang]["channel_post_add_button"],
+                callback_data="channel_post_add_button"
+            )
+        ])
+
+    if draft.get("buttons"):
+        keyboard.append([
+            InlineKeyboardButton(
+                TEXTS[lang]["channel_post_remove_button"],
+                callback_data="channel_post_remove_button"
+            )
+        ])
+
+    keyboard.append([
+        InlineKeyboardButton(
+            TEXTS[lang]["channel_post_send"],
+            callback_data="channel_post_send"
+        )
+    ])
+
+    keyboard.append([
+        InlineKeyboardButton(
+            TEXTS[lang]["channel_post_schedule"],
+            callback_data="channel_post_schedule"
+        )
+    ])
+
+    keyboard.append([
+        InlineKeyboardButton(
+            TEXTS[lang]["channel_post_cancel"],
+            callback_data="channel_post_cancel"
+        )
+    ])
+
+    return InlineKeyboardMarkup(keyboard)
+    
+async def delete_old_channel_post_preview(target, context):
+    old_id = context.user_data.get("channel_post_preview_message_id")
+
+    if old_id:
+        try:
+            await target.chat.delete_message(old_id)
+        except Exception as e:
+            print("DELETE OLD CHANNEL POST PREVIEW ERROR:", e)
+            
+async def send_channel_post_preview(target, context, lang: str):
+    await delete_old_channel_post_preview(target, context)
+
+    draft = context.user_data.get("channel_post_draft")
+
+    if not draft:
+        return
+
+    buttons = draft.get("buttons", [])
+
+    post_buttons = []
+
+    for button in buttons:
+        post_buttons.append([
+            InlineKeyboardButton(
+                button["text"],
+                url=button["url"]
+            )
+        ])
+
+    control_keyboard = build_channel_post_preview_keyboard(lang, draft)
+
+    final_keyboard = InlineKeyboardMarkup(
+        post_buttons + control_keyboard.inline_keyboard
+    )
+
+    text = draft.get("text") or ""
+
+    if draft.get("media"):
+        media = draft["media"][0]
+
+        if media["type"] == "photo":
+            msg = await target.reply_photo(
+                photo=media["file_id"],
+                caption=text,
+                parse_mode="HTML",
+                reply_markup=final_keyboard
+            )
+
+        elif media["type"] == "video":
+            msg = await target.reply_video(
+                video=media["file_id"],
+                caption=text,
+                parse_mode="HTML",
+                reply_markup=final_keyboard
+            )
+
+        else:
+            msg = await target.reply_animation(
+                animation=media["file_id"],
+                caption=text,
+                parse_mode="HTML",
+                reply_markup=final_keyboard
+            )
+
+    else:
+        msg = await target.reply_text(
+            text,
+            parse_mode="HTML",
+            reply_markup=final_keyboard,
+            disable_web_page_preview=True
+        )
+
+    context.user_data["channel_post_preview_message_id"] = msg.message_id
+
+    async def expire_channel_post_draft():
+        await asyncio.sleep(300)
+
+        if context.user_data.get("channel_post_draft"):
+            context.user_data.pop("channel_post_draft", None)
+            context.user_data.pop("state", None)
+
+            try:
+                await msg.delete()
+            except Exception as e:
+                print("DELETE CHANNEL POST DRAFT PREVIEW ERROR:", e)
+
+    context.application.create_task(expire_channel_post_draft())
+    
+async def channel_post_draft_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    lang = get_user_language(query.from_user.id)
+    draft = context.user_data.get("channel_post_draft")
+
+    if not draft:
+        await query.answer("Черновик не найден", show_alert=True)
+        return
+
+    data = query.data
+
+    if data == "channel_post_add_button":
+        context.user_data["state"] = "channel_post_button"
+
+        await query.message.reply_text(
+            TEXTS[lang]["channel_post_button_prompt"],
+            parse_mode="HTML"
+        )
+        return
+
+    if data == "channel_post_remove_button":
+        draft["buttons"] = []
+        await send_channel_post_preview(query.message, context, lang)
+        return
+
+    if data == "channel_post_attach_media":
+        context.user_data["state"] = "channel_post_media"
+        await query.answer("Отправьте фото, видео или GIF", show_alert=True)
+        return
+
+    if data == "channel_post_cancel":
+        channel_id = draft["channel_id"]
+
+        context.user_data.pop("channel_post_draft", None)
+        context.user_data.pop("state", None)
+
+        try:
+            await query.message.delete()
+        except Exception:
+            pass
+
+        await query.message.chat.send_message(
+            TEXTS[lang]["channel_post_cancelled"],
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        TEXTS[lang]["back_button"],
+                        callback_data=f"group_settings:{channel_id}"
+                    )
+                ]
+            ])
+        )
+        return
+
+    if data == "channel_post_send":
+        await query.edit_message_reply_markup(
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        TEXTS[lang]["channel_post_confirm_send"],
+                        callback_data="channel_post_confirm_send"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        TEXTS[lang]["channel_post_cancel"],
+                        callback_data="channel_post_cancel"
+                    )
+                ]
+            ])
+        )
+        await query.answer(TEXTS[lang]["channel_post_confirm"], show_alert=True)
+        return
+
+    if data == "channel_post_schedule":
+        await query.answer("Скоро добавим", show_alert=True)
+        return
+        
+async def channel_post_media_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = update.message
+
+    if context.user_data.get("state") != "channel_post_media":
+        return
+
+    lang = get_user_language(message.from_user.id)
+    draft = context.user_data.get("channel_post_draft")
+
+    if not draft:
+        context.user_data.pop("state", None)
+        return
+
+    media = []
+
+    if message.photo:
+        media.append({
+            "type": "photo",
+            "file_id": message.photo[-1].file_id
+        })
+
+    elif message.video:
+        media.append({
+            "type": "video",
+            "file_id": message.video.file_id
+        })
+
+    elif message.animation:
+        media.append({
+            "type": "animation",
+            "file_id": message.animation.file_id
+        })
+
+    if not media:
+        return
+
+    draft["media"] = media[:10]
+
+    context.user_data["state"] = "channel_post_preview"
+
+    await send_channel_post_preview(message, context, lang)
+    
+    
