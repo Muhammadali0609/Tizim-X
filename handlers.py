@@ -5792,6 +5792,7 @@ async def channel_post_draft_callback(update: Update, context: ContextTypes.DEFA
 
         context.user_data.pop("channel_post_draft", None)
         context.user_data.pop("state", None)
+        context.user_data.pop("channel_post_confirm_message_id", None)
 
         try:
             await query.message.delete()
@@ -5812,7 +5813,9 @@ async def channel_post_draft_callback(update: Update, context: ContextTypes.DEFA
         return
 
     if data == "channel_post_send":
-        await query.message.reply_text(
+        await delete_old_channel_post_preview(query.message, context)
+    
+        msg = await query.message.chat.send_message(
             TEXTS[lang]["channel_post_confirm"],
             reply_markup=InlineKeyboardMarkup([
                 [
@@ -5823,16 +5826,32 @@ async def channel_post_draft_callback(update: Update, context: ContextTypes.DEFA
                 ],
                 [
                     InlineKeyboardButton(
-                        TEXTS[lang]["channel_post_cancel"],
-                        callback_data="channel_post_cancel"
+                        TEXTS[lang]["back_button"],
+                        callback_data="channel_post_back_preview"
                     )
                 ]
             ])
         )
+    
+        context.user_data["channel_post_confirm_message_id"] = msg.message_id
         return
 
     if data == "channel_post_schedule":
         await query.answer("Скоро добавим", show_alert=True)
+        return
+
+    if data == "channel_post_back_preview":
+        confirm_id = context.user_data.pop("channel_post_confirm_message_id", None)
+    
+        if confirm_id:
+            try:
+                await query.message.chat.delete_message(confirm_id)
+            except Exception as e:
+                print("DELETE CHANNEL POST CONFIRM ERROR:", e)
+    
+        context.user_data["state"] = "channel_post_preview"
+    
+        await send_channel_post_preview(query.message, context, lang)
         return
         
 async def channel_post_media_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
@@ -5964,6 +5983,12 @@ async def channel_post_confirm_send_callback(update: Update, context: ContextTyp
     context.user_data.pop("channel_post_draft", None)
     context.user_data.pop("state", None)
     context.user_data.pop("channel_post_preview_message_id", None)
+    confirm_id = context.user_data.pop("channel_post_confirm_message_id", None)
+    if confirm_id:
+        try:
+            await query.message.chat.delete_message(confirm_id)
+        except Exception as e:
+            print("DELETE CHANNEL POST CONFIRM AFTER SEND ERROR:", e)
 
     await query.message.chat.send_message(
         TEXTS[lang]["channel_post_sent"]
