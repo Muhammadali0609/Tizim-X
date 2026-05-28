@@ -84,7 +84,8 @@ from handlers import (start_command,
     auto_material_delete_callback,
     channel_create_post_callback,
     channel_post_draft_callback,
-    channel_post_media_handler
+    channel_post_media_handler,
+    channel_post_confirm_send_callback
 )
 from db import setup_database
 from admins import (
@@ -238,6 +239,7 @@ def main():
     app.add_handler(CallbackQueryHandler(auto_material_edit_callback, pattern="^auto_material_edit:"))
     app.add_handler(CallbackQueryHandler(auto_material_delete_callback, pattern="^auto_material_delete:"))
     app.add_handler(CallbackQueryHandler(channel_create_post_callback, pattern="^channel_create_post:"))
+    app.add_handler(CallbackQueryHandler(channel_post_confirm_send_callback, pattern="^channel_post_confirm_send$"))
     app.add_handler(CallbackQueryHandler(channel_post_draft_callback, pattern="^channel_post_"))
     
     app.run_webhook(
