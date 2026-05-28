@@ -1,4 +1,4 @@
-from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ChatPermissions, ReplyKeyboardMarkup, ChatMemberOwner
+from telegram import Update, InlineKeyboardButton, InlineKeyboardMarkup, ChatPermissions, ReplyKeyboardMarkup, ChatMemberOwner, InputMediaPhoto, InputMediaVideo
 from telegram.constants import ChatMemberStatus
 from telegram.ext import ContextTypes
 from datetime import datetime, timedelta, timezone
@@ -5666,7 +5666,15 @@ def build_channel_post_preview_keyboard(lang: str, draft: dict):
     return InlineKeyboardMarkup(keyboard)
     
 async def delete_old_channel_post_preview(target, context):
-    old_id = context.user_data.get("channel_post_preview_message_id")
+    old_ids = context.user_data.pop("channel_post_preview_message_ids", [])
+
+    for old_id in old_ids:
+        try:
+            await target.chat.delete_message(old_id)
+        except Exception as e:
+            print("DELETE OLD CHANNEL POST ALBUM PREVIEW ERROR:", e)
+
+    old_id = context.user_data.pop("channel_post_preview_message_id", None)
 
     if old_id:
         try:
@@ -5702,33 +5710,75 @@ async def send_channel_post_preview(target, context, lang: str):
 
     text = draft.get("text") or ""
 
-    if draft.get("media"):
-        media = draft["media"][0]
+    media = draft.get("media", [])
 
-        if media["type"] == "photo":
-            msg = await target.reply_photo(
-                photo=media["file_id"],
-                caption=text,
-                parse_mode="HTML",
-                reply_markup=final_keyboard
-            )
-
-        elif media["type"] == "video":
-            msg = await target.reply_video(
-                video=media["file_id"],
-                caption=text,
-                parse_mode="HTML",
-                reply_markup=final_keyboard
-            )
-
+    if media:
+        if len(media) == 1:
+            item = media[0]
+    
+            if item["type"] == "photo":
+                msg = await target.reply_photo(
+                    photo=item["file_id"],
+                    caption=text,
+                    parse_mode="HTML",
+                    reply_markup=final_keyboard
+                )
+    
+            elif item["type"] == "video":
+                msg = await target.reply_video(
+                    video=item["file_id"],
+                    caption=text,
+                    parse_mode="HTML",
+                    reply_markup=final_keyboard
+                )
+    
+            else:
+                msg = await target.reply_animation(
+                    animation=item["file_id"],
+                    caption=text,
+                    parse_mode="HTML",
+                    reply_markup=final_keyboard
+                )
+    
+            context.user_data["channel_post_preview_message_id"] = msg.message_id
+    
         else:
-            msg = await target.reply_animation(
-                animation=media["file_id"],
-                caption=text,
-                parse_mode="HTML",
-                reply_markup=final_keyboard
+            media_group = []
+    
+            for i, item in enumerate(media[:10]):
+                caption = text if i == 0 else None
+    
+                if item["type"] == "photo":
+                    media_group.append(
+                        InputMediaPhoto(
+                            media=item["file_id"],
+                            caption=caption,
+                            parse_mode="HTML" if caption else None
+                        )
+                    )
+    
+                elif item["type"] == "video":
+                    media_group.append(
+                        InputMediaVideo(
+                            media=item["file_id"],
+                            caption=caption,
+                            parse_mode="HTML" if caption else None
+                        )
+                    )
+    
+            msgs = await target.reply_media_group(media_group)
+    
+            context.user_data["channel_post_preview_message_ids"] = [
+                msg.message_id for msg in msgs
+            ]
+    
+            control_msg = await target.reply_text(
+                "⚙️",
+                reply_markup=build_channel_post_preview_keyboard(lang, draft)
             )
-
+    
+            context.user_data["channel_post_preview_message_id"] = control_msg.message_id
+    
     else:
         msg = await target.reply_text(
             text,
@@ -5736,8 +5786,8 @@ async def send_channel_post_preview(target, context, lang: str):
             reply_markup=final_keyboard,
             disable_web_page_preview=True
         )
-
-    context.user_data["channel_post_preview_message_id"] = msg.message_id
+    
+        context.user_data["channel_post_preview_message_id"] = msg.message_id
 
     async def expire_channel_post_draft():
         await asyncio.sleep(300)
@@ -5870,33 +5920,61 @@ async def channel_post_media_handler(update: Update, context: ContextTypes.DEFAU
         context.user_data.pop("state", None)
         return
 
-    media = None
+    item = None
 
     if message.photo:
-        media = {
+        item = {
             "type": "photo",
             "file_id": message.photo[-1].file_id
         }
 
     elif message.video:
-        media = {
+        item = {
             "type": "video",
             "file_id": message.video.file_id
         }
 
     elif message.animation:
-        media = {
+        item = {
             "type": "animation",
             "file_id": message.animation.file_id
         }
 
-    if not media:
+    if not item:
         return
 
-    draft["media"] = [media]
-    context.user_data["state"] = "channel_post_preview"
+    if not message.media_group_id:
+        draft["media"] = [item]
+        context.user_data["state"] = "channel_post_preview"
 
-    await send_channel_post_preview(message, context, lang)
+        await send_channel_post_preview(message, context, lang)
+        return
+
+    album_key = f"channel_post_album:{message.media_group_id}"
+
+    album = context.user_data.setdefault(album_key, [])
+    album.append(item)
+
+    async def finish_album():
+        await asyncio.sleep(1.2)
+
+        album_items = context.user_data.pop(album_key, [])
+
+        if not album_items:
+            return
+
+        draft = context.user_data.get("channel_post_draft")
+
+        if not draft:
+            return
+
+        draft["media"] = album_items[:10]
+        context.user_data["state"] = "channel_post_preview"
+
+        await send_channel_post_preview(message, context, lang)
+
+    if len(album) == 1:
+        context.application.create_task(finish_album())
 
 async def send_channel_post_to_channel(context, draft: dict):
     channel_id = draft["channel_id"]
@@ -5918,43 +5996,64 @@ async def send_channel_post_to_channel(context, draft: dict):
         ])
 
     if media:
-        item = media[0]
-
-        if item["type"] == "photo":
-            await context.bot.send_photo(
-                chat_id=channel_id,
-                photo=item["file_id"],
-                caption=text,
-                parse_mode="HTML",
-                reply_markup=reply_markup
-            )
-
-        elif item["type"] == "video":
-            await context.bot.send_video(
-                chat_id=channel_id,
-                video=item["file_id"],
-                caption=text,
-                parse_mode="HTML",
-                reply_markup=reply_markup
-            )
-
+        if len(media) == 1:
+            item = media[0]
+    
+            if item["type"] == "photo":
+                await context.bot.send_photo(
+                    chat_id=channel_id,
+                    photo=item["file_id"],
+                    caption=text,
+                    parse_mode="HTML",
+                    reply_markup=reply_markup
+                )
+    
+            elif item["type"] == "video":
+                await context.bot.send_video(
+                    chat_id=channel_id,
+                    video=item["file_id"],
+                    caption=text,
+                    parse_mode="HTML",
+                    reply_markup=reply_markup
+                )
+    
+            else:
+                await context.bot.send_animation(
+                    chat_id=channel_id,
+                    animation=item["file_id"],
+                    caption=text,
+                    parse_mode="HTML",
+                    reply_markup=reply_markup
+                )
+    
         else:
-            await context.bot.send_animation(
+            media_group = []
+    
+            for i, item in enumerate(media[:10]):
+                caption = text if i == 0 else None
+    
+                if item["type"] == "photo":
+                    media_group.append(
+                        InputMediaPhoto(
+                            media=item["file_id"],
+                            caption=caption,
+                            parse_mode="HTML" if caption else None
+                        )
+                    )
+    
+                elif item["type"] == "video":
+                    media_group.append(
+                        InputMediaVideo(
+                            media=item["file_id"],
+                            caption=caption,
+                            parse_mode="HTML" if caption else None
+                        )
+                    )
+    
+            await context.bot.send_media_group(
                 chat_id=channel_id,
-                animation=item["file_id"],
-                caption=text,
-                parse_mode="HTML",
-                reply_markup=reply_markup
+                media=media_group
             )
-
-    else:
-        await context.bot.send_message(
-            chat_id=channel_id,
-            text=text,
-            parse_mode="HTML",
-            reply_markup=reply_markup,
-            disable_web_page_preview=True
-        )
 
 async def channel_post_confirm_send_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
