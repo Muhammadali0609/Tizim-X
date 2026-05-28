@@ -5784,7 +5784,10 @@ async def channel_post_draft_callback(update: Update, context: ContextTypes.DEFA
 
     if data == "channel_post_attach_media":
         context.user_data["state"] = "channel_post_media"
-        await query.answer("Отправьте фото, видео или GIF", show_alert=True)
+    
+        await query.message.reply_text(
+            TEXTS[lang]["channel_post_media_prompt"]
+        )
         return
 
     if data == "channel_post_cancel":
@@ -5857,7 +5860,7 @@ async def channel_post_draft_callback(update: Update, context: ContextTypes.DEFA
 async def channel_post_media_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
     message = update.message
 
-    if context.user_data.get("state") != "channel_post_media":
+    if not message or context.user_data.get("state") != "channel_post_media":
         return
 
     lang = get_user_language(message.from_user.id)
@@ -5867,31 +5870,30 @@ async def channel_post_media_handler(update: Update, context: ContextTypes.DEFAU
         context.user_data.pop("state", None)
         return
 
-    media = []
+    media = None
 
     if message.photo:
-        media.append({
+        media = {
             "type": "photo",
             "file_id": message.photo[-1].file_id
-        })
+        }
 
     elif message.video:
-        media.append({
+        media = {
             "type": "video",
             "file_id": message.video.file_id
-        })
+        }
 
     elif message.animation:
-        media.append({
+        media = {
             "type": "animation",
             "file_id": message.animation.file_id
-        })
+        }
 
     if not media:
         return
 
-    draft["media"] = media[:10]
-
+    draft["media"] = [media]
     context.user_data["state"] = "channel_post_preview"
 
     await send_channel_post_preview(message, context, lang)
