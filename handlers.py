@@ -825,7 +825,7 @@ async def group_settings_callback(update: Update, context: ContextTypes.DEFAULT_
         ]
     
         await query.edit_message_text(
-            TEXTS[lang]["group_panel"].format(
+            TEXTS[lang]["channel_panel"].format(
                 title=chat.title,
                 chat_id=chat_id
             ),
