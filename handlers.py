@@ -75,7 +75,11 @@ from db import(save_user_language,
     get_auto_materials_for_check,
     add_scheduled_channel_post,
     get_due_scheduled_channel_posts,
-    delete_scheduled_channel_post
+    delete_scheduled_channel_post,
+    get_scheduled_channel_posts_count,
+    get_scheduled_channel_posts_page,
+    get_scheduled_channel_post,
+    update_scheduled_channel_post_time
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username
@@ -1608,10 +1612,10 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
         if not draft:
             context.user_data.pop("state", None)
             return
-    
-        now = datetime.now(ZoneInfo("Asia/Tashkent"))
         
         try:
+            now = datetime.now(ZoneInfo("Asia/Tashkent"))
+            
             day_text, time_text = message.text.strip().split(" ", 1)
             hour_text, minute_text = time_text.split(":", 1)
             
@@ -1629,6 +1633,8 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
         except Exception:
             await message.reply_text(TEXTS[lang]["channel_post_schedule_invalid"])
             return
+            
+        now = datetime.now(ZoneInfo("Asia/Tashkent"))
     
         if send_at < now + timedelta(minutes=5):
             await message.reply_text(TEXTS[lang]["channel_post_schedule_too_early"])
@@ -1671,6 +1677,55 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
                 ]
             ])
         )
+        return
+        
+    if context.user_data.get("state") == "scheduled_post_change_time":
+        lang = get_user_language(message.from_user.id)
+        post_id = context.user_data.get("scheduled_post_id")
+    
+        try:
+            now = datetime.now(ZoneInfo("Asia/Tashkent"))
+    
+            day_text, time_text = message.text.strip().split(" ", 1)
+            hour_text, minute_text = time_text.split(":", 1)
+    
+            send_at = now.replace(
+                day=int(day_text),
+                hour=int(hour_text),
+                minute=int(minute_text),
+                second=0,
+                microsecond=0
+            )
+    
+        except Exception:
+            await message.reply_text(TEXTS[lang]["channel_post_schedule_invalid"])
+            return
+    
+        now = datetime.now(ZoneInfo("Asia/Tashkent"))
+    
+        if send_at < now + timedelta(minutes=5):
+            await message.reply_text(TEXTS[lang]["channel_post_schedule_too_early"])
+            return
+    
+        if send_at > now + timedelta(hours=72):
+            await message.reply_text(TEXTS[lang]["channel_post_schedule_too_late"])
+            return
+    
+        update_scheduled_channel_post_time(post_id, send_at)
+    
+        context.user_data.pop("state", None)
+        context.user_data.pop("scheduled_post_id", None)
+    
+        await delete_scheduled_post_preview(context, message.chat.id)
+    
+        await message.reply_text(TEXTS[lang]["scheduled_post_time_saved"])
+    
+        fake_query = type("FakeQuery", (), {
+            "message": message,
+            "answer": lambda *args, **kwargs: None
+        })()
+    
+        await send_scheduled_post_card(fake_query, context, lang, post_id)
         return
 
 def build_ads_panel(lang: str, chat_id: int, anti_links: bool):
@@ -6304,3 +6359,334 @@ async def scheduled_channel_posts_loop(app):
             print("SCHEDULED CHANNEL POSTS LOOP ERROR:", e)
 
         await asyncio.sleep(30)
+
+async def scheduled_posts_panel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    _, channel_id, page = query.data.split(":")
+    channel_id = int(channel_id)
+    page = int(page)
+
+    total_count = get_scheduled_channel_posts_count(channel_id)
+
+    if total_count == 0:
+        await query.edit_message_text(
+            TEXTS[lang]["scheduled_posts_empty"],
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        TEXTS[lang]["back_button"],
+                        callback_data=f"group_settings:{channel_id}"
+                    )
+                ]
+            ])
+        )
+        return
+
+    total_pages = math.ceil(total_count / SCHEDULED_POSTS_PER_PAGE)
+    page = max(0, min(page, total_pages - 1))
+
+    rows = get_scheduled_channel_posts_page(channel_id, page)
+
+    items = "\n".join(
+        TEXTS[lang]["scheduled_post_item"].format(
+            index=i + 1 + page * SCHEDULED_POSTS_PER_PAGE,
+            created_at=created_at.strftime("%d.%m %H:%M"),
+            created_by=created_by,
+            send_at=send_at.strftime("%d.%m %H:%M")
+        )
+        for i, (post_id, created_at, created_by, send_at) in enumerate(rows)
+    )
+
+    keyboard = []
+    buttons = []
+
+    for i, (post_id, *_rest) in enumerate(rows, start=1):
+        buttons.append(
+            InlineKeyboardButton(
+                str(i),
+                callback_data=f"scheduled_post_card:{post_id}"
+            )
+        )
+
+    for i in range(0, len(buttons), 5):
+        keyboard.append(buttons[i:i + 5])
+
+    nav = []
+
+    if page > 0:
+        nav.append(
+            InlineKeyboardButton(
+                "⬅️",
+                callback_data=f"scheduled_posts_panel:{channel_id}:{page - 1}"
+            )
+        )
+
+    if page < total_pages - 1:
+        nav.append(
+            InlineKeyboardButton(
+                "➡️",
+                callback_data=f"scheduled_posts_panel:{channel_id}:{page + 1}"
+            )
+        )
+
+    if nav:
+        keyboard.append(nav)
+
+    keyboard.append([
+        InlineKeyboardButton(
+            TEXTS[lang]["back_button"],
+            callback_data=f"group_settings:{channel_id}"
+        )
+    ])
+
+    await query.edit_message_text(
+        TEXTS[lang]["scheduled_posts_list"].format(items=items),
+        parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup(keyboard)
+    )
+    
+async def delete_scheduled_post_preview(context, chat_id: int):
+    ids = context.user_data.pop("scheduled_post_preview_ids", [])
+
+    for msg_id in ids:
+        try:
+            await context.bot.delete_message(chat_id=chat_id, message_id=msg_id)
+        except Exception as e:
+            print("DELETE SCHEDULED POST PREVIEW ERROR:", e)
+            
+async def send_scheduled_post_card(query, context, lang: str, post_id: int):
+    row = get_scheduled_channel_post(post_id)
+
+    if not row:
+        await query.answer("Пост не найден", show_alert=True)
+        return
+
+    post_id, channel_id, post_data, send_at, created_by, created_at = row
+
+    await delete_scheduled_post_preview(context, query.message.chat.id)
+
+    media = post_data.get("media", [])
+    text = post_data.get("text") or ""
+    buttons = post_data.get("buttons", [])
+
+    user_buttons = None
+
+    if buttons and len(media) <= 1:
+        user_buttons = InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton(
+                    button["text"],
+                    url=button["url"]
+                )
+            ]
+            for button in buttons
+        ])
+
+    sent_ids = []
+
+    if media:
+        if len(media) == 1:
+            item = media[0]
+
+            if item["type"] == "photo":
+                msg = await query.message.chat.send_photo(
+                    photo=item["file_id"],
+                    caption=text,
+                    parse_mode="HTML",
+                    reply_markup=user_buttons
+                )
+            elif item["type"] == "video":
+                msg = await query.message.chat.send_video(
+                    video=item["file_id"],
+                    caption=text,
+                    parse_mode="HTML",
+                    reply_markup=user_buttons
+                )
+            else:
+                msg = await query.message.chat.send_animation(
+                    animation=item["file_id"],
+                    caption=text,
+                    parse_mode="HTML",
+                    reply_markup=user_buttons
+                )
+
+            sent_ids.append(msg.message_id)
+
+        else:
+            media_group = []
+
+            for i, item in enumerate(media[:10]):
+                caption = text if i == 0 else None
+
+                if item["type"] == "photo":
+                    media_group.append(
+                        InputMediaPhoto(
+                            media=item["file_id"],
+                            caption=caption,
+                            parse_mode="HTML" if caption else None
+                        )
+                    )
+
+                elif item["type"] == "video":
+                    media_group.append(
+                        InputMediaVideo(
+                            media=item["file_id"],
+                            caption=caption,
+                            parse_mode="HTML" if caption else None
+                        )
+                    )
+
+            msgs = await query.message.chat.send_media_group(media_group)
+            sent_ids.extend([m.message_id for m in msgs])
+
+    else:
+        msg = await query.message.chat.send_message(
+            text,
+            parse_mode="HTML",
+            reply_markup=user_buttons,
+            disable_web_page_preview=True
+        )
+        sent_ids.append(msg.message_id)
+
+    control_msg = await query.message.chat.send_message(
+        TEXTS[lang]["channel_post_controls"],
+        reply_markup=InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["btn_change_send_time"],
+                    callback_data=f"scheduled_post_change_time:{post_id}"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["btn_delete"],
+                    callback_data=f"scheduled_post_delete_confirm:{post_id}"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["back_button"],
+                    callback_data=f"scheduled_posts_panel:{channel_id}:0"
+                )
+            ]
+        ])
+    )
+
+    sent_ids.append(control_msg.message_id)
+    context.user_data["scheduled_post_preview_ids"] = sent_ids
+    
+async def scheduled_post_card_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    lang = get_user_language(query.from_user.id)
+    post_id = int(query.data.split(":")[1])
+
+    try:
+        await query.message.delete()
+    except Exception:
+        pass
+
+    await send_scheduled_post_card(query, context, lang, post_id)
+    
+async def scheduled_post_change_time_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    lang = get_user_language(query.from_user.id)
+    post_id = int(query.data.split(":")[1])
+
+    context.user_data["state"] = "scheduled_post_change_time"
+    context.user_data["scheduled_post_id"] = post_id
+
+    await delete_scheduled_post_preview(context, query.message.chat.id)
+
+    msg = await query.message.chat.send_message(
+        TEXTS[lang]["scheduled_post_time_prompt"],
+        parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["back_button"],
+                    callback_data=f"scheduled_post_card:{post_id}"
+                )
+            ]
+        ])
+    )
+
+    context.user_data["scheduled_post_preview_ids"] = [msg.message_id]
+    
+async def scheduled_post_delete_confirm_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    lang = get_user_language(query.from_user.id)
+    post_id = int(query.data.split(":")[1])
+
+    await delete_scheduled_post_preview(context, query.message.chat.id)
+
+    msg = await query.message.chat.send_message(
+        TEXTS[lang]["scheduled_post_delete_confirm"],
+        reply_markup=InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["btn_confirm"],
+                    callback_data=f"scheduled_post_delete:{post_id}"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["back_button"],
+                    callback_data=f"scheduled_post_card:{post_id}"
+                )
+            ]
+        ])
+    )
+
+    context.user_data["scheduled_post_preview_ids"] = [msg.message_id]
+    
+async def scheduled_post_delete_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    lang = get_user_language(query.from_user.id)
+    post_id = int(query.data.split(":")[1])
+
+    row = get_scheduled_channel_post(post_id)
+
+    if not row:
+        await query.answer("Пост не найден", show_alert=True)
+        return
+
+    _, channel_id, *_ = row
+
+    delete_scheduled_channel_post(post_id)
+
+    await delete_scheduled_post_preview(context, query.message.chat.id)
+
+    await query.message.chat.send_message(
+        TEXTS[lang]["scheduled_post_deleted"],
+        reply_markup=InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["btn_open_section"],
+                    callback_data=f"scheduled_posts_panel:{channel_id}:0"
+                )
+            ]
+        ])
+    )
