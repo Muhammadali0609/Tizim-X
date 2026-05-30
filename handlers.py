@@ -75,8 +75,7 @@ from db import(save_user_language,
     get_auto_materials_for_check,
     add_scheduled_channel_post,
     get_due_scheduled_channel_posts,
-    mark_scheduled_channel_post_sent,
-    mark_scheduled_channel_post_failed
+    delete_scheduled_channel_post
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username
@@ -6289,11 +6288,11 @@ async def scheduled_channel_posts_loop(app):
                         post_data
                     )
 
-                    mark_scheduled_channel_post_sent(post_id)
-
                 except Exception as e:
                     print("SCHEDULED CHANNEL POST SEND ERROR:", e)
-                    mark_scheduled_channel_post_failed(post_id)
+                    
+                finally:
+                    delete_scheduled_channel_post(post_id)
 
         except Exception as e:
             print("SCHEDULED CHANNEL POSTS LOOP ERROR:", e)
