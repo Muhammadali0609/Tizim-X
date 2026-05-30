@@ -6557,7 +6557,7 @@ async def send_scheduled_post_card(query, context, lang: str, post_id: int):
         sent_ids.append(msg.message_id)
 
     control_msg = await query.message.chat.send_message(
-        TEXTS[lang]["channel_post_controls"],
+        TEXTS[lang]["channel_post_control"],
         reply_markup=InlineKeyboardMarkup([
             [
                 InlineKeyboardButton(
