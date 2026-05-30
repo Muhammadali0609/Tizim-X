@@ -623,7 +623,7 @@ TEXTS = {
             "ID канала:\n"
             "<code>{chat_id}</code>"
         ),
-        
+        "channel_post_create": "📝 Создать пост",
         "channel_post_enter_text": "📝 Отправьте текст поста.",
         "channel_post_attach_media": "📎 Прикрепить медиа",
         "channel_post_add_button": "🔗 Добавить кнопку",
@@ -1416,7 +1416,7 @@ TEXTS = {
             "Kanalning ID si:\n"
             "<code>{chat_id}</code>"
         ),
-        
+        "channel_post_create": "📝 Post yaratish",
         "channel_post_enter_text": "📝 Post matnini yuboring.",
         "channel_post_attach_media": "📎 Media biriktirish",
         "channel_post_add_button": "🔗 Tugma qo‘shish",
