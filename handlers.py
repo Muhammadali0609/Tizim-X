@@ -821,6 +821,12 @@ async def group_settings_callback(update: Update, context: ContextTypes.DEFAULT_
             ],
             [
                 InlineKeyboardButton(
+                    TEXTS[lang]["channel_scheduled_posts"],
+                    callback_data=f"scheduled_posts_panel:{chat_id}:0"
+                )
+            ],
+            [
+                InlineKeyboardButton(
                     TEXTS[lang]["back_button"],
                     callback_data="back_groups"
                 )
