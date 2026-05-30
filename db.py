@@ -253,10 +253,8 @@ def setup_database():
                     channel_id BIGINT NOT NULL,
                     post_data JSONB NOT NULL,
                     send_at TIMESTAMPTZ NOT NULL,
-                    status TEXT NOT NULL DEFAULT 'pending',
                     created_by BIGINT NOT NULL,
                     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
-                    sent_at TIMESTAMPTZ
                 )
             """)
         conn.commit()
@@ -1826,24 +1824,11 @@ def get_due_scheduled_channel_posts():
             return cur.fetchall()
 
 
-def mark_scheduled_channel_post_sent(post_id: int):
+def delete_scheduled_channel_post(post_id: int):
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                UPDATE tizimx_scheduled_channel_posts
-                SET status = 'sent',
-                    sent_at = NOW()
-                WHERE id = %s
-            """, (post_id,))
-        conn.commit()
-
-
-def mark_scheduled_channel_post_failed(post_id: int):
-    with get_connection() as conn:
-        with conn.cursor() as cur:
-            cur.execute("""
-                UPDATE tizimx_scheduled_channel_posts
-                SET status = 'failed'
+                DELETE FROM tizimx_scheduled_channel_posts
                 WHERE id = %s
             """, (post_id,))
         conn.commit()
