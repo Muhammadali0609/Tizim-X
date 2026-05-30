@@ -658,6 +658,16 @@ TEXTS = {
         "channel_post_schedule_too_late": "❌ Можно отложить максимум на 72 часа.",
         "channel_post_scheduled": "✅ Пост отложен и будет отправлен в указанное время.",
         
+        "channel_scheduled_posts": "⏰ Отложенные",
+        "scheduled_posts_empty": "⏰ Отложенных постов пока нет.",
+        "scheduled_posts_list": "⏰ <b>Отложенные посты</b>\n\n{items}",
+        "scheduled_post_item": "{index}. Создан: {created_at} | Создал: ID {created_by} | Отправка: {send_at}",
+        "btn_change_send_time": "🕒 Изменить время",
+        "scheduled_post_time_prompt": "🕒 Отправьте новое время в формате:\n\n<code>31 18:30</code>",
+        "scheduled_post_time_saved": "✅ Время отправки обновлено.",
+        "scheduled_post_delete_confirm": "⚠️ Удалить этот отложенный пост?",
+        "scheduled_post_deleted": "✅ Отложенный пост удалён.",
+        
         "guide_choose_section": "📘 Выберите раздел:",
         "btn_guide_bad_words": "📘 Маты",
         "btn_guide_ads": "📘 Рекламы",
@@ -1440,6 +1450,16 @@ TEXTS = {
         "channel_post_schedule_too_early": "❌ Vaqt kamida 5 daqiqadan keyin bo‘lishi kerak.",
         "channel_post_schedule_too_late": "❌ Ko‘pi bilan 72 soatgacha kechiktirish mumkin.",
         "channel_post_scheduled": "✅ Post kechiktirildi va belgilangan vaqtda yuboriladi.",
+        
+        "channel_scheduled_posts": "⏰ Kechiktirilganlar",
+        "scheduled_posts_empty": "⏰ Hozircha kechiktirilgan postlar yo‘q.",
+        "scheduled_posts_list": "⏰ <b>Kechiktirilgan postlar</b>\n\n{items}",
+        "scheduled_post_item": "{index}. Yaratildi: {created_at} | Yaratdi: ID {created_by} | Yuborish: {send_at}",
+        "btn_change_send_time": "🕒 Vaqtni o‘zgartirish",
+        "scheduled_post_time_prompt": "🕒 Yangi vaqtni quyidagi formatda yuboring:\n\n<code>31 18:30</code>",
+        "scheduled_post_time_saved": "✅ Yuborish vaqti yangilandi.",
+        "scheduled_post_delete_confirm": "⚠️ Bu kechiktirilgan post o‘chirilsinmi?",
+        "scheduled_post_deleted": "✅ Kechiktirilgan post o‘chirildi.",
 
         "guide_choose_section": "📘 Bo‘limni tanlang:",
         "btn_guide_bad_words": "📘 So‘kinishlar",
