@@ -1832,3 +1832,53 @@ def delete_scheduled_channel_post(post_id: int):
                 WHERE id = %s
             """, (post_id,))
         conn.commit()
+        
+SCHEDULED_POSTS_PER_PAGE = 10
+
+def get_scheduled_channel_posts_count(channel_id: int) -> int:
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT COUNT(*)
+                FROM tizimx_scheduled_channel_posts
+                WHERE channel_id = %s
+            """, (channel_id,))
+            row = cur.fetchone()
+    return row[0]
+
+
+def get_scheduled_channel_posts_page(channel_id: int, page: int):
+    offset = page * SCHEDULED_POSTS_PER_PAGE
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, created_at, created_by, send_at
+                FROM tizimx_scheduled_channel_posts
+                WHERE channel_id = %s
+                ORDER BY send_at ASC
+                LIMIT %s OFFSET %s
+            """, (channel_id, SCHEDULED_POSTS_PER_PAGE, offset))
+            return cur.fetchall()
+
+
+def get_scheduled_channel_post(post_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, channel_id, post_data, send_at, created_by, created_at
+                FROM tizimx_scheduled_channel_posts
+                WHERE id = %s
+            """, (post_id,))
+            return cur.fetchone()
+
+
+def update_scheduled_channel_post_time(post_id: int, send_at):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE tizimx_scheduled_channel_posts
+                SET send_at = %s
+                WHERE id = %s
+            """, (send_at, post_id))
+        conn.commit()
