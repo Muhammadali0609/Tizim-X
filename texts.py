@@ -646,9 +646,9 @@ TEXTS = {
         "channel_post_control": "Управление постом:",
 
         "channel_post_schedule_prompt": (
-            "⏰ Отправьте дату и время публикации.\n\n"
+            "⏰ Отправьте день и время публикации.\n\n"
             "Формат:\n"
-            "<code>30.05.2026 18:30</code>\n\n"
+            "<code>25 18:30</code>\n\n"
             "<i>Время указывается по Ташкенту. (GMT+5)\n"
             "Можно отложить минимум на 5 минут и максимум на 72 часа.</i>"
         ),
@@ -1429,9 +1429,9 @@ TEXTS = {
         "channel_post_control": "Postni boshqarish:",
 
         "channel_post_schedule_prompt": (
-            "⏰ Yuborish sanasi va vaqtini kiriting.\n\n"
+            "⏰ Yuborish kuni va vaqtini kiriting.\n\n"
             "Format:\n"
-            "<code>30.05.2026 18:30</code>\n\n"
+            "<code>25 18:30</code>\n\n"
             "Vaqt Toshkent vaqti bilan. (GMT+5)\n"
             "Kamida 5 daqiqadan keyin, ko‘pi bilan 72 soatgacha kechiktirish mumkin."
         ),
