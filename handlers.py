@@ -6200,33 +6200,63 @@ async def send_channel_post_to_channel_by_bot(bot, draft: dict):
         ])
 
     if media:
-        item = media[0]
-
-        if item["type"] == "photo":
-            await bot.send_photo(
-                chat_id=channel_id,
-                photo=item["file_id"],
-                caption=text,
-                parse_mode="HTML",
-                reply_markup=reply_markup
-            )
-
-        elif item["type"] == "video":
-            await bot.send_video(
-                chat_id=channel_id,
-                video=item["file_id"],
-                caption=text,
-                parse_mode="HTML",
-                reply_markup=reply_markup
-            )
-
+        if len(media) == 1:
+            item = media[0]
+    
+            if item["type"] == "photo":
+                await bot.send_photo(
+                    chat_id=channel_id,
+                    photo=item["file_id"],
+                    caption=text,
+                    parse_mode="HTML",
+                    reply_markup=reply_markup
+                )
+    
+            elif item["type"] == "video":
+                await bot.send_video(
+                    chat_id=channel_id,
+                    video=item["file_id"],
+                    caption=text,
+                    parse_mode="HTML",
+                    reply_markup=reply_markup
+                )
+    
+            else:
+                await bot.send_animation(
+                    chat_id=channel_id,
+                    animation=item["file_id"],
+                    caption=text,
+                    parse_mode="HTML",
+                    reply_markup=reply_markup
+                )
+    
         else:
-            await bot.send_animation(
+            media_group = []
+    
+            for i, item in enumerate(media[:10]):
+                caption = text if i == 0 else None
+    
+                if item["type"] == "photo":
+                    media_group.append(
+                        InputMediaPhoto(
+                            media=item["file_id"],
+                            caption=caption,
+                            parse_mode="HTML" if caption else None
+                        )
+                    )
+    
+                elif item["type"] == "video":
+                    media_group.append(
+                        InputMediaVideo(
+                            media=item["file_id"],
+                            caption=caption,
+                            parse_mode="HTML" if caption else None
+                        )
+                    )
+    
+            await bot.send_media_group(
                 chat_id=channel_id,
-                animation=item["file_id"],
-                caption=text,
-                parse_mode="HTML",
-                reply_markup=reply_markup
+                media=media_group
             )
 
     else:
