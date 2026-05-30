@@ -86,7 +86,12 @@ from handlers import (start_command,
     channel_post_draft_callback,
     channel_post_media_handler,
     channel_post_confirm_send_callback,
-    scheduled_channel_posts_loop
+    scheduled_channel_posts_loop,
+    scheduled_posts_panel_callback,
+    scheduled_post_card_callback,
+    scheduled_post_change_time_callback,
+    scheduled_post_delete_confirm_callback,
+    scheduled_post_delete_callback,
 )
 from db import setup_database
 from admins import (
@@ -243,6 +248,11 @@ def main():
     app.add_handler(CallbackQueryHandler(channel_create_post_callback, pattern="^channel_create_post:"))
     app.add_handler(CallbackQueryHandler(channel_post_confirm_send_callback, pattern="^channel_post_confirm_send$"))
     app.add_handler(CallbackQueryHandler(channel_post_draft_callback, pattern="^channel_post_"))
+    app.add_handler(CallbackQueryHandler(scheduled_posts_panel_callback, pattern="^scheduled_posts_panel:"))
+    app.add_handler(CallbackQueryHandler(scheduled_post_card_callback, pattern="^scheduled_post_card:"))
+    app.add_handler(CallbackQueryHandler(scheduled_post_change_time_callback, pattern="^scheduled_post_change_time:"))
+    app.add_handler(CallbackQueryHandler(scheduled_post_delete_confirm_callback, pattern="^scheduled_post_delete_confirm:"))
+    app.add_handler(CallbackQueryHandler(scheduled_post_delete_callback, pattern="^scheduled_post_delete:"))
     
     app.run_webhook(
         listen="0.0.0.0",
