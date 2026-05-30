@@ -815,7 +815,7 @@ async def group_settings_callback(update: Update, context: ContextTypes.DEFAULT_
         keyboard = [
             [
                 InlineKeyboardButton(
-                    "📝 Создать пост",
+                    TEXTS[lang]["channel_post_create"],
                     callback_data=f"channel_create_post:{chat_id}"
                 )
             ],
