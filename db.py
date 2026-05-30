@@ -254,7 +254,7 @@ def setup_database():
                     post_data JSONB NOT NULL,
                     send_at TIMESTAMPTZ NOT NULL,
                     created_by BIGINT NOT NULL,
-                    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
                 )
             """)
         conn.commit()
