@@ -1842,6 +1842,7 @@ def get_scheduled_channel_posts_count(channel_id: int) -> int:
                 SELECT COUNT(*)
                 FROM tizimx_scheduled_channel_posts
                 WHERE channel_id = %s
+                    AND send_at > NOW()
             """, (channel_id,))
             row = cur.fetchone()
     return row[0]
@@ -1856,6 +1857,7 @@ def get_scheduled_channel_posts_page(channel_id: int, page: int):
                 SELECT id, created_at, created_by, send_at
                 FROM tizimx_scheduled_channel_posts
                 WHERE channel_id = %s
+                    AND send_at > NOW()
                 ORDER BY send_at ASC
                 LIMIT %s OFFSET %s
             """, (channel_id, SCHEDULED_POSTS_PER_PAGE, offset))
