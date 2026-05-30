@@ -1604,17 +1604,26 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
             context.user_data.pop("state", None)
             return
     
+        now = datetime.now(ZoneInfo("Asia/Tashkent"))
+        
         try:
-            send_at = datetime.strptime(
-                message.text.strip(),
-                "%d.%m.%Y %H:%M"
-            ).replace(tzinfo=ZoneInfo("Asia/Tashkent"))
-    
+            day_text, time_text = message.text.strip().split(" ", 1)
+            hour_text, minute_text = time_text.split(":", 1)
+            
+            day = int(day_text)
+            hour = int(hour_text)
+            minute = int(minute_text)
+            
+            send_at = now.replace(
+                day=day,
+                hour=hour,
+                minute=minute,
+                second=0,
+                microsecond=0
+            )
         except Exception:
             await message.reply_text(TEXTS[lang]["channel_post_schedule_invalid"])
             return
-    
-        now = datetime.now(ZoneInfo("Asia/Tashkent"))
     
         if send_at < now + timedelta(minutes=5):
             await message.reply_text(TEXTS[lang]["channel_post_schedule_too_early"])
