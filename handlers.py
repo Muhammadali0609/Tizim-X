@@ -83,7 +83,7 @@ from db import(save_user_language,
     update_scheduled_channel_post_time
 )
 from texts import TEXTS
-from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username
+from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username, has_phrase
 from admins import is_admin
 import asyncio
 import math
@@ -477,7 +477,7 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
         for keyword, reply_text, button_text, button_url in auto_replies:
             keyword_lower = keyword.lower()
     
-            if keyword_lower in text_lower:
+            if has_phrase(message.text, keyword):
                 reply_markup = None
     
                 if button_text and button_url:
@@ -515,7 +515,7 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
         text_lower = message.text.lower()
     
         for keyword, material_url in auto_materials:
-            if keyword.lower() in text_lower:
+            if has_phrase(message.text, keyword):
                 parsed = parse_telegram_message_link(material_url)
     
                 if not parsed:
