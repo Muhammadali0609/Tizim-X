@@ -73,3 +73,11 @@ def has_username(text: str) -> bool:
         return False
 
     return bool(USERNAME_PATTERN.search(text))
+
+def has_phrase(text: str, keyword: str) -> bool:
+    text = text.lower()
+    keyword = keyword.lower().strip()
+
+    pattern = r'(?<!\w)' + re.escape(keyword) + r'(?!\w)'
+
+    return re.search(pattern, text, flags=re.IGNORECASE) is not None
