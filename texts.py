@@ -575,6 +575,7 @@ TEXTS = {
         
         "auto_reply_button_invalid": "❌ Неверный формат кнопки.",
         "auto_reply_saved": "✅ Авто-ответ сохранён.",
+        "auto_reply_deleted": "✅ Авто-ответ удалён.",
         "auto_reply_cancelled": "🗑 Черновик авто-ответа отменён.",
 
         "auto_materials_empty": (
@@ -1368,6 +1369,7 @@ TEXTS = {
         
         "auto_reply_button_invalid": "❌ Tugma formati noto‘g‘ri.",
         "auto_reply_saved": "✅ Avto-javob saqlandi.",
+        "auto_reply_deleted": "✅ Avto-javob o'chirildi.",
         "auto_reply_cancelled": "🗑 Avto-javob cho'rnavoyi bekor qilindi.",
 
         "auto_materials_empty": (
