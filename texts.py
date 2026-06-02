@@ -668,6 +668,7 @@ TEXTS = {
         "scheduled_post_time_saved": "✅ Время отправки обновлено.",
         "scheduled_post_delete_confirm": "⚠️ Удалить этот отложенный пост?",
         "scheduled_post_deleted": "✅ Отложенный пост удалён.",
+        "scheduled_posts_limit_reached": "❌ Вы достигли лимита отложенных постов: 5",
         
         "guide_choose_section": "📘 Выберите раздел:",
         "btn_guide_bad_words": "📘 Маты",
@@ -1462,6 +1463,7 @@ TEXTS = {
         "scheduled_post_time_saved": "✅ Yuborish vaqti yangilandi.",
         "scheduled_post_delete_confirm": "⚠️ Bu kechiktirilgan post o‘chirilsinmi?",
         "scheduled_post_deleted": "✅ Kechiktirilgan post o‘chirildi.",
+        "scheduled_posts_limit_reached": "❌ Kechiktirilgan postlar limiti tugadi: 5",
 
         "guide_choose_section": "📘 Bo‘limni tanlang:",
         "btn_guide_bad_words": "📘 So‘kinishlar",
