@@ -570,7 +570,7 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     if ad_violation:
         try:
-            if settings["anti_links"]:
+            if settings["delete_ads"]:
                 await message.delete()
 
             await handle_warning(
