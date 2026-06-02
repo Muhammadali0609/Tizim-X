@@ -1579,7 +1579,7 @@ async def private_text_handler(update: Update, context: ContextTypes.DEFAULT_TYP
         button_text = parts[0].strip()
         button_url = parts[1].strip()
     
-        if not button_text or not button_url.startswith(("http://", "https://")):
+        if not button_text or not button_url:
             await message.reply_text(TEXTS[lang]["auto_reply_button_invalid"])
             return
     
