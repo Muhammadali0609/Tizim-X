@@ -519,6 +519,7 @@ async def check_group_message(update: Update, context: ContextTypes.DEFAULT_TYPE
                 parsed = parse_telegram_message_link(material_url)
     
                 if not parsed:
+                    print("AUTO MATERIAL PARSE FAILED:", material_url)
                     return
     
                 from_chat_id, message_id = parsed
