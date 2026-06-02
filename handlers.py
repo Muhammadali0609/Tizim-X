@@ -188,11 +188,6 @@ async def language_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
     await query.message.reply_text(
         TEXTS[lang]["start"],
-        reply_markup=keyboard,
-        parse_mode="HTML"
-    )
-    await query.message.reply_text(
-        TEXTS[lang]["add_group_text"],
         reply_markup=InlineKeyboardMarkup([
             [
                 InlineKeyboardButton(
@@ -200,7 +195,13 @@ async def language_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
                     url=f"https://t.me/{context.bot.username}?startgroup=true"
                 )
             ]
-        ])
+        ]),
+        parse_mode="HTML"
+    )
+    
+    await query.message.reply_text(
+        TEXTS[lang]["menu_ready"],
+        reply_markup=keyboard
     )
 
     try:
