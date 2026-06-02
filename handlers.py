@@ -58,6 +58,7 @@ from db import(save_user_language,
     mark_required_subs_completed,
     reset_user_required_subs_completed,
     reset_user_required_contacts_completed,
+    reset_user_required_contacts_invites,
     get_auto_replies_count,
     get_auto_replies_page,
     get_auto_reply,
@@ -6787,5 +6788,6 @@ async def left_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
 
     reset_user_required_subs_completed(message.chat.id, user.id)
     reset_user_required_contacts_completed(message.chat.id, user.id)
+    reset_user_required_contacts_invites(message.chat.id, user.id)
 
     await clean_service_message(update, context)
