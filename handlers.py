@@ -6250,6 +6250,14 @@ async def send_channel_post_to_channel(context, draft: dict):
                 chat_id=channel_id,
                 media=media_group
             )
+    else:
+        await bot.send_message(
+            chat_id=channel_id,
+            text=text,
+            parse_mode="HTML",
+            reply_markup=reply_markup,
+            disable_web_page_preview=True
+        )
 
 async def channel_post_confirm_send_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
