@@ -3140,7 +3140,7 @@ def build_settings_panel(lang: str, chat_id: int, settings: dict):
 
     ads_status = (
         TEXTS[lang]["warn_enabled"]
-        if settings["anti_links"]
+        if settings["delete_ads"]
         else TEXTS[lang]["warn_disabled"]
     )
 
@@ -3164,7 +3164,7 @@ def build_settings_panel(lang: str, chat_id: int, settings: dict):
 
     ads_btn = (
         TEXTS[lang]["btn_toggle_ads_off"]
-        if settings["anti_links"]
+        if settings["delete_ads"]
         else TEXTS[lang]["btn_toggle_ads_on"]
     )
 
@@ -3184,7 +3184,7 @@ def build_settings_panel(lang: str, chat_id: int, settings: dict):
         [
             InlineKeyboardButton(
                 ads_btn,
-                callback_data=f"settings_toggle:anti_links:{chat_id}"
+                callback_data=f"settings_toggle:delete_ads:{chat_id}"
             )
         ],
         [
@@ -3250,7 +3250,7 @@ async def settings_toggle_callback(update: Update, context: ContextTypes.DEFAULT
 
     allowed = [
         "anti_bad_words",
-        "anti_links",
+        "delete_ads",
         "anti_usernames",
     ]
 
