@@ -1586,6 +1586,15 @@ def reset_user_required_contacts_completed(chat_id: int, user_id: int):
                 WHERE chat_id = %s AND user_id = %s
             """, (chat_id, user_id))
         conn.commit()
+        
+def reset_user_required_contacts_invites(chat_id: int, user_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                DELETE FROM tizimx_required_contacts_invites
+                WHERE chat_id = %s AND inviter_id = %s
+            """, (chat_id, user_id))
+        conn.commit()
 
 AUTO_REPLIES_PER_PAGE = 10
 
