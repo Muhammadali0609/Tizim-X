@@ -117,7 +117,7 @@ def is_callback_limited(user_id: int) -> bool:
         if now - timestamp <= 60
     ]
 
-    if len(data) >= 30:
+    if len(data) >= 40:
         CALLBACK_LIMIT[user_id] = data
         return True
 
