@@ -5460,8 +5460,8 @@ async def auto_reply_delete_callback(update: Update, context: ContextTypes.DEFAU
     delete_auto_reply(reply_id)
 
     await query.answer(
-        TEXTS[lang]["btn_delete"],
-        show_alert=False
+        TEXTS[lang]["auto_reply_deleted"],
+        show_alert=True
     )
 
     total_count = get_auto_replies_count(chat_id)
