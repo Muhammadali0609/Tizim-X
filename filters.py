@@ -35,15 +35,8 @@ def has_bad_word(text: str, bad_words: list[str]) -> bool:
     return any(word in bad_words_set for word in words)
 
 def has_ad_phrase(text: str, phrases: list[str]) -> bool:
-    if not text or not phrases:
-        return False
-
-    text = " ".join(text.lower().split())
-
     for phrase in phrases:
-        normalized_phrase = " ".join(phrase.lower().split())
-
-        if normalized_phrase and normalized_phrase in text:
+        if has_phrase(text, phrase):
             return True
 
     return False
@@ -57,12 +50,11 @@ def has_custom_ad_link(text: str, links: list[str]) -> bool:
     return any(link.lower() in text for link in links)
 
 def has_ad_exception(text: str, exceptions: list[str]) -> bool:
-    if not text or not exceptions:
-        return False
+    for exception in exceptions:
+        if has_phrase(text, exception):
+            return True
 
-    text = text.lower()
-
-    return any(exception in text for exception in exceptions)
+    return False
 
 USERNAME_PATTERN = re.compile(
     r"(?<!\w)@[a-zA-Z0-9_]{5,32}\b"
