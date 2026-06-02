@@ -4,6 +4,7 @@ from telegram import BotCommand, BotCommandScopeAllPrivateChats, BotCommandScope
 from config import BOT_TOKEN, WEBHOOK_URL, PORT
 import asyncio
 from handlers import (start_command,
+    left_member_handler
     language_callback,
     bot_added_to_group,
     check_group_message,
@@ -150,7 +151,7 @@ def main():
     app.add_handler(CallbackQueryHandler(language_callback, pattern="^lang_"))
     app.add_handler(ChatMemberHandler(bot_added_to_group, ChatMemberHandler.MY_CHAT_MEMBER))
     app.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, new_member_handler))
-    app.add_handler(MessageHandler(filters.StatusUpdate.LEFT_CHAT_MEMBER, clean_service_message))
+    app.add_handler(MessageHandler(filters.StatusUpdate.LEFT_CHAT_MEMBER, left_member_handler))
     app.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_TITLE, clean_service_message))
     app.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_PHOTO, clean_service_message))
     app.add_handler(MessageHandler(filters.StatusUpdate.DELETE_CHAT_PHOTO, clean_service_message))
