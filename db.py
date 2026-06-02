@@ -7,7 +7,6 @@ from datetime import datetime, timezone, timedelta
 def get_connection():
     return psycopg.connect(DATABASE_URL)
 
-
 def setup_database():
     with get_connection() as conn:
         with conn.cursor() as cur:
