@@ -6251,7 +6251,7 @@ async def send_channel_post_to_channel(context, draft: dict):
                 media=media_group
             )
     else:
-        await bot.send_message(
+        await context.bot.send_message(
             chat_id=channel_id,
             text=text,
             parse_mode="HTML",
