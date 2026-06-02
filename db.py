@@ -1821,8 +1821,7 @@ def get_due_scheduled_channel_posts():
             cur.execute("""
                 SELECT id, channel_id, post_data
                 FROM tizimx_scheduled_channel_posts
-                WHERE status = 'pending'
-                  AND send_at <= NOW()
+                WHERE send_at <= NOW()
                 ORDER BY send_at ASC
                 LIMIT 20
             """)
