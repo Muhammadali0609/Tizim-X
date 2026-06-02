@@ -191,6 +191,17 @@ async def language_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=keyboard,
         parse_mode="HTML"
     )
+    await query.message.reply_text(
+        TEXTS[lang]["add_group_text"],
+        reply_markup=InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["add_group_button"],
+                    url=f"https://t.me/{context.bot.username}?startgroup=true"
+                )
+            ]
+        ])
+    )
 
     try:
         await query.message.delete()
