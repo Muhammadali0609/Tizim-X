@@ -6060,6 +6060,15 @@ async def channel_post_draft_callback(update: Update, context: ContextTypes.DEFA
         return
 
     if data == "channel_post_schedule":
+        scheduled_count = get_scheduled_channel_posts_count(draft["channel_id"])
+
+        if scheduled_count >= 5:
+            await query.answer(
+                TEXTS[lang]["scheduled_posts_limit_reached"],
+                show_alert=True
+            )
+            return
+            
         await delete_old_channel_post_preview(query.message, context)
     
         context.user_data["state"] = "channel_post_schedule_time"
