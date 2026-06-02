@@ -4,7 +4,7 @@ from telegram import BotCommand, BotCommandScopeAllPrivateChats, BotCommandScope
 from config import BOT_TOKEN, WEBHOOK_URL, PORT
 import asyncio
 from handlers import (start_command,
-    left_member_handler
+    left_member_handler,
     language_callback,
     bot_added_to_group,
     check_group_message,
