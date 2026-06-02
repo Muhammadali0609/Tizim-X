@@ -183,6 +183,7 @@ TEXTS = {
             "Добавьте бота в группу и выдайте права администратора для полноценной работы.\n\n"
             "Подробная информация и инструкции доступны в разделе «📘 Инструкция»."
         ),
+        "add_group_button": "➕ Добавить в группу",
         "choose_language": "🌐 Выберите язык:",
         "language_saved": "✅ Язык сохранён: Русский",
         "group_connected": (
@@ -978,6 +979,7 @@ TEXTS = {
             "Botdan to‘liq foydalanish uchun uni guruhga qo‘shib administrator huquqlarini bering.\n\n"
             "Batafsil ma’lumot va qo‘llanmalar «📘 Qo‘llanma» bo‘limida mavjud."
         ),
+        "add_group_button": "➕ Guruhga qo‘shish",
         "choose_language": "🌐 Tilni tanlang:",
         "language_saved": "✅ Til saqlandi: O‘zbekcha",
         "group_connected": (
