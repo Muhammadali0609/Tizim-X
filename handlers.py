@@ -136,6 +136,13 @@ async def check_callback_limit(query) -> bool:
     return False
 
 async def start_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    if update.effective_chat.type != "private":
+        try:
+            await update.message.delete()
+        except Exception as e:
+            print("DELETE START COMMAND ERROR:", e)
+    
+        return
     user_id = update.effective_user.id
     
     if is_private_message_limited(user_id):
