@@ -56,6 +56,8 @@ from db import(save_user_language,
     reset_required_contacts_invites,
     is_required_subs_completed,
     mark_required_subs_completed,
+    reset_user_required_subs_completed,
+    reset_user_required_contacts_completed,
     get_auto_replies_count,
     get_auto_replies_page,
     get_auto_reply,
@@ -6768,3 +6770,22 @@ async def scheduled_post_delete_callback(update: Update, context: ContextTypes.D
             ]
         ])
     )
+
+async def left_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    message = update.message
+
+    if not message or not message.left_chat_member:
+        return
+
+    if message.chat.type not in ["group", "supergroup"]:
+        return
+
+    user = message.left_chat_member
+
+    if user.is_bot:
+        return
+
+    reset_user_required_subs_completed(message.chat.id, user.id)
+    reset_user_required_contacts_completed(message.chat.id, user.id)
+
+    await clean_service_message(update, context)
