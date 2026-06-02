@@ -5776,6 +5776,8 @@ async def channel_create_post_callback(update: Update, context: ContextTypes.DEF
     channel_id = int(query.data.split(":")[1])
 
     context.user_data["state"] = "channel_post_text"
+    draft_id = time.time()
+    context.user_data["channel_post_draft_id"] = draft_id
     context.user_data["channel_post_draft"] = {
         "channel_id": channel_id,
         "text": None,
@@ -5958,12 +5960,17 @@ async def send_channel_post_preview(target, context, lang: str):
         )
     
         context.user_data["channel_post_preview_message_id"] = msg.message_id
-
+        
+    draft_id = context.user_data.get("channel_post_draft_id")
     async def expire_channel_post_draft():
         await asyncio.sleep(300)
+        
+        if context.user_data.get("channel_post_draft_id") != draft_id:
+            return
 
         if context.user_data.get("channel_post_draft"):
             context.user_data.pop("channel_post_draft", None)
+            context.user_data.pop("channel_post_draft_id", None)
             context.user_data.pop("state", None)
 
             try:
@@ -6014,6 +6021,7 @@ async def channel_post_draft_callback(update: Update, context: ContextTypes.DEFA
         channel_id = draft["channel_id"]
 
         context.user_data.pop("channel_post_draft", None)
+        context.user_data.pop("channel_post_draft_id", None)
         context.user_data.pop("state", None)
         context.user_data.pop("channel_post_confirm_message_id", None)
 
@@ -6286,6 +6294,7 @@ async def channel_post_confirm_send_callback(update: Update, context: ContextTyp
         print("DELETE CHANNEL POST PREVIEW AFTER SEND ERROR:", e)
 
     context.user_data.pop("channel_post_draft", None)
+    context.user_data.pop("channel_post_draft_id", None)
     context.user_data.pop("state", None)
     context.user_data.pop("channel_post_preview_message_id", None)
     confirm_id = context.user_data.pop("channel_post_confirm_message_id", None)
