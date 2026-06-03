@@ -93,7 +93,10 @@ from handlers import (start_command,
     scheduled_post_change_time_callback,
     scheduled_post_delete_confirm_callback,
     scheduled_post_delete_callback,
-    
+    payment_choose_tariff_callback,
+    payment_tariff_standard_callback,
+    payment_toggle_group_callback,
+    payment_create_callback,
 )
 from db import setup_database
 from admins import (
@@ -255,6 +258,10 @@ def main():
     app.add_handler(CallbackQueryHandler(scheduled_post_change_time_callback, pattern="^scheduled_post_change_time:"))
     app.add_handler(CallbackQueryHandler(scheduled_post_delete_confirm_callback, pattern="^scheduled_post_delete_confirm:"))
     app.add_handler(CallbackQueryHandler(scheduled_post_delete_callback, pattern="^scheduled_post_delete:"))
+    app.add_handler(CallbackQueryHandler(payment_choose_tariff_callback, pattern="^payment_choose_tariff$"))
+    app.add_handler(CallbackQueryHandler(payment_tariff_standard_callback, pattern="^payment_tariff_standard$"))
+    app.add_handler(CallbackQueryHandler(payment_toggle_group_callback, pattern="^payment_toggle_group:"))
+    app.add_handler(CallbackQueryHandler(payment_create_callback, pattern="^payment_create$"))
     
     app.run_webhook(
         listen="0.0.0.0",
