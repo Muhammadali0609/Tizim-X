@@ -83,7 +83,8 @@ from db import(save_user_language,
     get_scheduled_channel_posts_count,
     get_scheduled_channel_posts_page,
     get_scheduled_channel_post,
-    update_scheduled_channel_post_time
+    update_scheduled_channel_post_time,
+    create_payment,
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username, has_phrase
@@ -91,8 +92,22 @@ from admins import is_admin
 import asyncio
 import math
 import re
-
 import time
+
+async def test_payment_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    user_id = update.effective_user.id
+
+    payment_id, merchant_trans_id = create_payment(
+        chat_id=-1001234567890,
+        user_id=user_id,
+        plan_name="standard",
+        months=1,
+        amount=15000
+    )
+
+    await update.message.reply_text(
+        f"✅ Payment created\n\nID: {payment_id}\nMerchant trans ID: {merchant_trans_id}"
+    )
 
 PRIVATE_MESSAGE_LIMIT = {}
 CALLBACK_LIMIT = {}
