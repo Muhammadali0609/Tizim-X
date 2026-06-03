@@ -1988,3 +1988,19 @@ def get_payment_by_merchant_trans_id(merchant_trans_id: str):
 
             return cur.fetchone()
             
+def calculate_standard_price(group_count: int) -> int:
+    prices = {
+        1: 9000,
+        2: 15000,
+        3: 21000,
+        4: 25000,
+        5: 30000,
+    }
+
+    if group_count <= 0:
+        return 0
+
+    if group_count in prices:
+        return prices[group_count]
+
+    return 30000 + (group_count - 5) * 5000
