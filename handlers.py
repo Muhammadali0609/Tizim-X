@@ -731,6 +731,14 @@ async def new_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
     if not is_group_active(message.chat.id):
         return
+        
+    for member in message.new_chat_members:
+        if member.is_bot:
+            continue
+    
+        reset_user_required_subs_completed(message.chat.id, member.id)
+        reset_user_required_contacts_completed(message.chat.id, member.id)
+        reset_user_required_contact_invites(message.chat.id, member.id)
 
     inviter = message.from_user
 
