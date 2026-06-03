@@ -84,6 +84,7 @@ from db import(save_user_language,
     get_scheduled_channel_posts_page,
     get_scheduled_channel_post,
     update_scheduled_channel_post_time,
+    create_payment
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username, has_phrase
@@ -93,9 +94,23 @@ import math
 import re
 import time
 
+async def test_payment_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    payment_id, merchant_trans_id = create_payment(
+        user_id=update.effective_user.id,
+        selected_chat_ids=[
+            -1001111111111,
+            -1002222222222,
+            -1003333333333,
+        ],
+        amount=21000
+    )
+
+    await update.message.reply_text(
+        f"✅ Payment created\n\nID: {payment_id}\nMerchant trans ID: {merchant_trans_id}"
+    )
+
 PRIVATE_MESSAGE_LIMIT = {}
 CALLBACK_LIMIT = {}
-
 
 def is_private_message_limited(user_id: int) -> bool:
     now = time.time()
