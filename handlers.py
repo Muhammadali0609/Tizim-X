@@ -731,30 +731,22 @@ async def new_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE)
 
     if not is_group_active(message.chat.id):
         return
-        
-    for member in message.new_chat_members:
-        if member.is_bot:
-            continue
-    
-        reset_user_required_subs_completed(message.chat.id, member.id)
-        reset_user_required_contacts_completed(message.chat.id, member.id)
-        reset_user_required_contact_invites(message.chat.id, member.id)
 
-        inviter = message.from_user
+    inviter = message.from_user
 
-        if inviter and not inviter.is_bot:
-            invited_user_ids = [
-                member.id
-                for member in message.new_chat_members
-                if not member.is_bot and member.id != inviter.id
-            ]
+    if inviter and not inviter.is_bot:
+        invited_user_ids = [
+            member.id
+            for member in message.new_chat_members
+            if not member.is_bot and member.id != inviter.id
+        ]
     
-            if invited_user_ids:
-                add_required_contact_invites(
-                    message.chat.id,
-                    inviter.id,
-                    invited_user_ids
-                )
+        if invited_user_ids:
+            add_required_contact_invites(
+                message.chat.id,
+                inviter.id,
+                invited_user_ids
+            )
 
 async def check_subscription_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
     query = update.callback_query
