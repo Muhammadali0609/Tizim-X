@@ -84,7 +84,8 @@ from db import(save_user_language,
     get_scheduled_channel_posts_page,
     get_scheduled_channel_post,
     update_scheduled_channel_post_time,
-    create_payment
+    create_payment,
+    calculate_standard_price
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username, has_phrase
@@ -93,21 +94,6 @@ import asyncio
 import math
 import re
 import time
-
-async def test_payment_command(update: Update, context: ContextTypes.DEFAULT_TYPE):
-    payment_id, merchant_trans_id = create_payment(
-        user_id=update.effective_user.id,
-        selected_chat_ids=[
-            -1001111111111,
-            -1002222222222,
-            -1003333333333,
-        ],
-        amount=21000
-    )
-
-    await update.message.reply_text(
-        f"✅ Payment created\n\nID: {payment_id}\nMerchant trans ID: {merchant_trans_id}"
-    )
 
 PRIVATE_MESSAGE_LIMIT = {}
 CALLBACK_LIMIT = {}
@@ -4013,7 +3999,7 @@ async def group_plan_callback(update: Update, context: ContextTypes.DEFAULT_TYPE
         [
             InlineKeyboardButton(
                 TEXTS[lang]["btn_pay_plan"],
-                callback_data=f"pay_plan:{chat_id}"
+                callback_data="payment_choose_tariff"
             )
         ],
         [
@@ -6804,3 +6790,164 @@ async def left_member_handler(update: Update, context: ContextTypes.DEFAULT_TYPE
         reset_user_required_contacts_invites(message.chat.id, user.id)
 
     await clean_service_message(update, context)
+
+def build_payment_groups_text(lang: str, groups: list, selected_ids: list[int]):
+    selected_titles = []
+
+    for chat_id, title in groups:
+        if chat_id in selected_ids:
+            selected_titles.append(f"✅ {title}")
+
+    amount = calculate_standard_price(len(selected_ids))
+
+    return TEXTS[lang]["payment_select_groups"].format(
+        count=len(selected_ids),
+        amount=amount,
+        groups="\n".join(selected_titles) if selected_titles else TEXTS[lang]["payment_no_groups"]
+    )
+
+
+def build_payment_groups_keyboard(lang: str, groups: list, selected_ids: list[int]):
+    keyboard = []
+
+    for chat_id, title in groups:
+        mark = "✅" if chat_id in selected_ids else "☐"
+
+        keyboard.append([
+            InlineKeyboardButton(
+                f"{mark} {title}",
+                callback_data=f"payment_toggle_group:{chat_id}"
+            )
+        ])
+
+    amount = calculate_standard_price(len(selected_ids))
+
+    keyboard.append([
+        InlineKeyboardButton(
+            TEXTS[lang]["payment_button"].format(amount=amount),
+            callback_data="payment_create"
+        )
+    ])
+
+    keyboard.append([
+        InlineKeyboardButton(
+            TEXTS[lang]["back_button"],
+            callback_data="payment_choose_tariff"
+        )
+    ])
+
+    return InlineKeyboardMarkup(keyboard)
+    
+async def payment_choose_tariff_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    lang = get_user_language(query.from_user.id)
+
+    await query.edit_message_text(
+        TEXTS[lang]["payment_choose_tariff"],
+        reply_markup=InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["payment_tariff_standard"],
+                    callback_data="payment_tariff_standard"
+                )
+            ],
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["back_button"],
+                    callback_data="back_groups"
+                )
+            ]
+        ])
+    )
+    
+async def payment_tariff_standard_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    groups = get_user_groups(user_id)
+
+    context.user_data["payment_selected_chat_ids"] = []
+    context.user_data["payment_groups"] = groups
+
+    await query.edit_message_text(
+        build_payment_groups_text(lang, groups, []),
+        parse_mode="HTML",
+        reply_markup=build_payment_groups_keyboard(lang, groups, [])
+    )
+    
+async def payment_toggle_group_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    lang = get_user_language(query.from_user.id)
+    chat_id = int(query.data.split(":")[1])
+
+    selected_ids = context.user_data.get("payment_selected_chat_ids", [])
+    groups = context.user_data.get("payment_groups") or get_user_groups(query.from_user.id)
+
+    if chat_id in selected_ids:
+        selected_ids.remove(chat_id)
+    else:
+        selected_ids.append(chat_id)
+
+    context.user_data["payment_selected_chat_ids"] = selected_ids
+    context.user_data["payment_groups"] = groups
+
+    await query.edit_message_text(
+        build_payment_groups_text(lang, groups, selected_ids),
+        parse_mode="HTML",
+        reply_markup=build_payment_groups_keyboard(lang, groups, selected_ids)
+    )
+    
+async def payment_create_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    user_id = query.from_user.id
+    lang = get_user_language(user_id)
+
+    selected_ids = context.user_data.get("payment_selected_chat_ids", [])
+
+    if not selected_ids:
+        await query.answer(
+            TEXTS[lang]["payment_choose_at_least_one"],
+            show_alert=True
+        )
+        return
+
+    amount = calculate_standard_price(len(selected_ids))
+
+    payment_id, merchant_trans_id = create_payment(
+        user_id=user_id,
+        selected_chat_ids=selected_ids,
+        amount=amount
+    )
+
+    await query.edit_message_text(
+        TEXTS[lang]["payment_created_test"].format(
+            payment_id=payment_id,
+            merchant_trans_id=merchant_trans_id
+        ),
+        parse_mode="HTML",
+        reply_markup=InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["back_button"],
+                    callback_data="payment_choose_tariff"
+                )
+            ]
+        ])
+    )
