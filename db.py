@@ -1975,13 +1975,3 @@ def get_payment_by_merchant_trans_id(merchant_trans_id: str):
 
             return cur.fetchone()
             
-payment_id, merchant_trans_id = create_payment(
-    chat_id=-1001234567890,
-    user_id=123456789,
-    plan_name="standard",
-    months=1,
-    amount=15000
-)
-
-print("PAYMENT:", payment_id, merchant_trans_id)
-print(get_payment_by_merchant_trans_id(merchant_trans_id))
