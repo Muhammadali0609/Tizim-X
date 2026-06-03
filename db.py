@@ -1,5 +1,6 @@
 import psycopg
 import json
+import time
 from config import DATABASE_URL
 from filters import DEFAULT_BAD_WORDS
 from datetime import datetime, timezone, timedelta
@@ -258,6 +259,21 @@ def setup_database():
                     send_at TIMESTAMPTZ NOT NULL,
                     created_by BIGINT NOT NULL,
                     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW()
+                )
+            """)
+            cur.execute("""
+                CREATE TABLE IF NOT EXISTS tizimx_payments (
+                    id BIGSERIAL PRIMARY KEY,
+                    chat_id BIGINT NOT NULL,
+                    user_id BIGINT NOT NULL,
+                    plan_name TEXT NOT NULL,
+                    months INTEGER NOT NULL DEFAULT 1,
+                    amount BIGINT NOT NULL,
+                    merchant_trans_id TEXT UNIQUE NOT NULL,
+                    status TEXT NOT NULL DEFAULT 'pending',
+                    click_trans_id BIGINT,
+                    created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
+                    paid_at TIMESTAMPTZ
                 )
             """)
         conn.commit()
@@ -1916,3 +1932,56 @@ def update_scheduled_channel_post_time(post_id: int, send_at):
                 WHERE id = %s
             """, (send_at, post_id))
         conn.commit()
+
+def create_payment(chat_id: int, user_id: int, plan_name: str, months: int, amount: int):
+    merchant_trans_id = f"tizimx_{chat_id}_{user_id}_{int(time.time())}"
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                INSERT INTO tizimx_payments (
+                    chat_id,
+                    user_id,
+                    plan_name,
+                    months,
+                    amount,
+                    merchant_trans_id
+                )
+                VALUES (%s, %s, %s, %s, %s, %s)
+                RETURNING id, merchant_trans_id
+            """, (
+                chat_id,
+                user_id,
+                plan_name,
+                months,
+                amount,
+                merchant_trans_id
+            ))
+
+            row = cur.fetchone()
+
+        conn.commit()
+
+    return row
+    
+def get_payment_by_merchant_trans_id(merchant_trans_id: str):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, chat_id, user_id, plan_name, months, amount, status
+                FROM tizimx_payments
+                WHERE merchant_trans_id = %s
+            """, (merchant_trans_id,))
+
+            return cur.fetchone()
+            
+payment_id, merchant_trans_id = create_payment(
+    chat_id=-1001234567890,
+    user_id=123456789,
+    plan_name="standard",
+    months=1,
+    amount=15000
+)
+
+print("PAYMENT:", payment_id, merchant_trans_id)
+print(get_payment_by_merchant_trans_id(merchant_trans_id))
