@@ -93,7 +93,7 @@ from handlers import (start_command,
     scheduled_post_change_time_callback,
     scheduled_post_delete_confirm_callback,
     scheduled_post_delete_callback,
-    test_payment_command
+    
 )
 from db import setup_database
 from admins import (
@@ -149,7 +149,6 @@ def main():
     app.post_init = post_init
 
     app.add_handler(CommandHandler("start", start_command))
-    app.add_handler(CommandHandler("testpay", test_payment_command))
     app.add_handler(CallbackQueryHandler(language_callback, pattern="^lang_"))
     app.add_handler(ChatMemberHandler(bot_added_to_group, ChatMemberHandler.MY_CHAT_MEMBER))
     app.add_handler(MessageHandler(filters.StatusUpdate.NEW_CHAT_MEMBERS, new_member_handler))
