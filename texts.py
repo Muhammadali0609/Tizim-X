@@ -672,6 +672,14 @@ TEXTS = {
         "scheduled_post_deleted": "✅ Отложенный пост удалён.",
         "scheduled_posts_limit_reached": "❌ Вы достигли лимита отложенных постов: 5",
         
+        "payment_choose_tariff": "💳 Выберите тариф:",
+        "payment_tariff_standard": "Standard",
+        "payment_select_groups": "💳 <b>Оплата Standard</b>\n\nВыбрано групп: {count}\nСтоимость: {amount} сум\n\n<b>Выбранные группы:</b>\n{groups}",
+        "payment_no_groups": "— нет —",
+        "payment_choose_at_least_one": "❌ Выберите хотя бы одну группу.",
+        "payment_button": "💳 Оплатить: {amount} сум",
+        "payment_created_test": "✅ Платёж создан.\n\nID: {payment_id}\nMerchant ID: <code>{merchant_trans_id}</code>",
+        
         "guide_choose_section": "📘 Выберите раздел:",
         "btn_guide_bad_words": "📘 Маты",
         "btn_guide_ads": "📘 Рекламы",
@@ -1468,6 +1476,14 @@ TEXTS = {
         "scheduled_post_delete_confirm": "⚠️ Bu kechiktirilgan post o‘chirilsinmi?",
         "scheduled_post_deleted": "✅ Kechiktirilgan post o‘chirildi.",
         "scheduled_posts_limit_reached": "❌ Kechiktirilgan postlar limiti tugadi: 5",
+        
+        "payment_choose_tariff": "💳 Tarifni tanlang:",
+        "payment_tariff_standard": "Standard",
+        "payment_select_groups": "💳 <b>Standard to‘lovi</b>\n\nTanlangan guruhlar: {count}\nNarx: {amount} so‘m\n\n<b>Tanlangan guruhlar:</b>\n{groups}",
+        "payment_no_groups": "— yo‘q —",
+        "payment_choose_at_least_one": "❌ Kamida bitta guruh tanlang.",
+        "payment_button": "💳 To‘lash: {amount} so‘m",
+        "payment_created_test": "✅ To‘lov yaratildi.\n\nID: {payment_id}\nMerchant ID: <code>{merchant_trans_id}</code>",
 
         "guide_choose_section": "📘 Bo‘limni tanlang:",
         "btn_guide_bad_words": "📘 So‘kinishlar",
