@@ -276,6 +276,14 @@ def setup_database():
                     paid_at TIMESTAMPTZ
                 )
             """)
+            cur.execute("""
+                ALTER TABLE tizimx_payments
+                ADD COLUMN IF NOT EXISTS selected_chat_ids JSONB
+            """)
+            cur.execute("""
+                ALTER TABLE tizimx_payments
+                ADD COLUMN IF NOT EXISTS group_count INTEGER NOT NULL DEFAULT 1
+            """)
         conn.commit()
 
 def get_user_language(user_id: int) -> str:
@@ -1933,8 +1941,9 @@ def update_scheduled_channel_post_time(post_id: int, send_at):
             """, (send_at, post_id))
         conn.commit()
 
-def create_payment(chat_id: int, user_id: int, plan_name: str, months: int, amount: int):
-    merchant_trans_id = f"tizimx_{chat_id}_{user_id}_{int(time.time())}"
+def create_payment(user_id: int, selected_chat_ids: list[int], amount: int, plan_name: str = "standard", months: int = 1):
+    first_chat_id = selected_chat_ids[0]
+    merchant_trans_id = f"tizimx_{user_id}_{int(time.time())}"
 
     with get_connection() as conn:
         with conn.cursor() as cur:
@@ -1945,17 +1954,21 @@ def create_payment(chat_id: int, user_id: int, plan_name: str, months: int, amou
                     plan_name,
                     months,
                     amount,
-                    merchant_trans_id
+                    merchant_trans_id,
+                    selected_chat_ids,
+                    group_count
                 )
-                VALUES (%s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
                 RETURNING id, merchant_trans_id
             """, (
-                chat_id,
+                first_chat_id,
                 user_id,
                 plan_name,
                 months,
                 amount,
-                merchant_trans_id
+                merchant_trans_id,
+                json.dumps(selected_chat_ids),
+                len(selected_chat_ids)
             ))
 
             row = cur.fetchone()
