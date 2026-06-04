@@ -680,6 +680,11 @@ TEXTS = {
         "payment_button": "💳 Оплатить: {amount} сум",
         "payment_created_test": "✅ Платёж создан.\n\nID: {payment_id}\nMerchant ID: <code>{merchant_trans_id}</code>",
         
+        "payment_pending_exists": "⏳ У вас уже есть ожидающий платёж.\n\nСумма: {amount} сум\nГрупп: {count}\nДействует до: {expires_at}",
+        "payment_continue": "💳 Продолжить оплату",
+        "payment_cancel": "❌ Отменить платёж",
+        "payment_cancelled": "✅ Платёж отменён.",
+        
         "guide_choose_section": "📘 Выберите раздел:",
         "btn_guide_bad_words": "📘 Маты",
         "btn_guide_ads": "📘 Рекламы",
@@ -1484,6 +1489,11 @@ TEXTS = {
         "payment_choose_at_least_one": "❌ Kamida bitta guruh tanlang.",
         "payment_button": "💳 To‘lash: {amount} so‘m",
         "payment_created_test": "✅ To‘lov yaratildi.\n\nID: {payment_id}\nMerchant ID: <code>{merchant_trans_id}</code>",
+        
+        "payment_pending_exists": "⏳ Sizda allaqachon kutilayotgan to‘lov bor.\n\nSumma: {amount} so‘m\nGuruhlar: {count}\nAmal qiladi: {expires_at}",
+        "payment_continue": "💳 To‘lovni davom ettirish",
+        "payment_cancel": "❌ To‘lovni bekor qilish",
+        "payment_cancelled": "✅ To‘lov bekor qilindi.",
 
         "guide_choose_section": "📘 Bo‘limni tanlang:",
         "btn_guide_bad_words": "📘 So‘kinishlar",
