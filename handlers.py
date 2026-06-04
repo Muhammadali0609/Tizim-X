@@ -87,6 +87,8 @@ from db import(save_user_language,
     create_payment,
     calculate_standard_price,
     activate_payment_groups,
+    get_user_pending_payment,
+    cancel_payment,
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username, has_phrase
@@ -6930,6 +6932,39 @@ async def payment_create_callback(update: Update, context: ContextTypes.DEFAULT_
         return
 
     amount = calculate_standard_price(len(selected_ids))
+    pending = get_user_pending_payment(user_id)
+
+    if pending:
+        payment_id, amount, merchant_trans_id, selected_chat_ids, group_count, expires_at = pending
+    
+        await query.edit_message_text(
+            TEXTS[lang]["payment_pending_exists"].format(
+                amount=amount,
+                count=group_count,
+                expires_at=expires_at.strftime("%d.%m.%Y %H:%M")
+            ),
+            reply_markup=InlineKeyboardMarkup([
+                [
+                    InlineKeyboardButton(
+                        TEXTS[lang]["payment_continue"],
+                        callback_data=f"payment_continue:{payment_id}"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        TEXTS[lang]["payment_cancel"],
+                        callback_data=f"payment_cancel:{payment_id}"
+                    )
+                ],
+                [
+                    InlineKeyboardButton(
+                        TEXTS[lang]["back_button"],
+                        callback_data="payment_choose_tariff"
+                    )
+                ]
+            ])
+        )
+        return
 
     payment_id, merchant_trans_id = create_payment(
         user_id=user_id,
@@ -6976,4 +7011,31 @@ async def payment_test_paid_callback(update: Update, context: ContextTypes.DEFAU
 
     await query.edit_message_text(
         "✅ Оплата успешно проверена.\n\nТариф Standard активирован для выбранных групп."
+    )
+    
+async def payment_cancel_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    lang = get_user_language(query.from_user.id)
+    payment_id = int(query.data.split(":")[1])
+
+    ok = cancel_payment(payment_id, query.from_user.id)
+
+    if not ok:
+        await query.answer("❌ Платёж не найден", show_alert=True)
+        return
+
+    await query.edit_message_text(
+        TEXTS[lang]["payment_cancelled"],
+        reply_markup=InlineKeyboardMarkup([
+            [
+                InlineKeyboardButton(
+                    TEXTS[lang]["back_button"],
+                    callback_data="payment_choose_tariff"
+                )
+            ]
+        ])
     )
