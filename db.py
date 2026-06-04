@@ -2022,7 +2022,7 @@ def get_payment_by_id(payment_id: int):
     with get_connection() as conn:
         with conn.cursor() as cur:
             cur.execute("""
-                SELECT id, user_id, amount, merchant_trans_id, status, selected_chat_ids
+                SELECT id, user_id, amount, merchant_trans_id, status, selected_chat_ids, expires_at
                 FROM tizimx_payments
                 WHERE id = %s
             """, (payment_id,))
@@ -2048,18 +2048,22 @@ def mark_payment_paid(payment_id: int, click_trans_id: int | None = None):
 
     return row is not None
     
-def activate_payment_groups(payment_id: int) -> bool:
+def activate_payment_groups(payment_id: int, click_trans_id: int | None = None) -> bool:
     payment = get_payment_by_id(payment_id)
 
     if not payment:
         return False
 
-    payment_id, user_id, amount, merchant_trans_id, status, selected_chat_ids = payment
+    payment_id, user_id, amount, merchant_trans_id, status, selected_chat_ids, expires_at = payment
 
     if status != "pending":
         return False
 
-    paid = mark_payment_paid(payment_id)
+    if not expires_at or expires_at <= datetime.now(timezone.utc):
+        expire_old_pending_payments(user_id)
+        return False
+
+    paid = mark_payment_paid(payment_id, click_trans_id)
 
     if not paid:
         return False
