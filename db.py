@@ -2004,3 +2004,57 @@ def calculate_standard_price(group_count: int) -> int:
         return prices[group_count]
 
     return 30000 + (group_count - 5) * 5000
+    
+def get_payment_by_id(payment_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, user_id, amount, merchant_trans_id, status, selected_chat_ids
+                FROM tizimx_payments
+                WHERE id = %s
+            """, (payment_id,))
+            return cur.fetchone()
+
+
+def mark_payment_paid(payment_id: int, click_trans_id: int | None = None):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE tizimx_payments
+                SET status = 'paid',
+                    click_trans_id = %s,
+                    paid_at = NOW()
+                WHERE id = %s
+                  AND status = 'pending'
+                RETURNING id
+            """, (click_trans_id, payment_id))
+
+            row = cur.fetchone()
+
+        conn.commit()
+
+    return row is not None
+    
+def activate_payment_groups(payment_id: int) -> bool:
+    payment = get_payment_by_id(payment_id)
+
+    if not payment:
+        return False
+
+    payment_id, user_id, amount, merchant_trans_id, status, selected_chat_ids = payment
+
+    if status != "pending":
+        return False
+
+    paid = mark_payment_paid(payment_id)
+
+    if not paid:
+        return False
+
+    if isinstance(selected_chat_ids, str):
+        selected_chat_ids = json.loads(selected_chat_ids)
+
+    for chat_id in selected_chat_ids:
+        activate_standard_plan(int(chat_id), days=30)
+
+    return True
