@@ -265,7 +265,12 @@ def main():
     app.add_handler(CallbackQueryHandler(payment_create_callback, pattern="^payment_create$"))
     app.add_handler(CallbackQueryHandler(payment_cancel_callback, pattern="^payment_cancel:"))
     
-    app.run_polling()
+    app.run_webhook(
+        listen="0.0.0.0",
+        port=PORT,
+        url_path="webhook",
+        webhook_url=f"{WEBHOOK_URL}/webhook",
+    )
 
 if __name__ == "__main__":
     main()
