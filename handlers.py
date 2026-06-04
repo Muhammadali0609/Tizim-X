@@ -6936,12 +6936,12 @@ async def payment_create_callback(update: Update, context: ContextTypes.DEFAULT_
 
     if pending:
         payment_id, amount, merchant_trans_id, selected_chat_ids, group_count, expires_at = pending
-    
+        expires_at_tashkent = expires_at.astimezone(ZoneInfo("Asia/Tashkent"))
         await query.edit_message_text(
             TEXTS[lang]["payment_pending_exists"].format(
                 amount=amount,
                 count=group_count,
-                expires_at=expires_at.strftime("%d.%m.%Y %H:%M")
+                expires_at=expires_at_tashkent.strftime("%d.%m.%Y %H:%M")
             ),
             reply_markup=InlineKeyboardMarkup([
                 [
