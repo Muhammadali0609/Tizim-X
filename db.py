@@ -284,6 +284,10 @@ def setup_database():
                 ALTER TABLE tizimx_payments
                 ADD COLUMN IF NOT EXISTS group_count INTEGER NOT NULL DEFAULT 1
             """)
+            cur.execute("""
+                ALTER TABLE tizimx_payments
+                ADD COLUMN IF NOT EXISTS expires_at TIMESTAMPTZ
+            """)
         conn.commit()
 
 def get_user_language(user_id: int) -> str:
@@ -1941,9 +1945,16 @@ def update_scheduled_channel_post_time(post_id: int, send_at):
             """, (send_at, post_id))
         conn.commit()
 
-def create_payment(user_id: int, selected_chat_ids: list[int], amount: int, plan_name: str = "standard", months: int = 1):
+def create_payment(
+    user_id: int,
+    selected_chat_ids: list[int],
+    amount: int,
+    plan_name: str = "standard",
+    months: int = 1
+):
     first_chat_id = selected_chat_ids[0]
     merchant_trans_id = f"tizimx_{user_id}_{int(time.time())}"
+    expires_at = datetime.now(timezone.utc) + timedelta(minutes=30)
 
     with get_connection() as conn:
         with conn.cursor() as cur:
@@ -1956,9 +1967,10 @@ def create_payment(user_id: int, selected_chat_ids: list[int], amount: int, plan
                     amount,
                     merchant_trans_id,
                     selected_chat_ids,
-                    group_count
+                    group_count,
+                    expires_at
                 )
-                VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
+                VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s)
                 RETURNING id, merchant_trans_id
             """, (
                 first_chat_id,
@@ -1968,7 +1980,8 @@ def create_payment(user_id: int, selected_chat_ids: list[int], amount: int, plan
                 amount,
                 merchant_trans_id,
                 json.dumps(selected_chat_ids),
-                len(selected_chat_ids)
+                len(selected_chat_ids),
+                expires_at
             ))
 
             row = cur.fetchone()
@@ -2058,3 +2071,49 @@ def activate_payment_groups(payment_id: int) -> bool:
         activate_standard_plan(int(chat_id), days=30)
 
     return True
+    
+def expire_old_pending_payments(user_id: int):
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE tizimx_payments
+                SET status = 'expired'
+                WHERE user_id = %s
+                  AND status = 'pending'
+                  AND expires_at <= NOW()
+            """, (user_id,))
+        conn.commit()
+        
+def get_user_pending_payment(user_id: int):
+    expire_old_pending_payments(user_id)
+
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                SELECT id, amount, merchant_trans_id, selected_chat_ids, group_count, expires_at
+                FROM tizimx_payments
+                WHERE user_id = %s
+                  AND status = 'pending'
+                  AND expires_at > NOW()
+                ORDER BY created_at DESC
+                LIMIT 1
+            """, (user_id,))
+            return cur.fetchone()
+            
+def cancel_payment(payment_id: int, user_id: int) -> bool:
+    with get_connection() as conn:
+        with conn.cursor() as cur:
+            cur.execute("""
+                UPDATE tizimx_payments
+                SET status = 'cancelled'
+                WHERE id = %s
+                  AND user_id = %s
+                  AND status = 'pending'
+                RETURNING id
+            """, (payment_id, user_id))
+
+            row = cur.fetchone()
+
+        conn.commit()
+
+    return row is not None
