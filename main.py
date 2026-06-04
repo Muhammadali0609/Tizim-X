@@ -98,6 +98,7 @@ from handlers import (start_command,
     payment_toggle_group_callback,
     payment_create_callback,
     payment_test_paid_callback,
+    payment_cancel_callback,
 )
 from db import setup_database
 from admins import (
@@ -264,6 +265,7 @@ def main():
     app.add_handler(CallbackQueryHandler(payment_toggle_group_callback, pattern="^payment_toggle_group:"))
     app.add_handler(CallbackQueryHandler(payment_create_callback, pattern="^payment_create$"))
     app.add_handler(CallbackQueryHandler(payment_test_paid_callback, pattern="^payment_test_paid:"))
+    app.add_handler(CallbackQueryHandler(payment_cancel_callback, pattern="^payment_cancel:"))
     
     app.run_webhook(
         listen="0.0.0.0",
