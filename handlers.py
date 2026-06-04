@@ -85,7 +85,8 @@ from db import(save_user_language,
     get_scheduled_channel_post,
     update_scheduled_channel_post_time,
     create_payment,
-    calculate_standard_price
+    calculate_standard_price,
+    activate_payment_groups,
 )
 from texts import TEXTS
 from filters import has_link, has_bad_word, has_ad_phrase, has_custom_ad_link, has_ad_exception, has_username, has_phrase
@@ -6945,9 +6946,34 @@ async def payment_create_callback(update: Update, context: ContextTypes.DEFAULT_
         reply_markup=InlineKeyboardMarkup([
             [
                 InlineKeyboardButton(
+                    "✅ Тестово оплатить",
+                    callback_data=f"payment_test_paid:{payment_id}"
+                )
+            ],
+            [
+                InlineKeyboardButton(
                     TEXTS[lang]["back_button"],
                     callback_data="payment_choose_tariff"
                 )
             ]
         ])
+    )
+    
+async def payment_test_paid_callback(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    query = update.callback_query
+
+    if await check_callback_limit(query):
+        return
+
+    lang = get_user_language(query.from_user.id)
+    payment_id = int(query.data.split(":")[1])
+
+    ok = activate_payment_groups(payment_id)
+
+    if not ok:
+        await query.answer("❌ Платёж не найден или уже оплачен", show_alert=True)
+        return
+
+    await query.edit_message_text(
+        "✅ Оплата успешно проверена.\n\nТариф Standard активирован для выбранных групп."
     )
